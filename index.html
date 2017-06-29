@@ -1,0 +1,837 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Irken Kitties</title>
+  <meta name="author" content="Safiire">
+
+  
+  <meta name="description" content="You may have noticed that I like to program many things in Ruby. I really do like
+many aspects of this language, and it’s usually the main language &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://irkenkitties.com">
+  <!-- <link href="/favicon.png" rel="icon"> &#8211;>
+
+  <!-- A million more different sizes and types of favicon -->
+  <link rel="apple-touch-icon" sizes="57x57" href="/favicons/apple-touch-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/favicons/apple-touch-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/favicons/apple-touch-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/favicons/apple-touch-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/favicons/apple-touch-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/favicons/apple-touch-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/favicons/apple-touch-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/favicons/apple-touch-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon-180x180.png">
+  <link rel="icon" type="image/png" href="/favicons/favicon-192x192.png" sizes="192x192">
+  <link rel="icon" type="image/png" href="/favicons/favicon-160x160.png" sizes="160x160">
+  <link rel="icon" type="image/png" href="/favicons/favicon-96x96.png" sizes="96x96">
+  <link rel="icon" type="image/png" href="/favicons/favicon-16x16.png" sizes="16x16">
+  <link rel="icon" type="image/png" href="/favicons/favicon-32x32.png" sizes="32x32">
+  <meta name="msapplication-TileColor" content="#9f00a7">
+  <meta name="msapplication-TileImage" content="/favicons/mstile-144x144.png">
+
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Irken Kitties" type="application/atom+xml">
+
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script src="/javascripts/three.min.js" type="text/javascript"></script>
+  <script src="/javascripts/glsl_header.js" type="text/javascript"></script>
+
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Francois+One' rel='stylesheet' type='text/css'>
+
+<!-- MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript"
+   src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Irken Kitties</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:irkenkitties.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a target="_blank" href="https://github.com/safiire">Github</a></li>
+  <li><a href="/blog/categories/haskell/">Haskell</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/04/12/reversing-crackme-challenges/">Reversing Crackme Challenges</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-04-12T16:27:26-07:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>You may have noticed that I like to program many things in Ruby.  I really do like
+many aspects of this language, and it’s usually the main language that I use at work
+as well.  Lately I’ve been getting the feeling that a programmer can get judged
+and immediately pigeon holed based on using a language a lot at work.  For example
+if you use Ruby you must be “only” a web programmer, if you use a garbage collected
+language, you mustn’t be able to manage memory, or handle programming in languages
+like C or C++, let alone assembly.</p>
+
+<p>So I like to take some of my free time and play hacker wargames like smashthestack.org,
+or reverse engineer crackmes, so I decided to describe my process for solving those
+types of challanges here.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2016/04/12/reversing-crackme-challenges/">Read it &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/02/10/glsl-shaders-with-webgl/">GLSL Shaders With WebGL</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-02-10T10:51:44-07:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><div style="text-align: center;">
+  <div id="moon_orb"></div>
+</div>
+
+<p>Here is a neat example of using shaders in WebGL, read on to see the GLSL shader code</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2016/02/10/glsl-shaders-with-webgl/">Read it &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/03/29/creating-sound-on-the-nes/">Creating Sound on the NES</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-03-29T10:51:44-07:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I am into all types of synthesizers, old and new, and recently I’ve taken to the sound of
+older video game sound chips.  I recently desoldered the NES’s 2A03 processor off its mainboard
+and have it in partial communication with an Arudino, but rewind, do I really know enough
+about composing music on that chip?  Not yet.  So there’s only one thing to do about that.</p>
+
+<h2 id="assembler">6502 Assembler</h2>
+
+<p>The NES was programmed in 6502 assembly language, and lucky for me, it actually has a really
+straight forward instruction set, but still, last month I was still not familiar with it 
+enough to make anything.  Now, usually when I don’t understand something, I write a program
+that somehow involves whatever topic I’m learning.  You can’t write a program like an assembler 
+without understanding how the processor for that assembler works, so I wrote my own assembler 
+for the NES called <a href="https://github.com/safiire/n65">n65</a>.</p>
+
+<p>This is the assembler I will be using in this article, and to help me compose music on the NES.</p>
+
+<p>You can easily install n65 through RubyGems.org:</p>
+
+<pre><code>gem install n65
+</code></pre>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/03/29/creating-sound-on-the-nes/">Read it &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/10/17/matrices-as-linear-operations/">Matrices as Linear Operators</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-10-17T07:57:55+00:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Since they are my favourite, let’s learn something neat about matrices, something that can also
+serve as the first post on this new blog of mine about math, programming, and DSP.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/10/17/matrices-as-linear-operations/">Read it &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/12/13/building-my-shruthi-1/">Building My Shruthi-1</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-13T17:54:00-08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Last year I built a small MIDI controlled polyphonic synthesizer called KittySynth using a <a href="http://leaflabs.com/devices/maple/">72MHz LeafLabs Maple</a> 
+microcontroller board, an <a href="http://www.openmusiclabs.com/projects/codec-shield/">Audio Codec Shield</a> from Open Music Labs,
+and some C++.  I had originally had some ideas to try to build something like this by abusing the timers and PWM duty cycles
+on a 16MHz Arduino Mega I have, but quickly realized there was no way on earth I could build what I wanted to with the small
+amount of resources on an Arduino.  The ARM based STM32 chip on the Maple had just enough resources available to create 
+an 8-voice polyphonic wavetable synth, which I should write about sooner or later.</p>
+
+<p>Anyway, while researching for that project I found out that someone actually has created a perfectly viable synthesizer
+based around a 20MHz ATMega chip (as in the Arduino) called the <a href="http://mutable-instruments.net/">Shruthi-1</a>.  I thought this was a perfect
+opportunity to go through the steps of actually building a proper synth of the sort I would someday like to design,
+so I ordered the Shruth-1 4-Pole Mission Kit, and decided to put it together from scratch.</p>
+
+<p><img src="/images/shruthi/shruthi_01.jpg" alt="The Parts Arrived" title="The Parts Arrive" /></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2012/12/13/building-my-shruthi-1/">Read it &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/12/03/recreating-the-haskell-list-part-6-the-io-monad/">Recreating the Haskell List Part 6: The IO Monad</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-03T23:55:00-08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>This is part 6 of a 6 part tutorial</p>
+
+<h2 id="the-io-monad">The IO Monad</h2>
+
+<p>In pure functional programming, all functions are supposed to be referentially
+transparent, and that means that each time you call a function with the same
+arguments, it should give you the exact same result.  When functions are
+referentially transparent, you have a lot less worries about whether or not it
+will always work correctly.</p>
+
+<p>A mathematical function is never going to give you a different answer no matter
+how many times you give it the same argument.  The reason for that is pretty
+much that it cannot get any values from anywhere other than what you passed
+it, so it can never be any different.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2012/12/03/recreating-the-haskell-list-part-6-the-io-monad/">Read it &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/12/03/recreating-the-haskell-list-part-5-monads/">Recreating the Haskell List Part 5: Monads</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-03T23:55:00-08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>This is part 5 of a 6 part tutorial</p>
+
+<h2 id="monads">Monads</h2>
+
+<p>The Haskell list type is also an instance of the <code>Monad</code> typeclass. There are four functions 
+defined for a monad, but you only need to implement 2 of them: <code>&gt;&gt;=</code> (pronounced bind) and <code>return</code>.</p>
+
+<h3 id="the-monad-typeclass">The Monad Typeclass</h3>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class="haskell"><span class="line"><span class="kr">class</span> <span class="kt">Monad</span> <span class="n">m</span> <span class="kr">where</span>
+</span><span class="line">    <span class="p">(</span><span class="o">&gt;&gt;=</span><span class="p">)</span> <span class="ow">::</span> <span class="n">m</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">m</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">m</span> <span class="n">b</span>
+</span><span class="line">    <span class="p">(</span><span class="o">&gt;&gt;</span><span class="p">)</span> <span class="ow">::</span> <span class="n">m</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">m</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="n">m</span> <span class="n">b</span>
+</span><span class="line">    <span class="n">return</span> <span class="ow">::</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">m</span> <span class="n">a</span>
+</span><span class="line">    <span class="n">fail</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="n">m</span> <span class="n">a</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>The easiest function is <code>return</code>.  It just wraps a value in the monad container, and it is exactly 
+the same thing as <code>pure</code> from the Applicative class.  The bind function takes a monad holding a 
+value of type <code>a</code>, and a function which can change an <code>a</code> into the same type of monad holding something of type <code>b</code>.</p>
+
+<p>Before making <code>MyList</code> an instance of Monad, it might be easier to see what happens if we make 
+something simpler like <code>Container</code> from part 1 an instance first.</p>
+
+<h3 id="making-container-a-monad">Making Container a Monad</h3>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="haskell"><span class="line"><span class="kr">instance</span> <span class="kt">Monad</span> <span class="kt">Container</span> <span class="kr">where</span>
+</span><span class="line">    <span class="p">(</span><span class="kt">Container</span> <span class="n">contents</span><span class="p">)</span> <span class="o">&gt;&gt;=</span> <span class="n">f</span> <span class="ow">=</span> <span class="n">f</span> <span class="n">contents</span>
+</span><span class="line">    <span class="n">return</span> <span class="n">a</span> <span class="ow">=</span> <span class="kt">Container</span> <span class="n">a</span>
+</span><span class="line"><span class="c1">-- binding a container to a function</span>
+</span><span class="line"><span class="p">(</span><span class="kt">Container</span> <span class="mi">3</span><span class="p">)</span> <span class="o">&gt;&gt;=</span> <span class="p">(</span><span class="nf">\</span><span class="n">x</span> <span class="ow">-&gt;</span> <span class="n">return</span> <span class="o">$</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
+</span><span class="line"><span class="ow">=&gt;</span> <span class="kt">Container</span> <span class="mi">5</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2012/12/03/recreating-the-haskell-list-part-5-monads/">Read it &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/12/03/recreating-the-haskell-list-part-4-applicative-functors/">Recreating the Haskell List Part 4: Applicative Functors</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-03T23:55:00-08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>This is part 4 of a 6 part tutorial</p>
+
+<h2 id="applicative-functors">Applicative Functors</h2>
+
+<p>A Haskell list is also an Applicative Functor.  If we want to make <code>MyList</code> one too, we can 
+look at the interface for the Applicative class, and implement the right functions.</p>
+
+<h3 id="interface-for-the-applicative-typeclass">Interface for the Applicative Typeclass</h3>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="haskell"><span class="line"><span class="kt">:</span><span class="n">info</span> <span class="kt">Applicative</span>
+</span><span class="line"><span class="ow">=&gt;</span> <span class="kr">class</span> <span class="p">(</span><span class="kt">Functor</span> <span class="n">f</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="kt">Applicative</span> <span class="n">f</span> <span class="kr">where</span>
+</span><span class="line">    <span class="n">pure</span> <span class="ow">::</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">f</span> <span class="n">a</span>
+</span><span class="line">    <span class="p">(</span><span class="o">&lt;*&gt;</span><span class="p">)</span> <span class="ow">::</span> <span class="n">f</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">f</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">f</span> <span class="n">b</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>So, it looks as though we need to implement the functions <code>pure</code> and <code>&lt;*&gt;</code> in order to be an 
+instance of Applicative.  This also says that whatever is Applictaive has the prerequisite of 
+also being a Functor.  The function <code>pure</code> must take any type <code>a</code> and wrap it in the container MyList.
+This is also called lifting <code>a</code> into the Functor.  Implementing <code>pure</code> is easy enough, because it
+is the same thing as our data constructor, <code>Cons</code>.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2012/12/03/recreating-the-haskell-list-part-4-applicative-functors/">Read it &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/12/03/recreating-the-haskell-list-part-3-monoids/">Recreating the Haskell List Part 3: Monoids</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-03T23:55:00-08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>This is part 3 of a 6 part tutorial</p>
+
+<h2 id="monoids">Monoids</h2>
+
+<p>It turns out that cons lists can be more than just a Functor, it can be a Monoid.  A Monoid is
+a object with a single associative binary operation, and an identity element.  This means that 
+things like addition and multiplication form a monoid.</p>
+
+<p>The identity element for addition is the number $0$, because $x + 0 = x$.  An identity element and any
+other element, when operated on by the single associative binary operation, is one that does not
+change the other element.  Basically you can add $0$ to any number and you just get the same number.
+The identity element for multiplication is $1$, because $x \cdot 1 = x$ for every number.</p>
+
+<p>The binary operation should be one which can combine two of the objects, and for a list that happens to be
+appending them using the function <code>++</code>.</p>
+
+<p><code>[1, 2, 3] ++ [4, 5, 6] == [1, 2, 3, 4, 5, 6]</code>  Easy enough, so that means the identity element, the
+element you can combine with a list that will return the same list is: <code>[]</code>, the empty list.  <code>[1, 2] ++ [] == [1, 2]</code></p>
+
+<p>The ghci command <code>:info</code> shows that to be an instance of a monoid you must implement the functions
+<code>mempty</code> which returns the identity element, and either <code>mappend</code> or <code>mconcat</code>.  Typeclasses can
+sometimes have default implementations for some functions, and it’s often the case that two functions 
+are actually defined by default in terms of one another, meaning you only have to implement one of them
+and the other will automatically work.  Here <code>mappend</code> and <code>mconcat</code> are defined in terms of each other
+so we just decide to implement the easier of the two, <code>mappend</code></p>
+
+<p>Looking at the type signatures below we can see <code>mappend :: a -&gt; a -&gt; a</code>,  where in our case <code>a</code> will
+be the type <code>MyList</code>.  This means <code>mappend</code> receives two lists and returns a third in which they are 
+combined.  For addition this would have been receiving two numbers that need to be combined, but for
+a list it just means to stick them together end to end.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2012/12/03/recreating-the-haskell-list-part-3-monoids/">Read it &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/12/03/recreating-the-haskell-list-part-2-functors/">Recreating the Haskell List Part 2: Functors</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-03T23:54:00-08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>This is part 2 of a 6 part tutorial</p>
+
+<h2 id="functors">Functors</h2>
+
+<p>How can we modify or transform a value or values that are contained in a data structure such as <code>Container</code>? Let’s
+say we have a <code>Container</code> holding the integer 4, and we want to add 1 to it.  The problem is that
+a <code>Container</code> doesn’t have addition defined for it, and really, it shouldn’t considering that any possible
+type could be stored inside it, any number of which have no meaningful way to respond to addition.</p>
+
+<p>Let’s look at a similar situation in C++:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+</pre></td><td class="code"><pre><code class="c++"><span class="line"><span class="k">template</span> <span class="o">&lt;</span><span class="k">class</span> <span class="nc">T</span><span class="o">&gt;</span>
+</span><span class="line"><span class="k">class</span> <span class="nc">Container</span> <span class="p">{</span>
+</span><span class="line">   <span class="n">T</span> <span class="n">_value</span><span class="p">;</span>
+</span><span class="line">   <span class="k">public</span><span class="o">:</span>
+</span><span class="line">   <span class="n">Container</span><span class="p">(</span><span class="n">T</span> <span class="n">value</span><span class="p">)</span> <span class="o">:</span> <span class="n">_value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+</span><span class="line">   <span class="n">T</span> <span class="n">get_value</span><span class="p">()</span> <span class="p">{</span>
+</span><span class="line">       <span class="k">return</span> <span class="n">_value</span><span class="p">;</span>
+</span><span class="line">   <span class="p">}</span>
+</span><span class="line">   <span class="kt">void</span> <span class="n">set_value</span><span class="p">(</span><span class="n">T</span> <span class="n">value</span><span class="p">){</span>
+</span><span class="line">       <span class="n">_value</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
+</span><span class="line">   <span class="p">}</span>
+</span><span class="line"><span class="p">};</span>
+</span><span class="line"><span class="n">Container</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">container</span> <span class="o">=</span> <span class="n">Container</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
+</span><span class="line"><span class="c1">//  Of course, you can&#39;t do this to transform the value inside</span>
+</span><span class="line"><span class="n">container</span> <span class="o">=</span> <span class="n">container</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span class="line"><span class="c1">//  You must remove it, apply the transformation and put it back</span>
+</span><span class="line"><span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="n">container</span><span class="p">.</span><span class="n">get_value</span><span class="p">();</span>
+</span><span class="line"><span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span class="line"><span class="n">container</span><span class="p">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>The extreme generality of this C++ class means that it would be a mistake to define <code>operator+</code> on
+it, as any number of types <code>T</code> also cannot meaningfully respond to addition.  Now we find ourselves
+in a similar situation in Haskell:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+</pre></td><td class="code"><pre><code class="haskell"><span class="line"><span class="kr">let</span> <span class="n">container</span> <span class="ow">=</span> <span class="kt">Container</span> <span class="mi">4</span>
+</span><span class="line"><span class="kr">let</span> <span class="n">container&#39;</span> <span class="ow">=</span> <span class="n">container</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span class="line"><span class="o">&lt;</span><span class="n">interactive</span><span class="o">&gt;:</span><span class="mi">3</span><span class="kt">:</span><span class="mi">28</span><span class="kt">:</span>
+</span><span class="line">    <span class="kt">No</span> <span class="kr">instance</span> <span class="n">for</span> <span class="p">(</span><span class="kt">Num</span> <span class="p">(</span><span class="kt">Container</span> <span class="kt">Integer</span><span class="p">))</span>
+</span><span class="line">        <span class="n">arising</span> <span class="n">from</span> <span class="n">a</span> <span class="n">use</span> <span class="kr">of</span> <span class="p">`</span><span class="o">+</span><span class="n">&#39;</span>
+</span><span class="line">    <span class="kt">Possible</span> <span class="n">fix</span><span class="kt">:</span>
+</span><span class="line">        <span class="n">add</span> <span class="n">an</span> <span class="kr">instance</span> <span class="n">declaration</span> <span class="n">for</span> <span class="p">(</span><span class="kt">Num</span> <span class="p">(</span><span class="kt">Container</span> <span class="kt">Integer</span><span class="p">))</span>
+</span><span class="line">    <span class="kt">In</span> <span class="n">the</span> <span class="n">expression</span><span class="kt">:</span> <span class="n">container</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span class="line">    <span class="kt">In</span> <span class="n">an</span> <span class="n">equation</span> <span class="n">for</span> <span class="n">container&#39;</span><span class="kt">:</span> <span class="n">container&#39;</span> <span class="ow">=</span> <span class="n">container</span> <span class="o">+</span> <span class="mi">1</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2012/12/03/recreating-the-haskell-list-part-2-functors/">Read it &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="2">&larr; Older</a>
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/04/12/reversing-crackme-challenges/">Reversing Crackme Challenges</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/02/10/glsl-shaders-with-webgl/">GLSL Shaders With WebGL</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/29/creating-sound-on-the-nes/">Creating Sound on the NES</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/17/matrices-as-linear-operations/">Matrices as Linear Operators</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/12/13/building-my-shruthi-1/">Building My Shruthi-1</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/safiire">@safiire</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'safiire',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2017 - Safiire
+</p>
+
+</footer>
+  
+
+
+</body>
+</html>

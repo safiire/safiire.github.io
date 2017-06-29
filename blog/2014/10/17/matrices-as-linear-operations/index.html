@@ -1,0 +1,822 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Matrices as Linear Operators - Irken Kitties</title>
+  <meta name="author" content="Safiire">
+
+  
+  <meta name="description" content="Since they are my favourite, let’s learn something neat about matrices, something that can also
+serve as the first post on this new blog of mine &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://irkenkitties.com/blog/2014/10/17/matrices-as-linear-operations">
+  <!-- <link href="/favicon.png" rel="icon"> &#8211;>
+
+  <!-- A million more different sizes and types of favicon -->
+  <link rel="apple-touch-icon" sizes="57x57" href="/favicons/apple-touch-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/favicons/apple-touch-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/favicons/apple-touch-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/favicons/apple-touch-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/favicons/apple-touch-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/favicons/apple-touch-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/favicons/apple-touch-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/favicons/apple-touch-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon-180x180.png">
+  <link rel="icon" type="image/png" href="/favicons/favicon-192x192.png" sizes="192x192">
+  <link rel="icon" type="image/png" href="/favicons/favicon-160x160.png" sizes="160x160">
+  <link rel="icon" type="image/png" href="/favicons/favicon-96x96.png" sizes="96x96">
+  <link rel="icon" type="image/png" href="/favicons/favicon-16x16.png" sizes="16x16">
+  <link rel="icon" type="image/png" href="/favicons/favicon-32x32.png" sizes="32x32">
+  <meta name="msapplication-TileColor" content="#9f00a7">
+  <meta name="msapplication-TileImage" content="/favicons/mstile-144x144.png">
+
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Irken Kitties" type="application/atom+xml">
+
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script src="/javascripts/three.min.js" type="text/javascript"></script>
+  <script src="/javascripts/glsl_header.js" type="text/javascript"></script>
+
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Francois+One' rel='stylesheet' type='text/css'>
+
+<!-- MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript"
+   src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Irken Kitties</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:irkenkitties.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a target="_blank" href="https://github.com/safiire">Github</a></li>
+  <li><a href="/blog/categories/haskell/">Haskell</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Matrices as Linear Operators</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-10-17T07:57:55+00:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Since they are my favourite, let’s learn something neat about matrices, something that can also
+serve as the first post on this new blog of mine about math, programming, and DSP.</p>
+
+<!-- more -->
+
+<h2 id="matrix-multiplication-as-a-linear-operator">Matrix Multiplication as a Linear Operator</h2>
+
+<p>It turns out that matrix multiplication can be used to perform any linear mathematical operation, and
+a whole lot of interesting things are linear.  Geometrically speaking, scaling, rotation, and skewing 
+are linear operations.</p>
+
+<p>First let’s say we want to model multiplication of two complex numbers by matrices. First we need some
+complex numbers to multiply, and I happen to like $(3 + 4i) \cdot i$.</p>
+
+<p>So that is pretty easy it is just polynomial multiplication, so we distribute $i$ onto both terms.</p>
+
+<p><img class="center" src="/images/math/complex_rotation.png" /></p>
+
+<script type="math/tex; mode=display">(3 + 4i) \cdot i \\
+  4i^2 + 3i \\
+  4 \cdot (-1) + 3i \\
+  -4 + 3i \\</script>
+
+<p>Yep, multiplying by $i$ is a rotation $90^{\circ}$ counter clockwise. So anyways the thing I think is cool, 
+is how it can be represented as a matrix multiply instead of looking like a polynomial multiply.</p>
+
+<h2 id="identity-operation">Identity Operation</h2>
+
+<p>The identiy matrix, the matrix that if you multiply by it, it is basically a no-op, why does it act like
+that, and why is it shaped the way it is?  Say you have this matrix multiply:</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{bmatrix} 
+  c & 0 \\ 
+  0 & c 
+\end{bmatrix}
+
+\cdot
+
+\begin{bmatrix} 
+  a \\ 
+  b 
+\end{bmatrix}
+
+= 
+
+\begin{bmatrix} 
+  c \cdot a + 0 \cdot b \\ 
+  0 \cdot a + c \cdot b
+\end{bmatrix}
+
+= 
+
+\begin{bmatrix} 
+  ca  \\ 
+  cb
+\end{bmatrix} %]]></script>
+
+<p>If $c = 1$ then there is your identity operation.  But did you ever think:</p>
+
+<blockquote>
+  <p>What are these rows and columns in a matrix really all about?</p>
+</blockquote>
+
+<p>Say you view that $2x2$ matrix as two unit length column vectors sitting side by side.</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{bmatrix} 
+  1 & 0    \\ 
+  0 & 1 
+\end{bmatrix} %]]></script>
+
+<p>The first column $\begin{bmatrix} 1 &amp; 0 \end{bmatrix}^{T}$ and the second column 
+$\begin{bmatrix} 0 &amp; 1 \end{bmatrix}^{T}$ are exactly the basis vectors which define and span 
+$\mathbb{R}^{2}$.  Otherwise known as either the x-y or real-imaginary axis.</p>
+
+<h2 id="change-of-basis">Change of Basis</h2>
+
+<p>So we saw that multiplication by the identity matrix performs no operation at all, because there
+is just no change to the basis vectors for that space $\mathbb{R}^{2}$.  We also saw if we perform
+a simple change of basis where we scale by $c$, it just scales everything by $c$. The
+diagonal numbers don’t have to be the same as each other either, if they were different you would get a 
+skewing operation instead of a scaling operation.</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{bmatrix} 
+  2 & 0 \\ 
+  0 & 4 
+\end{bmatrix}
+
+\cdot
+
+\begin{bmatrix} 
+  a \\ 
+  b 
+\end{bmatrix}
+
+= 
+
+\begin{bmatrix} 
+  2 \cdot a + 0 \cdot b \\ 
+  0 \cdot a + 4 \cdot b
+\end{bmatrix}
+
+= 
+
+\begin{bmatrix} 
+  2a  \\ 
+  4b
+\end{bmatrix} %]]></script>
+
+<p>Great, so what do the other numbers on the opposite diagonal that have always been $0$ up to this
+point do?  Those numbers let you perform rotations.</p>
+
+<h2 id="time-to-define-the-i-matrix">Time to Define the $i$ Matrix</h2>
+
+<p>If we take the two column matrices we are using as our basis, and rotate them counter clockwise 
+by $90^{\circ}$, which should be easy because they are so simple, we should get the new basis we’re
+looking for.</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+identity =
+\begin{bmatrix} 
+  1 & 0    \\ 
+  0 & 1 
+\end{bmatrix}
+
+and, \\
+
+i =
+\begin{bmatrix} 
+  0 & -1    \\ 
+  1 & 0 
+\end{bmatrix} %]]></script>
+
+<p>You can see how the first column, instead of being a vector pointing horizontally, is now pointing vertically,
+and how the second column, which used to, by chance be pointing vertically is now pointing horizontally but in
+the negative direction, each vector is pointing $90^{\circ}$ counter clockwise to where it used to be pointing.</p>
+
+<p>So what that means, is since we’ve rotated each component $90^{\circ}$ anything vector we multiply by $i$ will also 
+rotate in the same way.</p>
+
+<h2 id="square-root-of-negative-one">Square Root of Negative One</h2>
+
+<p>This should totally be true of a matrix that we decide to name $i$, that is $i^2 = -1$, or well it should 
+equal the matrix version of $-1$.</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{bmatrix} 
+  0 & -1    \\ 
+  1 & 0 
+\end{bmatrix}
+
+\cdot
+
+\begin{bmatrix} 
+  0 & -1    \\ 
+  1 & 0 
+\end{bmatrix}
+
+= 
+
+\begin{bmatrix} 
+  -1 & 0    \\ 
+  0 & -1 
+\end{bmatrix} %]]></script>
+
+<p>Further proof that this makes any sense:</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{bmatrix} 
+  0 & -1    \\ 
+  1 & 0 
+\end{bmatrix}
+
+\cdot
+
+\begin{bmatrix} 
+  3    \\ 
+  4 
+\end{bmatrix}
+
+= 
+
+\begin{bmatrix} 
+  -4  \\ 
+  3
+\end{bmatrix} %]]></script>
+
+<p>Just as the old “graph paper” example predicted.  So, I am pretty happy with my explaination of this phenomenon.
+I have to admit I am <em>just</em> getting used to this Mathjax Latex formatting stuff.</p>
+
+<p>Normally I am happy with a code example, so here is a Ruby example of the same thing:</p>
+
+<h2 id="ruby-example">Ruby example</h2>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line"><span class="nb">require</span> <span class="s1">&#39;matrix&#39;</span>
+</span><span class="line">
+</span><span class="line"><span class="n">v</span> <span class="o">=</span> <span class="no">Vector</span><span class="o">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="o">]</span>
+</span><span class="line">
+</span><span class="line"><span class="n">i</span> <span class="o">=</span> <span class="no">Matrix</span><span class="o">.</span><span class="n">columns</span><span class="p">(</span><span class="o">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="o">]</span><span class="p">,</span><span class="o">[-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="o">]]</span><span class="p">)</span>
+</span><span class="line"><span class="n">i</span> <span class="o">*</span> <span class="no">Vector</span><span class="o">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="o">]</span>
+</span><span class="line">
+</span><span class="line"><span class="o">=&gt;</span> <span class="no">Vector</span><span class="o">[-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="o">]</span>
+</span><span class="line">
+</span><span class="line"><span class="n">i</span> <span class="o">*</span> <span class="n">i</span>
+</span><span class="line"><span class="o">=&gt;</span> <span class="no">Matrix</span><span class="o">[[-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">]]</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="other-rotations">Other Rotations</h2>
+
+<p>We don’t alway want to rotate by $90^{\circ}$, but there is an equation that will let us create a matrix
+for any arbitrary rotation by $\omega$ radians.  And that happens to look like this:</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{bmatrix} 
+  cos(\omega) & -sin(\omega) \\
+  sin(\omega) &  cos(\omega) \\
+\end{bmatrix} %]]></script>
+
+<p>Let’s write a Ruby method to create rotation matrices for us, just by passing an angle in radians.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line"><span class="nb">require</span> <span class="s1">&#39;matrix&#39;</span>
+</span><span class="line">
+</span><span class="line"><span class="k">def</span> <span class="nf">create_rotation_matrix</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+</span><span class="line">  <span class="n">sin_w</span> <span class="o">=</span> <span class="no">Math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+</span><span class="line">  <span class="n">cos_w</span> <span class="o">=</span> <span class="no">Math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+</span><span class="line">  <span class="no">Matrix</span><span class="o">.</span><span class="n">columns</span><span class="p">(</span><span class="o">[</span>
+</span><span class="line">      <span class="o">[</span><span class="n">cos_w</span><span class="p">,</span>  <span class="n">sin_w</span><span class="o">]</span><span class="p">,</span>
+</span><span class="line">      <span class="o">[-</span><span class="n">sin_w</span><span class="p">,</span> <span class="n">cos_w</span><span class="o">]]</span>
+</span><span class="line">  <span class="p">)</span>
+</span><span class="line"><span class="k">end</span>
+</span><span class="line">
+</span><span class="line"><span class="n">w</span> <span class="o">=</span> <span class="no">Math</span><span class="o">::</span><span class="no">PI</span> <span class="o">/</span> <span class="mi">4</span><span class="o">.</span><span class="mi">0</span>
+</span><span class="line"><span class="o">=&gt;</span> <span class="mi">0</span><span class="o">.</span><span class="mi">7853981633974483</span>
+</span><span class="line">
+</span><span class="line"><span class="n">forty_five</span> <span class="o">=</span> <span class="n">create_rotation_matrix</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+</span><span class="line"><span class="o">=&gt;</span> <span class="no">Matrix</span><span class="o">[[</span><span class="mi">0</span><span class="o">.</span><span class="mi">7071067811865476</span><span class="p">,</span> <span class="o">-</span><span class="mi">0</span><span class="o">.</span><span class="mi">7071067811865475</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">0</span><span class="o">.</span><span class="mi">7071067811865475</span><span class="p">,</span> <span class="mi">0</span><span class="o">.</span><span class="mi">7071067811865476</span><span class="o">]]</span>
+</span><span class="line">
+</span><span class="line"><span class="n">v</span> <span class="o">=</span> <span class="no">Vector</span><span class="o">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="o">]</span>
+</span><span class="line">
+</span><span class="line"><span class="n">forty_five</span> <span class="o">*</span> <span class="n">v</span>
+</span><span class="line"><span class="o">=&gt;</span> <span class="no">Vector</span><span class="o">[-</span><span class="mi">0</span><span class="o">.</span><span class="mi">707106781186547</span><span class="p">,</span> <span class="mi">4</span><span class="o">.</span><span class="mi">949747468305833</span><span class="o">]</span>
+</span><span class="line">
+</span><span class="line"><span class="c1">##  Nice, and rotate by 45 degrees twice?</span>
+</span><span class="line"><span class="n">forty_five</span> <span class="o">*</span> <span class="n">forty_five</span> <span class="o">*</span> <span class="n">v</span>
+</span><span class="line"><span class="o">=&gt;</span> <span class="no">Vector</span><span class="o">[-</span><span class="mi">3</span><span class="o">.</span><span class="mi">999999999999999</span><span class="p">,</span> <span class="mi">3</span><span class="o">.</span><span class="mo">000000000000001</span><span class="o">]</span>
+</span><span class="line">
+</span><span class="line"><span class="c1">##  Now that&#39;s a &quot;computer close&quot; type of answer if I ever saw one :)</span>
+</span><span class="line"><span class="c1">##  Very close to Vector[-4, 3]</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="matrix-form">Matrix Form</h2>
+
+<p>Now that we’ve established all that stuff about complex numbers and matrices works we sort of
+have a formula for represeenting a complex number as a matrix.</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+3 + 4i = 
+
+  \begin{bmatrix} 
+    3 & -4 \\
+    4 &  3
+  \end{bmatrix} %]]></script>
+
+<p>So what happens if we use some other sorta pattern besides that?   What if we use some other dimension besides
+the imaginary dimension?  What if that dimension was infinitesimal.  Most people learn calculus by learning
+about limits first, but for some reason I didn’t, I learned on my own, and the first calculus textbook that
+made sense to me taught derivitives using infinitesimals, it’s really similar in some ways, but revolves around
+the number $\varepsilon$</p>
+
+<h2 id="derivitives">Derivitives</h2>
+
+<p>Derivitives calculate the slope at one point on a curve, when it takes two actual points to calculate a slope,
+“Rise over Run” style.  Usually you see a formula for derivitive using a variable $h$ or $\Delta x$, and take the limit as
+it goes to 0</p>
+
+<script type="math/tex; mode=display">f'(x) = \lim\limits_{\Delta x \to 0} \dfrac{f(x+\Delta x)-f(x)}{\Delta x}</script>
+
+<p>…but in this “style” of calculus, instead of that, you use $\varepsilon$ where $\varepsilon^{2} = 0$.
+In math, they say that if there is some positive integer $n$ where $x^n = 0$ then you would call $x$ a nilpotent number</p>
+
+<p>So, example:</p>
+
+<script type="math/tex; mode=display">f(x) = x^2    \\ \\
+
+  f'(x) = \dfrac{f(x + \varepsilon) - f(x)}{\varepsilon}   \\ \\
+
+  f'(x) = \dfrac{(x + \varepsilon)^{2} - x^{2}}{\varepsilon} \\ \\
+
+  f'(x) = \dfrac{x^{2} + x\varepsilon + x\varepsilon + \varepsilon^{2} - x^{2}}{\varepsilon} \\ \\ 
+
+  f'(x) = \dfrac{2x\varepsilon}{\varepsilon} \\ \\
+
+  f'(x) = 2x</script>
+
+<p>And that all worked out correctly, because $2x$ is totally the derivitive of $x^{2}$.  The key to that working
+out was that we defined $\varepsilon^{2} = 0$, which is something that totally reminds me of defining $i^{2} = -1$.</p>
+
+<h2 id="dual-numbers">Dual Numbers</h2>
+
+<p>Like a complex number has the form $a + bi$, a dual number has the form $a + b\varepsilon$.  The imaginary number $i$
+has magic powers, in that it can magically do rotations that you would normally have to use trigonometry for, but
+a dual number, has the magic power that it can automatically calculate the derivitive of a function.</p>
+
+<p>All you need to do to simultaneously calculate the value of a function, and its derivitive, is pass the function
+a value of $x + \varepsilon$, that’s whatever $x$ happens to be + $1\varepsilon$.</p>
+
+<p>Simple example again.</p>
+
+<script type="math/tex; mode=display">f(x) = x^2    \\ \\
+
+  f(x + \varepsilon) = (x + \varepsilon)^{2} \\ \\
+
+  f(x + \varepsilon) = x^{2} + x\varepsilon + x\varepsilon + \varepsilon^{2} \\ \\
+
+  f(x + \varepsilon) = x^{2} + 2x\varepsilon</script>
+
+<p>The result of the function is another dual number, the real part of which is $x^{2}$, and the dual part is $2x$,
+which the value and derivitive at $f(x)$ and $f’(x)$ respectively.</p>
+
+<h2 id="dual-numbers-as-matrices">Dual Numbers as Matrices</h2>
+
+<p>So just like we can encode a complex number into a 2x2 matrix, we can also encode a dual number in a similar way.</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\varepsilon = 
+
+  \begin{bmatrix} 
+    0 &  1 \\
+    0 &  0
+  \end{bmatrix}  \\ \\ %]]></script>
+
+<p>So if we multiply $\varepsilon \cdot \varepsilon$, we should get 0.</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{bmatrix} 
+    0 &  1 \\
+    0 &  0
+  \end{bmatrix} 
+
+  \cdot
+
+  \begin{bmatrix} 
+    0 &  1 \\
+    0 &  0
+  \end{bmatrix} 
+
+  = 
+
+  \begin{bmatrix} 
+    0 \cdot 0 + 1 \cdot 0 &  0 \cdot 1 + 1 \cdot 0 \\
+    0 \cdot 0 + 0 \cdot 0 &  0 \cdot 1 + 0 \cdot 0
+  \end{bmatrix} 
+
+  =
+
+  \begin{bmatrix} 
+    
+    0 &  0 \\
+    0 &  0
+  \end{bmatrix} %]]></script>
+
+<h2 id="ruby-class-for-dual-numbers">Ruby Class for Dual Numbers</h2>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+<span class="line-number">36</span>
+<span class="line-number">37</span>
+<span class="line-number">38</span>
+<span class="line-number">39</span>
+<span class="line-number">40</span>
+<span class="line-number">41</span>
+<span class="line-number">42</span>
+<span class="line-number">43</span>
+<span class="line-number">44</span>
+<span class="line-number">45</span>
+<span class="line-number">46</span>
+<span class="line-number">47</span>
+<span class="line-number">48</span>
+<span class="line-number">49</span>
+<span class="line-number">50</span>
+<span class="line-number">51</span>
+<span class="line-number">52</span>
+<span class="line-number">53</span>
+<span class="line-number">54</span>
+<span class="line-number">55</span>
+<span class="line-number">56</span>
+<span class="line-number">57</span>
+<span class="line-number">58</span>
+<span class="line-number">59</span>
+<span class="line-number">60</span>
+<span class="line-number">61</span>
+<span class="line-number">62</span>
+<span class="line-number">63</span>
+<span class="line-number">64</span>
+<span class="line-number">65</span>
+<span class="line-number">66</span>
+<span class="line-number">67</span>
+<span class="line-number">68</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line"><span class="c1">####</span>
+</span><span class="line"><span class="c1">##  Here is a class that implements Dual numbers, with addition,</span>
+</span><span class="line"><span class="c1">##  multiplication, and exponentiation</span>
+</span><span class="line"><span class="k">class</span> <span class="nc">Dual</span>
+</span><span class="line">    <span class="kp">attr_accessor</span> <span class="ss">:matrix</span>
+</span><span class="line">    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">real</span><span class="p">,</span> <span class="n">dual</span><span class="p">)</span>
+</span><span class="line">        <span class="vi">@matrix</span> <span class="o">=</span> <span class="no">Matrix</span><span class="o">[[</span><span class="n">real</span><span class="p">,</span> <span class="n">dual</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">real</span><span class="o">]]</span>
+</span><span class="line">    <span class="k">end</span>
+</span><span class="line">    <span class="k">def</span> <span class="nf">+</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+</span><span class="line">        <span class="n">result</span> <span class="o">=</span> <span class="vi">@matrix</span> <span class="o">+</span> <span class="n">other</span><span class="o">.</span><span class="n">matrix</span>
+</span><span class="line">        <span class="no">Dual</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">result</span><span class="o">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="o">]</span><span class="p">,</span> <span class="n">result</span><span class="o">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="o">]</span><span class="p">)</span>
+</span><span class="line">    <span class="k">end</span>
+</span><span class="line">    <span class="k">def</span> <span class="nf">*</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+</span><span class="line">        <span class="n">result</span> <span class="o">=</span> <span class="vi">@matrix</span> <span class="o">*</span> <span class="n">other</span><span class="o">.</span><span class="n">matrix</span>
+</span><span class="line">        <span class="no">Dual</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">result</span><span class="o">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="o">]</span><span class="p">,</span> <span class="n">result</span><span class="o">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="o">]</span><span class="p">)</span>
+</span><span class="line">    <span class="k">end</span>
+</span><span class="line">    <span class="k">def</span> <span class="nf">**</span><span class="p">(</span><span class="n">exponent</span><span class="p">)</span>
+</span><span class="line">        <span class="n">result</span> <span class="o">=</span> <span class="vi">@matrix</span><span class="o">**</span><span class="n">exponent</span>
+</span><span class="line">        <span class="no">Dual</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">result</span><span class="o">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="o">]</span><span class="p">,</span> <span class="n">result</span><span class="o">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="o">]</span><span class="p">)</span>
+</span><span class="line">    <span class="k">end</span>
+</span><span class="line">    <span class="k">def</span> <span class="nf">to_s</span>
+</span><span class="line">        <span class="s2">&quot;</span><span class="si">#{</span><span class="n">real</span><span class="si">}</span><span class="s2"> + </span><span class="si">#{</span><span class="n">dual</span><span class="si">}</span><span class="s2">ε&quot;</span>
+</span><span class="line">    <span class="k">end</span>
+</span><span class="line">    <span class="k">def</span> <span class="nf">inspect</span>
+</span><span class="line">        <span class="nb">to_s</span>
+</span><span class="line">    <span class="k">end</span>
+</span><span class="line">    <span class="k">def</span> <span class="nf">real</span>
+</span><span class="line">        <span class="vi">@matrix</span><span class="o">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="o">]</span>
+</span><span class="line">    <span class="k">end</span>
+</span><span class="line">    <span class="k">def</span> <span class="nf">dual</span>
+</span><span class="line">        <span class="vi">@matrix</span><span class="o">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="o">]</span>
+</span><span class="line">    <span class="k">end</span>
+</span><span class="line"><span class="k">end</span>
+</span><span class="line"><span class="c1">#</span>
+</span><span class="line"><span class="c1">####</span>
+</span><span class="line"><span class="c1">##  Now let&#39;s have f(x) = x**2</span>
+</span><span class="line"><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</span><span class="line">    <span class="n">x</span><span class="o">**</span><span class="mi">2</span>
+</span><span class="line"><span class="k">end</span>
+</span><span class="line"><span class="c1">####</span>
+</span><span class="line"><span class="c1">##  Let&#39;s print a few values of this function</span>
+</span><span class="line"><span class="nb">print</span> <span class="s2">&quot;f(x) = &quot;</span>
+</span><span class="line"><span class="nb">p</span> <span class="p">(</span><span class="mi">0</span><span class="o">.</span><span class="n">.</span><span class="mi">15</span><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">{</span><span class="o">|</span><span class="n">x</span><span class="o">|</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="p">}</span>
+</span><span class="line"><span class="c1">## This prints:</span>
+</span><span class="line"><span class="c1">## f(x) = [0, 1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169, 196, 225]</span>
+</span><span class="line"><span class="c1">#  </span>
+</span><span class="line"><span class="c1">#  </span>
+</span><span class="line"><span class="c1">####</span>
+</span><span class="line"><span class="c1">##  Now lets run function f on a dual number, f(x + ε)</span>
+</span><span class="line"><span class="nb">print</span> <span class="s2">&quot;f(x + ε) = &quot;</span>
+</span><span class="line"><span class="nb">p</span> <span class="p">(</span><span class="mi">0</span><span class="o">.</span><span class="n">.</span><span class="mi">15</span><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">{</span><span class="o">|</span><span class="n">x</span><span class="o">|</span> <span class="n">f</span><span class="p">(</span><span class="no">Dual</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> <span class="p">}</span>
+</span><span class="line"><span class="c1"># </span>
+</span><span class="line"><span class="c1"># </span>
+</span><span class="line"><span class="c1">##  This prints</span>
+</span><span class="line"><span class="c1">##  f(x + ε) = [0 + 0ε, 1 + 2ε, 4 + 4ε, 9 + 6ε, 16 + 8ε, 25 + 10ε, 36 + 12ε, </span>
+</span><span class="line"><span class="c1">##              49 + 14ε, 64 + 16ε, 81 + 18ε, 100 + 20ε, 121 + 22ε, 144 + 24ε, </span>
+</span><span class="line"><span class="c1">##              169 + 26ε, 196 + 28ε, 225 + 30ε]</span>
+</span><span class="line"><span class="c1"># </span>
+</span><span class="line"><span class="c1"># </span>
+</span><span class="line"><span class="c1">##  The real part of the dual number in f(x + ε) is exactly the same as f(x)</span>
+</span><span class="line"><span class="c1">##  Let&#39;s just print out the dual component instead</span>
+</span><span class="line"><span class="c1"># </span>
+</span><span class="line"><span class="nb">print</span> <span class="s2">&quot;Dual{f(x + ε)} = &quot;</span>
+</span><span class="line"><span class="nb">p</span> <span class="p">(</span><span class="mi">0</span><span class="o">.</span><span class="n">.</span><span class="mi">15</span><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">{</span><span class="o">|</span><span class="n">x</span><span class="o">|</span> <span class="n">f</span><span class="p">(</span><span class="no">Dual</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">dual</span> <span class="p">}</span>
+</span><span class="line"><span class="c1"># </span>
+</span><span class="line"><span class="c1"># </span>
+</span><span class="line"><span class="c1">##  This prints</span>
+</span><span class="line"><span class="c1">##  Dual{f(x + ε)} = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30]</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>I dunno, thought that was pretty cool.  Actually the more I figure out about matrices
+the more I am understanding how they can be used to implement any linear operator.  Actually the reasoning
+behind me even caring about matrices or linear operators at all (or math really), is that works together
+well with my obsession for digital audio filters.  Because a digital filter is usually a linear operation, yep,
+matrices can be used to calculate filters :)  Hopefully I will get more into describing how filters work in
+future blog posts.</p>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Safiire</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-10-17T07:57:55+00:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/complex-numbers/'>complex numbers</a>, <a class='category' href='/blog/categories/derivatives/'>derivatives</a>, <a class='category' href='/blog/categories/dual-numbers/'>dual numbers</a>, <a class='category' href='/blog/categories/linear-algebra/'>linear algebra</a>, <a class='category' href='/blog/categories/math/'>math</a>, <a class='category' href='/blog/categories/matrices/'>matrices</a>, <a class='category' href='/blog/categories/ruby/'>ruby</a>
+  
+</span>
+
+
+    </p>
+    
+      
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/12/13/building-my-shruthi-1/" title="Previous Post: Building My Shruthi-1">&laquo; Building My Shruthi-1</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2015/03/29/creating-sound-on-the-nes/" title="Next Post: Creating Sound on the NES">Creating Sound on the NES &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/04/12/reversing-crackme-challenges/">Reversing Crackme Challenges</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/02/10/glsl-shaders-with-webgl/">GLSL Shaders With WebGL</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/29/creating-sound-on-the-nes/">Creating Sound on the NES</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/17/matrices-as-linear-operations/">Matrices as Linear Operators</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/12/13/building-my-shruthi-1/">Building My Shruthi-1</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/safiire">@safiire</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'safiire',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2017 - Safiire
+</p>
+
+</footer>
+  
+
+
+</body>
+</html>

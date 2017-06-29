@@ -1,0 +1,652 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Recreating the Haskell List Part 2: Functors - Irken Kitties</title>
+  <meta name="author" content="Safiire">
+
+  
+  <meta name="description" content="This is part 2 of a 6 part tutorial Functors How can we modify or transform a value or values that are contained in a data structure such as &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://irkenkitties.com/blog/2012/12/03/recreating-the-haskell-list-part-2-functors">
+  <!-- <link href="/favicon.png" rel="icon"> &#8211;>
+
+  <!-- A million more different sizes and types of favicon -->
+  <link rel="apple-touch-icon" sizes="57x57" href="/favicons/apple-touch-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/favicons/apple-touch-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/favicons/apple-touch-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/favicons/apple-touch-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/favicons/apple-touch-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/favicons/apple-touch-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/favicons/apple-touch-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/favicons/apple-touch-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon-180x180.png">
+  <link rel="icon" type="image/png" href="/favicons/favicon-192x192.png" sizes="192x192">
+  <link rel="icon" type="image/png" href="/favicons/favicon-160x160.png" sizes="160x160">
+  <link rel="icon" type="image/png" href="/favicons/favicon-96x96.png" sizes="96x96">
+  <link rel="icon" type="image/png" href="/favicons/favicon-16x16.png" sizes="16x16">
+  <link rel="icon" type="image/png" href="/favicons/favicon-32x32.png" sizes="32x32">
+  <meta name="msapplication-TileColor" content="#9f00a7">
+  <meta name="msapplication-TileImage" content="/favicons/mstile-144x144.png">
+
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Irken Kitties" type="application/atom+xml">
+
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script src="/javascripts/three.min.js" type="text/javascript"></script>
+  <script src="/javascripts/glsl_header.js" type="text/javascript"></script>
+
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Francois+One' rel='stylesheet' type='text/css'>
+
+<!-- MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript"
+   src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Irken Kitties</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:irkenkitties.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a target="_blank" href="https://github.com/safiire">Github</a></li>
+  <li><a href="/blog/categories/haskell/">Haskell</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Recreating the Haskell List Part 2: Functors</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-03T23:54:00-08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>This is part 2 of a 6 part tutorial</p>
+
+<h2 id="functors">Functors</h2>
+
+<p>How can we modify or transform a value or values that are contained in a data structure such as <code>Container</code>? Let’s
+say we have a <code>Container</code> holding the integer 4, and we want to add 1 to it.  The problem is that
+a <code>Container</code> doesn’t have addition defined for it, and really, it shouldn’t considering that any possible
+type could be stored inside it, any number of which have no meaningful way to respond to addition.</p>
+
+<p>Let’s look at a similar situation in C++:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+</pre></td><td class="code"><pre><code class="c++"><span class="line"><span class="k">template</span> <span class="o">&lt;</span><span class="k">class</span> <span class="nc">T</span><span class="o">&gt;</span>
+</span><span class="line"><span class="k">class</span> <span class="nc">Container</span> <span class="p">{</span>
+</span><span class="line">   <span class="n">T</span> <span class="n">_value</span><span class="p">;</span>
+</span><span class="line">   <span class="k">public</span><span class="o">:</span>
+</span><span class="line">   <span class="n">Container</span><span class="p">(</span><span class="n">T</span> <span class="n">value</span><span class="p">)</span> <span class="o">:</span> <span class="n">_value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+</span><span class="line">   <span class="n">T</span> <span class="n">get_value</span><span class="p">()</span> <span class="p">{</span>
+</span><span class="line">       <span class="k">return</span> <span class="n">_value</span><span class="p">;</span>
+</span><span class="line">   <span class="p">}</span>
+</span><span class="line">   <span class="kt">void</span> <span class="n">set_value</span><span class="p">(</span><span class="n">T</span> <span class="n">value</span><span class="p">){</span>
+</span><span class="line">       <span class="n">_value</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
+</span><span class="line">   <span class="p">}</span>
+</span><span class="line"><span class="p">};</span>
+</span><span class="line"><span class="n">Container</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">container</span> <span class="o">=</span> <span class="n">Container</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
+</span><span class="line"><span class="c1">//  Of course, you can&#39;t do this to transform the value inside</span>
+</span><span class="line"><span class="n">container</span> <span class="o">=</span> <span class="n">container</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span class="line"><span class="c1">//  You must remove it, apply the transformation and put it back</span>
+</span><span class="line"><span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="n">container</span><span class="p">.</span><span class="n">get_value</span><span class="p">();</span>
+</span><span class="line"><span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span class="line"><span class="n">container</span><span class="p">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>The extreme generality of this C++ class means that it would be a mistake to define <code>operator+</code> on
+it, as any number of types <code>T</code> also cannot meaningfully respond to addition.  Now we find ourselves
+in a similar situation in Haskell:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+</pre></td><td class="code"><pre><code class="haskell"><span class="line"><span class="kr">let</span> <span class="n">container</span> <span class="ow">=</span> <span class="kt">Container</span> <span class="mi">4</span>
+</span><span class="line"><span class="kr">let</span> <span class="n">container&#39;</span> <span class="ow">=</span> <span class="n">container</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span class="line"><span class="o">&lt;</span><span class="n">interactive</span><span class="o">&gt;:</span><span class="mi">3</span><span class="kt">:</span><span class="mi">28</span><span class="kt">:</span>
+</span><span class="line">    <span class="kt">No</span> <span class="kr">instance</span> <span class="n">for</span> <span class="p">(</span><span class="kt">Num</span> <span class="p">(</span><span class="kt">Container</span> <span class="kt">Integer</span><span class="p">))</span>
+</span><span class="line">        <span class="n">arising</span> <span class="n">from</span> <span class="n">a</span> <span class="n">use</span> <span class="kr">of</span> <span class="p">`</span><span class="o">+</span><span class="n">&#39;</span>
+</span><span class="line">    <span class="kt">Possible</span> <span class="n">fix</span><span class="kt">:</span>
+</span><span class="line">        <span class="n">add</span> <span class="n">an</span> <span class="kr">instance</span> <span class="n">declaration</span> <span class="n">for</span> <span class="p">(</span><span class="kt">Num</span> <span class="p">(</span><span class="kt">Container</span> <span class="kt">Integer</span><span class="p">))</span>
+</span><span class="line">    <span class="kt">In</span> <span class="n">the</span> <span class="n">expression</span><span class="kt">:</span> <span class="n">container</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span class="line">    <span class="kt">In</span> <span class="n">an</span> <span class="n">equation</span> <span class="n">for</span> <span class="n">container&#39;</span><span class="kt">:</span> <span class="n">container&#39;</span> <span class="ow">=</span> <span class="n">container</span> <span class="o">+</span> <span class="mi">1</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<!-- more -->
+
+<p>Haskell has an elegant solution to this problem called a Functor.  Ghci is able to print out the full 
+interface for any typeclass with the <code>:info</code> command so let’s see what interface is required for a 
+data type to become an instance of the <code>Functor</code> typeclass:</p>
+
+<h3 id="using-ghcis-info-command">Using ghci’s :info command</h3>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="haskell"><span class="line"><span class="kt">:</span><span class="n">info</span> <span class="kt">Functor</span>
+</span><span class="line"><span class="ow">=&gt;</span> <span class="kr">class</span> <span class="kt">Functor</span> <span class="n">f</span> <span class="kr">where</span>
+</span><span class="line">      <span class="n">fmap</span> <span class="ow">::</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">f</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">f</span> <span class="n">b</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>This says there is a class named <code>Functor</code>, its instances will be referred to as <code>f</code>.  Instances must define a 
+function called <code>fmap</code>.  The first parameter of <code>fmap</code>, is <code>(a -&gt; b)</code>. This means the first parameter is a 
+function which accepts something of type <code>a</code>, and returns something of a possibly different type <code>b</code>.</p>
+
+<p>The second parameter <code>f a</code> is a functor (such as <code>Container</code>) wrapping a type <code>a</code>.  The last thing in a type signature is the 
+return value.  It returns <code>f b</code>, which means it returns the same sort of datatype, (Such as <code>Container</code>) wrapping something of type <code>b</code>.</p>
+
+<p>That can be somewhat difficult to follow at first, but what it is essentially asking you to implement is
+a way to take the data out of the data structure, apply a transformation function to it, and then put it back 
+in the data structure.  Let’s make <code>Container</code> an instance of <code>Functor</code>.</p>
+
+<h3 id="making-container-an-instance-of-functor">Making Container an Instance of Functor</h3>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+</pre></td><td class="code"><pre><code class="haskell"><span class="line"><span class="kr">instance</span> <span class="kt">Functor</span> <span class="kt">Container</span> <span class="kr">where</span>
+</span><span class="line">    <span class="n">fmap</span> <span class="n">f</span> <span class="p">(</span><span class="kt">Container</span> <span class="n">contents</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Container</span> <span class="p">(</span><span class="n">f</span> <span class="n">contents</span><span class="p">)</span>
+</span><span class="line"><span class="kr">let</span> <span class="n">container</span> <span class="ow">=</span> <span class="kt">Container</span> <span class="mi">4</span>
+</span><span class="line"><span class="nf">container</span>
+</span><span class="line"><span class="ow">=&gt;</span> <span class="kt">Container</span> <span class="mi">4</span>
+</span><span class="line"><span class="nf">fmap</span> <span class="p">(</span><span class="nf">\</span><span class="n">x</span> <span class="ow">-&gt;</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="n">container</span>
+</span><span class="line"><span class="ow">=&gt;</span> <span class="kt">Container</span> <span class="mi">5</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>In the function fmap above, on the left hand side of the declaration, we are using Haskell’s pattern matching 
+feature to deconstruct the container and remove the value from it.  When called <code>fmap f (Container contents) =</code> 
+binds the function <code>(\x -&gt; x + 1)</code> to <code>f</code>, and in this case the integer <code>4</code> to <code>contents</code>.</p>
+
+<p>This is because during pattern matching, the data constructor function <code>Container</code> acts to deconstruct the data
+type into its components.  Later we’ll see data types that contain more than one value and see that it can be
+used to access any number of data members.  Haskell is all about composite data structures and wrapping and
+unwrapping the components inside them to do work.</p>
+
+<p>On the right hand side of <code>fmap</code> the <code>Container</code> data constructor is again used to wrap up this value, but it
+is first transformed by the function <code>f</code>.  We get the effect of being able to send any function inside the
+container to be applied to its inner value.</p>
+
+<p>You might be wondering, why wrap this integer in a data structure at all if it just makes it annoying to work
+on it?  The answer is that unless you want to isolate a value or restrict operations that can be performed on
+it, you probably wouldn’t want to do this if it only held one value.  This type of isolation is used in Haskell
+to separate functions that work with IO and side effects from pure functional code.  The IO Monad hides
+its data constructor so that you cannot create anything of type IO in ‘pure’ code, and you can’t deconstruct 
+an IO and get its values out.  This causes you to always need to work with ‘impure’ IO stuff by sending functions
+into or declaring them inside the IO container, and also serves as a marker for impurity.</p>
+
+<p>The Maybe Monad is another type that can still do something interesting while wrapping only one value, but let’s
+see an example of a functor working on multiple values first, a list!</p>
+
+<h2 id="a-linked-list-as-a-functor">A Linked List as a Functor</h2>
+
+<p>The native list type in Haskell is a linked list, and it is also a functor.  Let’s reimplement it from scratch
+so that we can see how it works.  In functional languages a linked list is often called a Cons List, and is
+a recursive data structure formed by cons cells in which each cell contains two elements, the first element
+is called the head or car, and is one value in the list, and the second is called the tail or cdr (pronounced kooder) 
+and is another Cons Cell, which in turn holds one value and another cons cell and so on.</p>
+
+<p>The terms cons, car, and cdr come from Lisp, and they are the three main functions used in that language to work
+with lists.  Cons constructs a list, car returns the head of the list, and cdr returns the tail of the list.<br />
+In haskell, the car and cdr functions for lists are actually just named <code>head</code> and <code>tail</code>, but I am using 
+the Lisp-named version here to avoid us getting confused by <code>head</code> and <code>tail</code> already defined in the ghci Prelude’s
+namespace.</p>
+
+<h3 id="a-cons-list">A Cons List</h3>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="haskell"><span class="line"><span class="kr">data</span> <span class="kt">MyList</span> <span class="n">a</span> <span class="ow">=</span>
+</span><span class="line">    <span class="kt">Empty</span> <span class="o">|</span>
+</span><span class="line">    <span class="kt">Cons</span> <span class="p">{</span>
+</span><span class="line">        <span class="n">car</span> <span class="ow">::</span> <span class="n">a</span><span class="p">,</span>
+</span><span class="line">        <span class="n">cdr</span> <span class="ow">::</span> <span class="kt">MyList</span> <span class="n">a</span>
+</span><span class="line">    <span class="p">}</span> <span class="kr">deriving</span><span class="p">(</span><span class="kt">Show</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Above we define a type <code>MyList</code> to hold a parameterized “variable” type <code>a</code>.  This time you can see that there
+are two data constructors, and that they don’t have to have the same name as the type itself as we chose in
+the definition of <code>Container</code>.  Empty is the data constructor for constructing an empty list, and Cons is 
+a data constructor of two arguments.  This could have been written <code>data MyList a = Empty | Cons a (MyList a) deriving(Show)</code>
+but what we’ve used here is called record syntax.</p>
+
+<p>You can see the first argument to Cons is something of type <code>a</code>, and the second is of type <code>MyList a</code>, record
+syntax gives names to each argument, and also provides accessor functions by the same name to get at 
+each data member.  This is a recursive data structure because <code>MyList</code> itelf is used on the right hand side
+of the definition.  Let’s play with this for a moment, and construct some lists.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+</pre></td><td class="code"><pre><code class="haskell"><span class="line"><span class="c1">--  An empty list</span>
+</span><span class="line"><span class="kt">Empty</span>
+</span><span class="line"><span class="ow">=&gt;</span> <span class="kt">Empty</span>
+</span><span class="line"><span class="c1">--  A list with one item in it</span>
+</span><span class="line"><span class="kt">Cons</span> <span class="mi">1</span> <span class="kt">Empty</span>
+</span><span class="line"><span class="ow">=&gt;</span> <span class="kt">Cons</span> <span class="p">{</span><span class="n">car</span> <span class="ow">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">cdr</span> <span class="ow">=</span> <span class="kt">Empty</span><span class="p">}</span>
+</span><span class="line"><span class="c1">--  A list with three items in it</span>
+</span><span class="line"><span class="kr">let</span> <span class="n">list</span> <span class="ow">=</span> <span class="kt">Cons</span> <span class="mi">1</span> <span class="p">(</span><span class="kt">Cons</span> <span class="mi">2</span> <span class="p">(</span><span class="kt">Cons</span> <span class="mi">3</span> <span class="kt">Empty</span><span class="p">))</span>
+</span><span class="line"><span class="nf">list</span>
+</span><span class="line"><span class="ow">=&gt;</span> <span class="kt">Cons</span> <span class="p">{</span><span class="n">car</span> <span class="ow">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">cdr</span> <span class="ow">=</span> <span class="kt">Cons</span> <span class="p">{</span><span class="n">car</span> <span class="ow">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">cdr</span> <span class="ow">=</span> <span class="kt">Cons</span> <span class="p">{</span><span class="n">car</span> <span class="ow">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">cdr</span> <span class="ow">=</span> <span class="kt">Empty</span><span class="p">}}}</span>
+</span><span class="line"><span class="c1">--  Using the functions provided by record syntax</span>
+</span><span class="line"><span class="nf">car</span> <span class="n">list</span>
+</span><span class="line"><span class="ow">=&gt;</span> <span class="mi">1</span>
+</span><span class="line"><span class="nf">cdr</span> <span class="n">list</span>
+</span><span class="line"><span class="ow">=&gt;</span> <span class="kt">Cons</span> <span class="p">{</span><span class="n">car</span> <span class="ow">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">cdr</span> <span class="ow">=</span> <span class="kt">Cons</span> <span class="p">{</span><span class="n">car</span> <span class="ow">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">cdr</span> <span class="ow">=</span> <span class="kt">Empty</span><span class="p">}}</span>
+</span><span class="line"><span class="nf">car</span> <span class="p">(</span><span class="n">cdr</span> <span class="n">list</span><span class="p">)</span>
+</span><span class="line"><span class="ow">=&gt;</span> <span class="mi">2</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>A similar C++ class might look like this:</p>
+
+<h3 id="quick-c-linked-list">Quick C++ linked list</h3>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+</pre></td><td class="code"><pre><code class="c++"><span class="line"><span class="k">template</span> <span class="o">&lt;</span><span class="k">class</span> <span class="nc">T</span><span class="o">&gt;</span>
+</span><span class="line"><span class="k">class</span> <span class="nc">Cons</span> <span class="p">{</span>
+</span><span class="line">    <span class="n">T</span> <span class="n">_car</span><span class="p">;</span>
+</span><span class="line">    <span class="n">Cons</span> <span class="o">*</span><span class="n">_cdr</span><span class="p">;</span>
+</span><span class="line">    <span class="k">public</span><span class="o">:</span>
+</span><span class="line">    <span class="n">Cons</span><span class="p">(</span><span class="n">T</span> <span class="n">car</span><span class="p">,</span> <span class="n">Cons</span> <span class="o">*</span><span class="n">cdr</span><span class="p">)</span> <span class="o">:</span>
+</span><span class="line">        <span class="n">_car</span><span class="p">(</span><span class="n">car</span><span class="p">),</span>
+</span><span class="line">        <span class="n">_cdr</span><span class="p">(</span><span class="n">cdr</span><span class="p">)</span> <span class="p">{}</span>
+</span><span class="line">    <span class="kt">void</span> <span class="n">show</span><span class="p">(){</span>
+</span><span class="line">        <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">_car</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; &quot;</span><span class="p">;</span>
+</span><span class="line">        <span class="k">if</span><span class="p">(</span><span class="n">_cdr</span><span class="p">){</span>
+</span><span class="line">            <span class="n">_cdr</span><span class="o">-&gt;</span><span class="n">show</span><span class="p">();</span>
+</span><span class="line">        <span class="p">}</span>
+</span><span class="line">    <span class="p">}</span>
+</span><span class="line"><span class="p">};</span>
+</span><span class="line"><span class="k">typedef</span> <span class="n">Cons</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">ConsInt</span><span class="p">;</span>
+</span><span class="line"><span class="n">ConsInt</span> <span class="n">list</span> <span class="o">=</span> <span class="n">ConsInt</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="k">new</span> <span class="n">ConsInt</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="k">new</span> <span class="n">ConsInt</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">)));</span>
+</span><span class="line"><span class="n">list</span><span class="p">.</span><span class="n">show</span><span class="p">();</span>
+</span><span class="line"><span class="o">=&gt;</span> <span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Haskell itself has a builtin list data type with some syntactic sugar.  The haskell
+equivalent of the Cons data constructor is <code>:</code>, the Empty data constructor is <code>[]</code>,
+while <code>car</code> and <code>cdr</code> are <code>head</code> and <code>tail</code>.  Haskell lists also have a pretty show function
+defined for them.</p>
+
+<h3 id="built-in-list-type">Built in List type</h3>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+</pre></td><td class="code"><pre><code class="haskell"><span class="line"><span class="c1">--  An empty list</span>
+</span><span class="line"><span class="kt">[]</span>
+</span><span class="line"><span class="ow">=&gt;</span> <span class="kt">[]</span>
+</span><span class="line"><span class="c1">--  A list with one item in it</span>
+</span><span class="line"><span class="mi">1</span> <span class="kt">:</span> <span class="kt">[]</span>
+</span><span class="line"><span class="ow">=&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</span><span class="line"><span class="c1">--  Syntactic Sugar</span>
+</span><span class="line"><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</span><span class="line"><span class="ow">=&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</span><span class="line"><span class="c1">--  A list with three items in it</span>
+</span><span class="line"><span class="kr">let</span> <span class="n">list</span> <span class="ow">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+</span><span class="line"><span class="nf">list</span>
+</span><span class="line"><span class="ow">=&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+</span><span class="line"><span class="c1">--  Using the functions provided List</span>
+</span><span class="line"><span class="nf">head</span> <span class="n">list</span>
+</span><span class="line"><span class="ow">=&gt;</span> <span class="mi">1</span>
+</span><span class="line"><span class="nf">tail</span> <span class="n">list</span>
+</span><span class="line"><span class="ow">=&gt;</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+</span><span class="line"><span class="nf">head</span> <span class="p">(</span><span class="n">tail</span> <span class="n">list</span><span class="p">)</span>
+</span><span class="line"><span class="ow">=&gt;</span> <span class="mi">2</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>So <code>MyList</code> is now a perfectly functioning linked list, but one thing it is missing over the 
+builtin list type is the fact that it is not yet an instance of <code>Functor</code>, but we can fix that.</p>
+
+<p>Before, with <code>Container</code> the idea behind <code>fmap</code> was to unwrap a value, apply a given function to
+it and wrap it back up again, and here the only difference is that there are two data members in a cons 
+cell; the value, and another cons cell.  The recursive nature of a cons list gives us a clue that 
+<code>fmap</code> will also be recursive.  We’re going to apply the given function to the value in the cell,
+and then call fmap again on the cons cell containing the rest of the list so that each of its values
+will be transformed as well.</p>
+
+<h3 id="mylist-becomes-a-functor">MyList becomes a Functor</h3>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="haskell"><span class="line"><span class="kr">instance</span> <span class="kt">Functor</span> <span class="kt">MyList</span> <span class="kr">where</span>
+</span><span class="line">    <span class="n">fmap</span> <span class="kr">_</span> <span class="kt">Empty</span> <span class="ow">=</span> <span class="kt">Empty</span>
+</span><span class="line">    <span class="n">fmap</span> <span class="n">f</span> <span class="p">(</span><span class="kt">Cons</span> <span class="n">x</span> <span class="n">xs</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Cons</span> <span class="p">(</span><span class="n">f</span> <span class="n">x</span><span class="p">)</span> <span class="p">(</span><span class="n">fmap</span> <span class="n">f</span> <span class="n">xs</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Here <code>fmap</code> is defined twice.  Again we can see data constructors on the left hand side being used
+to deconstruct our list for pattern matching.  If we try to fmap an empty list the first declaration
+is matched and chosen, the function argument itself is thrown away and and Empty list is constructed
+and returned.  Fmapping an empty list is an empty list.</p>
+
+<p>If a cons cell is matched, the data constructor <code>Cons</code> is used to deconstruct the cell and bind its
+two values to <code>x</code> and <code>xs</code>.  <code>xs</code> as in the plural of <code>x</code>  What this does is separates the head of the
+list from the rest of it, you perform an operation on the head and send the rest for processing by
+recalling the function recursively.  This is a common pattern you’ll see when writing recursive functions.</p>
+
+<p>The base case is encountering the Empty cell at the end of the list, which stops the recursion.  The 
+function only knows how to handle one element at a time, and relegates the rest of the work to itself
+during future calls, and so on until it meets the base case and stops.</p>
+
+<h3 id="transforming-a-whole-list">Transforming a whole list</h3>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="haskell"><span class="line"><span class="kr">let</span> <span class="n">list</span> <span class="ow">=</span> <span class="kt">Cons</span> <span class="mi">1</span> <span class="p">(</span><span class="kt">Cons</span> <span class="mi">2</span> <span class="p">(</span><span class="kt">Cons</span> <span class="mi">3</span> <span class="kt">Empty</span><span class="p">))</span>
+</span><span class="line"><span class="nf">fmap</span> <span class="p">(</span><span class="nf">\</span><span class="n">x</span> <span class="ow">-&gt;</span> <span class="n">x</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="n">list</span>
+</span><span class="line"><span class="ow">=&gt;</span> <span class="kt">Cons</span> <span class="p">{</span><span class="n">car</span> <span class="ow">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">cdr</span> <span class="ow">=</span> <span class="kt">Cons</span> <span class="p">{</span><span class="n">car</span> <span class="ow">=</span> <span class="mi">4</span><span class="p">,</span> <span class="n">cdr</span> <span class="ow">=</span> <span class="kt">Cons</span> <span class="p">{</span><span class="n">car</span> <span class="ow">=</span> <span class="mi">6</span><span class="p">,</span> <span class="n">cdr</span> <span class="ow">=</span> <span class="kt">Empty</span><span class="p">}}}</span>
+</span><span class="line"><span class="c1">-- Same thing with the builtin list</span>
+</span><span class="line"><span class="nf">fmap</span> <span class="p">(</span><span class="nf">\</span><span class="n">x</span> <span class="ow">-&gt;</span> <span class="n">x</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+</span><span class="line"><span class="ow">=&gt;</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>You’ve probably seen this before in other non-functional languages since many parts of the
+functional paradigm are being adopted in imperative languages all the time.  Ruby and Python
+both define <code>map</code> on their list types. Ruby passes a code block into its <code>map</code> method and 
+that looks like this:</p>
+
+<h3 id="rubys-map">Ruby’s map</h3>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line"><span class="o">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="o">].</span><span class="n">map</span> <span class="k">do</span> <span class="o">|</span><span class="n">x</span><span class="o">|</span>
+</span><span class="line">  <span class="n">x</span> <span class="o">*</span> <span class="mi">2</span>
+</span><span class="line"><span class="k">end</span>
+</span><span class="line"><span class="o">=&gt;</span> <span class="o">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<ul>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-1/">Recreating the Haskell List Part 1</a></li>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-2-functors/">Recreating the Haskell List Part 2: Functors</a></li>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-3-monoids/">Recreating the Haskell List Part 3: Monoids</a></li>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-4-applicative-functors/">Recreating the Haskell List Part 4: Applicative Functors</a></li>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-5-monads/">Recreating the Haskell List Part 5: Monads</a></li>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-6-the-io-monad/">Recreating the Haskell List Part 6: The IO Monad</a></li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Safiire</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-03T23:54:00-08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/functional-programming/'>functional programming</a>, <a class='category' href='/blog/categories/haskell/'>haskell</a>
+  
+</span>
+
+
+    </p>
+    
+      
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/12/03/recreating-the-haskell-list-part-1/" title="Previous Post: Recreating the Haskell List Part 1">&laquo; Recreating the Haskell List Part 1</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/12/03/recreating-the-haskell-list-part-3-monoids/" title="Next Post: Recreating the Haskell List Part 3: Monoids">Recreating the Haskell List Part 3: Monoids &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/04/12/reversing-crackme-challenges/">Reversing Crackme Challenges</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/02/10/glsl-shaders-with-webgl/">GLSL Shaders With WebGL</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/29/creating-sound-on-the-nes/">Creating Sound on the NES</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/17/matrices-as-linear-operations/">Matrices as Linear Operators</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/12/13/building-my-shruthi-1/">Building My Shruthi-1</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/safiire">@safiire</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'safiire',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2017 - Safiire
+</p>
+
+</footer>
+  
+
+
+</body>
+</html>

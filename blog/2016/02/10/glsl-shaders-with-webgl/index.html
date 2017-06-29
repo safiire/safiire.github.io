@@ -1,0 +1,411 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>GLSL Shaders With WebGL - Irken Kitties</title>
+  <meta name="author" content="Safiire">
+
+  
+  <meta name="description" content="Here is a neat example of using shaders in WebGL, read on to see the GLSL shader code Fragment Shader This is an example of Ray Marching using &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://irkenkitties.com/blog/2016/02/10/glsl-shaders-with-webgl">
+  <!-- <link href="/favicon.png" rel="icon"> &#8211;>
+
+  <!-- A million more different sizes and types of favicon -->
+  <link rel="apple-touch-icon" sizes="57x57" href="/favicons/apple-touch-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/favicons/apple-touch-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/favicons/apple-touch-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/favicons/apple-touch-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/favicons/apple-touch-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/favicons/apple-touch-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/favicons/apple-touch-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/favicons/apple-touch-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon-180x180.png">
+  <link rel="icon" type="image/png" href="/favicons/favicon-192x192.png" sizes="192x192">
+  <link rel="icon" type="image/png" href="/favicons/favicon-160x160.png" sizes="160x160">
+  <link rel="icon" type="image/png" href="/favicons/favicon-96x96.png" sizes="96x96">
+  <link rel="icon" type="image/png" href="/favicons/favicon-16x16.png" sizes="16x16">
+  <link rel="icon" type="image/png" href="/favicons/favicon-32x32.png" sizes="32x32">
+  <meta name="msapplication-TileColor" content="#9f00a7">
+  <meta name="msapplication-TileImage" content="/favicons/mstile-144x144.png">
+
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Irken Kitties" type="application/atom+xml">
+
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script src="/javascripts/three.min.js" type="text/javascript"></script>
+  <script src="/javascripts/glsl_header.js" type="text/javascript"></script>
+
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Francois+One' rel='stylesheet' type='text/css'>
+
+<!-- MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript"
+   src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Irken Kitties</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:irkenkitties.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a target="_blank" href="https://github.com/safiire">Github</a></li>
+  <li><a href="/blog/categories/haskell/">Haskell</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">GLSL Shaders With WebGL</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-02-10T10:51:44-07:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><div style="text-align: center;">
+  <div id="moon_orb"></div>
+</div>
+
+<p>Here is a neat example of using shaders in WebGL, read on to see the GLSL shader code</p>
+
+<!-- more -->
+
+<h2 id="fragment-shader">Fragment Shader</h2>
+
+<p>This is an example of Ray Marching using Distance Fields.  The <code>map</code> function given
+here is for a sphere, it accepts a point <code>p</code> and returns the distance <code>p</code> is from
+the surface of a sphere with radius <code>0.25</code> units.</p>
+
+<p>By first manipulating <code>p</code> by calling <code>fract(p)</code> on it (basically mod 1), we get 
+multiple equally spaced spheres.  <code>length()</code> performs the 3D pythagorean theorem
+in order to see how far away <code>p</code> is.</p>
+
+<p>The <code>trace()</code> function receives the origin <code>o</code> and the ray <code>r</code>, and casts the ray
+outwards towards the object in the <code>map()</code> function by multiplying it by <code>t</code>.</p>
+
+<p>This makes the <code>trace()</code> function search for the surface of an object iteratively,
+here over a maximum of 32 iterations.  Each iteration it projects the ray half the 
+distance remaining returned by the distance function, which zooms in safely until it finds
+the shape’s boundary.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+<span class="line-number">36</span>
+<span class="line-number">37</span>
+<span class="line-number">38</span>
+</pre></td><td class="code"><pre><code class="glsl"><span class="line"><span class="k">uniform</span> <span class="k">float</span> <span class="n">time</span><span class="p">;</span>
+</span><span class="line"><span class="k">uniform</span> <span class="k">vec2</span> <span class="n">resolution</span><span class="p">;</span>
+</span><span class="line">
+</span><span class="line"><span class="k">const</span> <span class="k">float</span> <span class="n">pi</span> <span class="o">=</span> <span class="mf">3.14159265359</span><span class="p">;</span>
+</span><span class="line"><span class="k">const</span> <span class="k">float</span> <span class="n">tau</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">pi</span><span class="p">;</span>
+</span><span class="line">
+</span><span class="line"><span class="k">float</span> <span class="n">map</span><span class="p">(</span><span class="k">vec3</span> <span class="n">p</span><span class="p">){</span>
+</span><span class="line">  <span class="k">vec3</span> <span class="n">q</span> <span class="o">=</span> <span class="n">fract</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">*</span> <span class="mf">2.0</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">;</span>
+</span><span class="line">  <span class="k">return</span> <span class="n">length</span><span class="p">(</span><span class="n">q</span><span class="p">)</span> <span class="o">-</span> <span class="mf">0.25</span><span class="p">;</span>
+</span><span class="line"><span class="p">}</span>
+</span><span class="line">
+</span><span class="line"><span class="k">float</span> <span class="n">trace</span><span class="p">(</span><span class="k">vec3</span> <span class="n">o</span><span class="p">,</span> <span class="k">vec3</span> <span class="n">r</span><span class="p">){</span>
+</span><span class="line">  <span class="k">float</span> <span class="n">t</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
+</span><span class="line">  <span class="k">for</span><span class="p">(</span><span class="k">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mo">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">32</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">){</span>
+</span><span class="line">    <span class="k">vec3</span> <span class="n">p</span> <span class="o">=</span> <span class="n">o</span> <span class="o">+</span> <span class="n">r</span> <span class="o">*</span> <span class="n">t</span><span class="p">;</span>
+</span><span class="line">    <span class="k">float</span> <span class="n">d</span> <span class="o">=</span> <span class="n">map</span><span class="p">(</span><span class="n">p</span><span class="p">);</span>
+</span><span class="line">    <span class="n">t</span> <span class="o">+=</span> <span class="n">d</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">;</span>
+</span><span class="line">  <span class="p">}</span>
+</span><span class="line">  <span class="k">return</span> <span class="n">t</span><span class="p">;</span>
+</span><span class="line"><span class="p">}</span>
+</span><span class="line">
+</span><span class="line"><span class="k">void</span> <span class="n">main</span><span class="p">(){</span>
+</span><span class="line">  <span class="k">vec2</span> <span class="n">uv</span> <span class="o">=</span> <span class="n">gl_FragCoord</span><span class="p">.</span><span class="n">xy</span> <span class="o">/</span> <span class="n">resolution</span><span class="p">;</span>
+</span><span class="line">  <span class="n">uv</span> <span class="o">=</span> <span class="n">uv</span> <span class="o">*</span> <span class="mf">2.0</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">;</span>
+</span><span class="line">  <span class="n">uv</span><span class="p">.</span><span class="n">x</span> <span class="o">*=</span> <span class="n">resolution</span><span class="p">.</span><span class="n">x</span> <span class="o">/</span> <span class="n">resolution</span><span class="p">.</span><span class="n">y</span><span class="p">;</span>
+</span><span class="line">
+</span><span class="line">  <span class="k">float</span> <span class="n">theta</span> <span class="o">=</span> <span class="n">time</span> <span class="o">*</span> <span class="mf">0.25</span><span class="p">;</span>
+</span><span class="line">  <span class="k">vec3</span> <span class="n">r</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="k">vec3</span><span class="p">(</span><span class="n">uv</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">));</span>
+</span><span class="line">  <span class="k">vec3</span> <span class="n">o</span> <span class="o">=</span> <span class="k">vec3</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">time</span> <span class="o">*</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">;</span>
+</span><span class="line">  <span class="n">r</span><span class="p">.</span><span class="n">xy</span> <span class="o">*=</span> <span class="k">mat2</span><span class="p">(</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">),</span> <span class="o">-</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">),</span> <span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">),</span> <span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">));</span>
+</span><span class="line">
+</span><span class="line">  <span class="k">float</span> <span class="n">t</span> <span class="o">=</span> <span class="n">trace</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">r</span><span class="p">);</span>
+</span><span class="line">  <span class="k">float</span> <span class="n">fog</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">t</span> <span class="o">*</span> <span class="n">t</span> <span class="o">*</span> <span class="mf">0.1</span><span class="p">);</span>
+</span><span class="line">
+</span><span class="line">  <span class="k">vec3</span> <span class="n">fc</span> <span class="o">=</span> <span class="k">vec3</span><span class="p">(</span><span class="n">fog</span><span class="p">)</span> <span class="o">*</span> <span class="k">vec3</span><span class="p">(</span><span class="mf">0.4</span> <span class="o">*</span> <span class="n">sin</span><span class="p">(</span><span class="n">time</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.4</span> <span class="o">*</span> <span class="n">cos</span><span class="p">(</span><span class="n">time</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">);</span>
+</span><span class="line">
+</span><span class="line">  <span class="n">gl_FragColor</span> <span class="o">=</span> <span class="k">vec4</span><span class="p">(</span><span class="n">fc</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">);</span>
+</span><span class="line"><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>The screen here is really a quad the same size as the viewport, so each fragment has a uv coordinate 
+on that quad.</p>
+
+<p>Next we expand the 2D uv coordinate into 3D called <code>r</code> for ray, and normalize it to unit length, and establish an origin.
+together these make a ray that is cast through that point on the screen.  I adjust the z-coorindate 
+by multiplying it by <code>time</code> which makes us seem to zoom through the scene.</p>
+
+<p>The next thing I do is create a 2D rotation matrix, which I multiply by the ray’s <code>xy</code> vector, the 
+angle of rotation <code>theta</code> is also adjusted over time.</p>
+
+<p>Now I use <code>trace</code> to calculate the distance a ray travels into the scene before hitting something.  The 
+value <code>fog</code> is trying to use an inverse square equation to make more distant points seem darker than nearby points.</p>
+
+<p>Finally <code>fog</code> is used to compose an RGB color, mostly purple, but also modified by time to slowly change
+the color of the spheres.  Finally the fragment color is returned.</p>
+
+<h2 id="vertex-shader">Vertex Shader</h2>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+</pre></td><td class="code"><pre><code class="glsl"><span class="line"><span class="k">uniform</span> <span class="k">float</span> <span class="n">time</span><span class="p">;</span>
+</span><span class="line"><span class="k">uniform</span> <span class="k">vec2</span> <span class="n">resolution</span><span class="p">;</span>
+</span><span class="line">
+</span><span class="line">
+</span><span class="line"><span class="k">void</span> <span class="n">main</span><span class="p">(){</span>
+</span><span class="line">  <span class="n">gl_Position</span> <span class="o">=</span> <span class="n">projectionMatrix</span> <span class="o">*</span> <span class="n">modelViewMatrix</span> <span class="o">*</span> <span class="k">vec4</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">);</span>
+</span><span class="line"><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Not much happening in the vertex shader, we apply the model and projection matrices, most importantly
+we pass the <code>time</code> and <code>resolution</code> uniforms we receive from javascript along to the fragment shader.</p>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Safiire</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-02-10T10:51:44-07:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/glsl/'>glsl</a>, <a class='category' href='/blog/categories/javascript/'>javascript</a>, <a class='category' href='/blog/categories/webgl/'>webgl</a>
+  
+</span>
+
+
+    </p>
+    
+      
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/03/29/creating-sound-on-the-nes/" title="Previous Post: Creating Sound on the NES">&laquo; Creating Sound on the NES</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2016/04/12/reversing-crackme-challenges/" title="Next Post: Reversing Crackme Challenges">Reversing Crackme Challenges &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/04/12/reversing-crackme-challenges/">Reversing Crackme Challenges</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/02/10/glsl-shaders-with-webgl/">GLSL Shaders With WebGL</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/29/creating-sound-on-the-nes/">Creating Sound on the NES</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/17/matrices-as-linear-operations/">Matrices as Linear Operators</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/12/13/building-my-shruthi-1/">Building My Shruthi-1</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/safiire">@safiire</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'safiire',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2017 - Safiire
+</p>
+
+</footer>
+  
+
+
+</body>
+</html>

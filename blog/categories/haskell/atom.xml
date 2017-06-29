@@ -1,0 +1,879 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Haskell | Irken Kitties]]></title>
+  <link href="http://irkenkitties.com/blog/categories/haskell/atom.xml" rel="self"/>
+  <link href="http://irkenkitties.com/"/>
+  <updated>2017-06-29T16:17:35-07:00</updated>
+  <id>http://irkenkitties.com/</id>
+  <author>
+    <name><![CDATA[Safiire]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Recreating the Haskell List Part 6: The IO Monad]]></title>
+    <link href="http://irkenkitties.com/blog/2012/12/03/recreating-the-haskell-list-part-6-the-io-monad/"/>
+    <updated>2012-12-03T23:55:00-08:00</updated>
+    <id>http://irkenkitties.com/blog/2012/12/03/recreating-the-haskell-list-part-6-the-io-monad</id>
+    <content type="html"><![CDATA[<p>This is part 6 of a 6 part tutorial</p>
+
+<h2 id="the-io-monad">The IO Monad</h2>
+
+<p>In pure functional programming, all functions are supposed to be referentially
+transparent, and that means that each time you call a function with the same
+arguments, it should give you the exact same result.  When functions are
+referentially transparent, you have a lot less worries about whether or not it
+will always work correctly.</p>
+
+<p>A mathematical function is never going to give you a different answer no matter
+how many times you give it the same argument.  The reason for that is pretty
+much that it cannot get any values from anywhere other than what you passed
+it, so it can never be any different.</p>
+
+<!-- more -->
+
+<p>In an imperative programming language you could write a <code>sin(x)</code> function which
+was completely evil and called <code>time()</code>, getting a value from somewhere besides
+the <code>x</code> parameter.  If the time in seconds was even, it would add 1 to the result
+it returns, and if not it wouldn’t.</p>
+
+<p>This example is just plain evil, especially if every time you happen to test
+the <code>sin()</code> function it happened to be an odd time in seconds, until one
+important day a million astronauts burn to death in the depths of space because
+it was run on an even second.  Silly example but that is the nature of many
+bugs in the imperative programming world.</p>
+
+<p>All of these problems involve IO.  If you say no functions can do any input
+or output to the OS, then the problem is solved, except you can also never
+interact with the program in any way.</p>
+
+<p>The answer is to let some functions do IO, but do it inside a container called
+the IO Monad from which you aren’t supposed to be able to escape.  The reason
+you aren’t able to escape, is because the data constructor for IO is hidden
+from use, by hiding it in the IO Module.  This means the type signature for
+every function which does IO will be something like <code>main :: IO ()</code>.</p>
+
+<p>Any function which calls another function that does IO, <code>getLine :: IO String</code>,
+for example, must also return something wrapped in IO.  It can’t deconstruct
+the return value from <code>getLine</code> into just a <code>String</code> using the IO data
+constructor and return that.  It can pass the pure string to a pure function
+though, by using bind.</p>
+
+<p>Here is an example of doing IO to get a number to pass to the pure function sin.</p>
+
+<h3 id="doing-some-io-in-the-io-monad">Doing some IO in the IO Monad</h3>
+<p><code>haskell
+getSin :: IO ()
+getSin = do
+    valueStr &lt;- getLine
+    let result = sin (read valueStr :: Float)
+    putStrLn $ "sin(" ++ valueStr ++ ") = " ++ (show result)
+</code></p>
+
+<p>This looks like imperative code, telling you which order to do things and
+sharing the results of subsequent function calls.  <code>getLine</code> returns a type <code>IO String</code>,
+remember this is like <code>Container String</code> from part 1.</p>
+
+<p>The function <code>putStrLn</code> always returns <code>IO ()</code>, read IO null, and since it is the
+last thing, that is returned from the entire function, as you would expect.</p>
+
+<p>In reality, it is converted to this:</p>
+
+<h3 id="explicitly-using-bind">Explicitly using bind</h3>
+<p><code>haskell
+getSin2 :: IO ()
+getSin2 = 
+    getLine &gt;&gt;= 
+        (\valueStr -&gt; let result = sin (read valueStr :: Float) in
+            putStrLn $ "sin(" ++ valueStr ++ ") = " ++ (show result))
+</code></p>
+
+<p>This is really one long expression, and not a recipe as it looks in do
+notation.  Since haskell is lazy, it probably does not do any computation until
+it reaches the <code>putStrLn</code> function, which I think is strict (evaluates it as soon as it sees it).</p>
+
+<p>When <code>putStrLn</code> evaluates its argument it finds <code>valueStr</code> and finds that it
+does’t have the value worked out yet.  It sees that it comes passed in through
+the lambda and that forces it to call <code>getLine</code>, and the use enters their text.
+Then it evaluates the let statement to find the result, has a complete
+string, prints it out, and <code>putStrln</code> returns IO () from the lambda, and
+according to the definition of bind, also returns <code>IO ()</code> from the bind
+expression, and then the function <code>getSin2</code> itself.</p>
+
+<ul>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-1/">Recreating the Haskell List Part 1</a></li>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-2-functors/">Recreating the Haskell List Part 2: Functors</a></li>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-3-monoids/">Recreating the Haskell List Part 3: Monoids</a></li>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-4-applicative-functors/">Recreating the Haskell List Part 4: Applicative Functors</a></li>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-5-monads/">Recreating the Haskell List Part 5: Monads</a></li>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-6-the-io-monad/">Recreating the Haskell List Part 6: The IO Monad</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Recreating the Haskell List Part 5: Monads]]></title>
+    <link href="http://irkenkitties.com/blog/2012/12/03/recreating-the-haskell-list-part-5-monads/"/>
+    <updated>2012-12-03T23:55:00-08:00</updated>
+    <id>http://irkenkitties.com/blog/2012/12/03/recreating-the-haskell-list-part-5-monads</id>
+    <content type="html"><![CDATA[<p>This is part 5 of a 6 part tutorial</p>
+
+<h2 id="monads">Monads</h2>
+
+<p>The Haskell list type is also an instance of the <code>Monad</code> typeclass. There are four functions 
+defined for a monad, but you only need to implement 2 of them: <code>&gt;&gt;=</code> (pronounced bind) and <code>return</code>.</p>
+
+<h3 id="the-monad-typeclass">The Monad Typeclass</h3>
+<p><code>haskell
+class Monad m where
+    (&gt;&gt;=) :: m a -&gt; (a -&gt; m b) -&gt; m b
+    (&gt;&gt;) :: m a -&gt; m b -&gt; m b
+    return :: a -&gt; m a
+    fail :: String -&gt; m a
+</code></p>
+
+<p>The easiest function is <code>return</code>.  It just wraps a value in the monad container, and it is exactly 
+the same thing as <code>pure</code> from the Applicative class.  The bind function takes a monad holding a 
+value of type <code>a</code>, and a function which can change an <code>a</code> into the same type of monad holding something of type <code>b</code>.</p>
+
+<p>Before making <code>MyList</code> an instance of Monad, it might be easier to see what happens if we make 
+something simpler like <code>Container</code> from part 1 an instance first.</p>
+
+<h3 id="making-container-a-monad">Making Container a Monad</h3>
+<p><code>haskell
+instance Monad Container where
+    (Container contents) &gt;&gt;= f = f contents
+    return a = Container a
+-- binding a container to a function
+(Container 3) &gt;&gt;= (\x -&gt; return $ x + 2)
+=&gt; Container 5
+</code></p>
+
+<!-- more -->
+
+<p>The Container on the left hand side is a monad and holds a 3, the function
+on the right hand side of bind always accepts one argument.  In this case the
+implementation I wrote for bind just passes the inner value of Container to the
+function.</p>
+
+<p>The function we passed just adds 2 to the value and rewraps it using return. This implementation 
+is the least exciting thing that a monad can do, because <code>Container</code> is now the identity monad.<br />
+The identity monad performs just simple function application, and doesn’t employ any computational
+strategy.  Making <code>MyList</code> into a monad is significantly more amazing.</p>
+
+<p><code>haskell 
+instance Monad MyList where
+    return = pure
+    Empty &gt;&gt;= _ = Empty
+    (Cons car cdr) &gt;&gt;= f = (f car) `mappend` (cdr &gt;&gt;= f)
+</code></p>
+
+<p>The above says that binding any function to an empty list just returns an empty list.  In the case
+that we have list items, the head and tail of the list are pulled apart, the bound function is 
+applied to the head of the list, and recursion is used to bind the function to the remaining
+tail of the list.  These results are appended together using <code>mappend</code> from the <code>Monoid</code> typeclass, 
+resulting in one list at the end.</p>
+
+<p>Since the bound function <code>f</code> must return a wrapped value, each item it returns is a list with one 
+item in it such as (Cons 1 Empty) or [1] where the item inside has been modified by the function.<br />
+Then it appends all these lists into one list.</p>
+
+<h3 id="simple-usage-of-bind">Simple usage of bind</h3>
+<p><code>haskell
+--  Just like fmap
+(Cons 1 (Cons 2 Empty)) &gt;&gt;= (\x -&gt; return $ x * 2)
+=&gt; Cons {car = 2, cdr = Cons {car = 4, cdr = Empty}}
+--  Native list version
+[1,2] &gt;&gt;= (\x -&gt; return $ x * 2)
+=&gt; [2,4]
+</code></p>
+
+<p>This looks a lot like fmap, but the difference is that the function you apply has to return an 
+already wrapped type, and so you can chain these together in an ever increasing closure, or enclosed 
+scope inside lambdas.  This means that each new lambda closure brings its argument within scope of all the rest.</p>
+
+<h3 id="nested-bind">Nested bind</h3>
+<p><code>haskell
+[1,2] &gt;&gt;= 
+    (\x -&gt; [3,4] &gt;&gt;= 
+        (\y -&gt; [5,6] &gt;&gt;= 
+            (\z -&gt; return (x,y,z))))
+=&gt; [(1,3,5),(1,3,6),(1,4,5),(1,4,6),(2,3,5),(2,3,6),(2,4,5),(2,4,6)]
+</code></p>
+
+<p>Because of the recursion in bind, this is basically 3 nested loops, giving you every combination of the 
+3 lists.  The same thing will work on MyList, except it will look ugly for lack of pretty printing.</p>
+
+<p>This is the basis for list comprehensions in languages like in Erlang, Python, and Haskell itself.  Haskell
+provides 2 types of syntactic sugar for this, do-expressions for monads, and list comprehensions for the list
+monad specifically.</p>
+
+<h3 id="list-comprehension">List comprehension</h3>
+<p><code>haskell
+[(x,y,z) | x &lt;- [1,2], y &lt;- [3,4], z &lt;- [5,6]]
+=&gt; [(1,3,5),(1,3,6),(1,4,5),(1,4,6),(2,3,5),(2,3,6),(2,4,5),(2,4,6)]
+</code></p>
+
+<p>In an imperative programming language you can write a list of things to do in a
+function like a recipe.  When you make variables in a function scope
+they are available to everything within that scope, but writing Haskell is not
+like writing a todo list of what to do, and in what order, and carrying state
+from one todo item to another.  It is like like declaring what something is in
+one expression, and it doesn’t really let you say what order anything should be
+evaluated.  Haskell evaluates things in the order that it needs to know the
+value.</p>
+
+<p>A monad can let you simulate sequence by nesting bind functions, because it
+will cause evaluation in the order that you nest the bound functions.  It evaluates
+in a specific order because nesting makes each closure rely on the value of the
+previous outer closure.</p>
+
+<p>It will also allow you to build scope that each function you bind can share, due to the
+nested lambda expressions.</p>
+
+<p>The people who created Haskell made something called a do-expression that is
+syntactic sugar for monadic binding, and it sort of makes your code appear to
+be an imperative programming language with sequence and imperative style scope.</p>
+
+<h3 id="the-list-monad-with-do-notation">The List Monad with do-notation</h3>
+<p><code>haskell
+combos = do
+    x &lt;- [1,2]
+    y &lt;- [3,4]
+    z &lt;- [5,6]
+    return (x,y,z)
+combos 
+=&gt; [(1,3,5),(1,3,6),(1,4,5),(1,4,6),(2,3,5),(2,3,6),(2,4,5),(2,4,6)]
+</code></p>
+
+<ul>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-1/">Recreating the Haskell List Part 1</a></li>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-2-functors/">Recreating the Haskell List Part 2: Functors</a></li>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-3-monoids/">Recreating the Haskell List Part 3: Monoids</a></li>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-4-applicative-functors/">Recreating the Haskell List Part 4: Applicative Functors</a></li>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-5-monads/">Recreating the Haskell List Part 5: Monads</a></li>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-6-the-io-monad/">Recreating the Haskell List Part 6: The IO Monad</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Recreating the Haskell List Part 4: Applicative Functors]]></title>
+    <link href="http://irkenkitties.com/blog/2012/12/03/recreating-the-haskell-list-part-4-applicative-functors/"/>
+    <updated>2012-12-03T23:55:00-08:00</updated>
+    <id>http://irkenkitties.com/blog/2012/12/03/recreating-the-haskell-list-part-4-applicative-functors</id>
+    <content type="html"><![CDATA[<p>This is part 4 of a 6 part tutorial</p>
+
+<h2 id="applicative-functors">Applicative Functors</h2>
+
+<p>A Haskell list is also an Applicative Functor.  If we want to make <code>MyList</code> one too, we can 
+look at the interface for the Applicative class, and implement the right functions.</p>
+
+<h3 id="interface-for-the-applicative-typeclass">Interface for the Applicative Typeclass</h3>
+<p><code>haskell
+:info Applicative
+=&gt; class (Functor f) =&gt; Applicative f where
+    pure :: a -&gt; f a
+    (&lt;*&gt;) :: f (a -&gt; b) -&gt; f a -&gt; f b
+</code></p>
+
+<p>So, it looks as though we need to implement the functions <code>pure</code> and <code>&lt;*&gt;</code> in order to be an 
+instance of Applicative.  This also says that whatever is Applictaive has the prerequisite of 
+also being a Functor.  The function <code>pure</code> must take any type <code>a</code> and wrap it in the container MyList.
+This is also called lifting <code>a</code> into the Functor.  Implementing <code>pure</code> is easy enough, because it
+is the same thing as our data constructor, <code>Cons</code>.</p>
+
+<!-- more-->
+
+<p>The function <code>&lt;*&gt;</code> has the type signature <code>(&lt;*&gt;) :: f (a -&gt; b) -&gt; f a -&gt; f b</code> and represents function
+application for types that are wrapped in our data structure <code>f</code>, where the function is also wrapped in
+the same data structure <code>f</code>.</p>
+
+<p>Functions that represent applying functions is sort of weird concept, but I can think of three functions
+offhand that do accomplish this in different ways.  The three are: <code>$</code>, <code>&lt;$&gt;</code>, and <code>&lt;*&gt;</code>, so let’s look
+at their type signatures.</p>
+
+<h3 id="function-application">Function Application</h3>
+<p><code>haskell
+:t ($)
+=&gt; ($) :: (a -&gt; b) -&gt; a -&gt; b
+:t (&lt;$&gt;)
+=&gt; (&lt;$&gt;) :: (Functor f) =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+:t (&lt;*&gt;)
+=&gt; (&lt;*&gt;) :: (Applicative f) =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</code></p>
+
+<p>The <code>$</code> function takes a function <code>(a -&gt; b)</code> and applies to an <code>a</code>, not surprisingly
+giving you a <code>b</code>.  This is regular function application like <code>odd 3</code> returning
+True.  Here I show different ways to use <code>$</code>, implicitly, explicitly, and infix.</p>
+
+<h3 id="functon-application-using-">Functon application using $</h3>
+<p><code>haskell
+odd 3
+=&gt; True
+($) odd 3
+=&gt; True
+odd $ 3
+=&gt; True
+--  Precedence issue here
+--  Haskell parses this as (Container 2) + 1
+Container 2 + 1
+=&gt; &lt;interactive&gt;:1:0:
+    No instance for (Num (Container t))
+        arising from a use of `+' at &lt;interactive&gt;:1:0-14
+    Possible fix: add an instance declaration for (Num (Container t))
+        In the expression: Container 2 + 1
+        In the definition of `it': it = Container 2 + 1
+--  Ways to fix this
+Container (2 + 1)
+=&gt; Container 3
+Container $ 2 + 1
+=&gt; Container 3
+</code></p>
+
+<p>People generally use <code>$</code> when they want to change the precedence of an expression
+without using a lot of parenthesis.</p>
+
+<p>Look at the type signature of <code>&lt;$&gt;</code>, and the one for <code>fmap</code>.</p>
+
+<h3 id="type-signatures-of--and-fmap">Type signatures of &lt;$&gt; and fmap</h3>
+<p><code>haskell
+:t (&lt;$&gt;)
+=&gt; (&lt;$&gt;) :: (Functor f) =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+:t fmap
+=&gt;  fmap :: (Functor f) =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</code></p>
+
+<p>The function <code>&lt;$&gt;</code> <em>is</em> <code>fmap</code>.  It is applying a function to the Functor <code>f a</code>
+producing <code>f b</code>.  The angle brackets around the $ are indicating that this is
+application inside a container.  This is called lifting the normal function <code>(a -&gt; b)</code> 
+into the Functor.  What if the function itself is wrapped inside a Functor container?</p>
+
+<p>The answer is that function <code>&lt;*&gt;</code> is used instead.  Why wrap a function in a container to
+apply it to some value in the same type of container?  Why not just not have
+anything in containers at all?  Remember that a list is a container and check
+this out:</p>
+
+<h3 id="the--function">The &lt;*&gt; function</h3>
+<p><code>haskell
+-- Type signature
+:t (&lt;*&gt;)
+=&gt; (&lt;*&gt;) :: (Applicative f) =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+--  Applying a list of functions to a list of numbers
+[(+2), (*2)] &lt;*&gt; [1,2,3]
+=&gt; [3,4,5,2,4,6]
+</code></p>
+
+<p>Since lists are applicative functors, you may combine a list of functions to a list of 
+values and have it do the obvious thing, apply everything to everything, and then either <code>mconcat</code> or <code>mappend</code> 
+the results into a single flat list.  This just happens to be how <code>&lt;*&gt;</code> is implemented for a Haskell 
+list, because it is really the only way that makes sense to implement it.</p>
+
+<h3 id="making-mylist-an-instance-of-applicative">Making MyList an Instance of Applicative</h3>
+<p><code>haskell
+instance Applicative MyList where
+    pure a = Cons a Empty  -- like [a] for lists
+    Empty &lt;*&gt; m = Empty
+    (Cons f cdr) &lt;*&gt; m = (fmap f m) `mappend` (cdr &lt;*&gt; m)
+--  Make a list
+let list = Cons 1 (Cons 2 (Cons 3 Empty))
+--  Make a list of functions
+let functions = Cons (+2) (Cons (*2) Empty)
+-- We get the same result with MyList
+functions &lt;*&gt; list
+=&gt; Cons {car = 3, cdr = Cons {car = 4, cdr = Cons {car = 5, cdr = 
+   Cons {car = 2, cdr = Cons {car = 4, cdr = Cons {car = 6, cdr = Empty}}}}}}
+</code></p>
+
+<p>The definition of <code>&lt;*&gt;</code> is just building on <code>fmap</code> and <code>mappend</code>.  Which is neat and shows how all 
+of these things are related.  For a list, <code>&lt;*&gt;</code> just maps each function over each item in the 
+list like a nested loop, and appends them together into one list.</p>
+
+<ul>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-1/">Recreating the Haskell List Part 1</a></li>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-2-functors/">Recreating the Haskell List Part 2: Functors</a></li>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-3-monoids/">Recreating the Haskell List Part 3: Monoids</a></li>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-4-applicative-functors/">Recreating the Haskell List Part 4: Applicative Functors</a></li>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-5-monads/">Recreating the Haskell List Part 5: Monads</a></li>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-6-the-io-monad/">Recreating the Haskell List Part 6: The IO Monad</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Recreating the Haskell List Part 3: Monoids]]></title>
+    <link href="http://irkenkitties.com/blog/2012/12/03/recreating-the-haskell-list-part-3-monoids/"/>
+    <updated>2012-12-03T23:55:00-08:00</updated>
+    <id>http://irkenkitties.com/blog/2012/12/03/recreating-the-haskell-list-part-3-monoids</id>
+    <content type="html"><![CDATA[<p>This is part 3 of a 6 part tutorial</p>
+
+<h2 id="monoids">Monoids</h2>
+
+<p>It turns out that cons lists can be more than just a Functor, it can be a Monoid.  A Monoid is
+a object with a single associative binary operation, and an identity element.  This means that 
+things like addition and multiplication form a monoid.</p>
+
+<p>The identity element for addition is the number $0$, because $x + 0 = x$.  An identity element and any
+other element, when operated on by the single associative binary operation, is one that does not
+change the other element.  Basically you can add $0$ to any number and you just get the same number.
+The identity element for multiplication is $1$, because $x \cdot 1 = x$ for every number.</p>
+
+<p>The binary operation should be one which can combine two of the objects, and for a list that happens to be
+appending them using the function <code>++</code>.</p>
+
+<p><code>[1, 2, 3] ++ [4, 5, 6] == [1, 2, 3, 4, 5, 6]</code>  Easy enough, so that means the identity element, the
+element you can combine with a list that will return the same list is: <code>[]</code>, the empty list.  <code>[1, 2] ++ [] == [1, 2]</code></p>
+
+<p>The ghci command <code>:info</code> shows that to be an instance of a monoid you must implement the functions
+<code>mempty</code> which returns the identity element, and either <code>mappend</code> or <code>mconcat</code>.  Typeclasses can
+sometimes have default implementations for some functions, and it’s often the case that two functions 
+are actually defined by default in terms of one another, meaning you only have to implement one of them
+and the other will automatically work.  Here <code>mappend</code> and <code>mconcat</code> are defined in terms of each other
+so we just decide to implement the easier of the two, <code>mappend</code></p>
+
+<p>Looking at the type signatures below we can see <code>mappend :: a -&gt; a -&gt; a</code>,  where in our case <code>a</code> will
+be the type <code>MyList</code>.  This means <code>mappend</code> receives two lists and returns a third in which they are 
+combined.  For addition this would have been receiving two numbers that need to be combined, but for
+a list it just means to stick them together end to end.</p>
+
+<!-- more -->
+
+<h3 id="making-mylist-a-monoid">Making MyList a Monoid</h3>
+<p><code>haskell
+import Data.Monoid
+:info Monoid
+=&gt; class Monoid a where
+    mempty :: a
+    mappend :: a -&gt; a -&gt; a
+    mconcat :: [a] -&gt; a
+instance Monoid (MyList b) where
+    mempty = Empty
+    mappend xs Empty = xs
+    mappend Empty ys = mappend ys Empty
+    mappend (Cons x xs) ys = Cons x $ mappend xs ys
+let list1 = (Cons 1 (Cons 2 Empty)) 
+let list2 = (Cons 3 (Cons 4 Empty))
+list1 `mappend` list2
+=&gt; Cons {car = 1, cdr = Cons {car = 2, cdr = Cons {car = 3, cdr = Cons {car = 4, cdr = Empty}}}}
+[1,2] `mappend` [3,4]
+=&gt; [1,2,3,4]
+-- mconcat is similar but it flattens a list of lists
+mconcat [[1,2], [3, 4]]
+=&gt; [1, 2, 3, 4]
+</code></p>
+
+<p>Having MyList be an instance of Monoid makes it easier to write the implementation for the 
+Applicative type-class, because <code>mappend</code> is used in its implementation.</p>
+
+<ul>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-1/">Recreating the Haskell List Part 1</a></li>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-2-functors/">Recreating the Haskell List Part 2: Functors</a></li>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-3-monoids/">Recreating the Haskell List Part 3: Monoids</a></li>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-4-applicative-functors/">Recreating the Haskell List Part 4: Applicative Functors</a></li>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-5-monads/">Recreating the Haskell List Part 5: Monads</a></li>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-6-the-io-monad/">Recreating the Haskell List Part 6: The IO Monad</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Recreating the Haskell List Part 2: Functors]]></title>
+    <link href="http://irkenkitties.com/blog/2012/12/03/recreating-the-haskell-list-part-2-functors/"/>
+    <updated>2012-12-03T23:54:00-08:00</updated>
+    <id>http://irkenkitties.com/blog/2012/12/03/recreating-the-haskell-list-part-2-functors</id>
+    <content type="html"><![CDATA[<p>This is part 2 of a 6 part tutorial</p>
+
+<h2 id="functors">Functors</h2>
+
+<p>How can we modify or transform a value or values that are contained in a data structure such as <code>Container</code>? Let’s
+say we have a <code>Container</code> holding the integer 4, and we want to add 1 to it.  The problem is that
+a <code>Container</code> doesn’t have addition defined for it, and really, it shouldn’t considering that any possible
+type could be stored inside it, any number of which have no meaningful way to respond to addition.</p>
+
+<p>Let’s look at a similar situation in C++:</p>
+
+<p><code>c++
+template &lt;class T&gt;
+class Container {
+   T _value;
+   public:
+   Container(T value) : _value(value) { }
+   T get_value() {
+       return _value;
+   }
+   void set_value(T value){ 
+       _value = value;
+   }
+};
+Container&lt;int&gt; container = Container&lt;int&gt;(4);
+//  Of course, you can't do this to transform the value inside
+container = container + 1
+//  You must remove it, apply the transformation and put it back
+int x = container.get_value();
+x = x + 1
+container.set_value(x);
+</code></p>
+
+<p>The extreme generality of this C++ class means that it would be a mistake to define <code>operator+</code> on
+it, as any number of types <code>T</code> also cannot meaningfully respond to addition.  Now we find ourselves
+in a similar situation in Haskell:</p>
+
+<p>&#8220;` haskell
+let container = Container 4
+let container’ = container + 1</p>
+<interactive>:3:28:
+    No instance for (Num (Container Integer))
+        arising from a use of `+&#8217;
+    Possible fix:
+        add an instance declaration for (Num (Container Integer))
+    In the expression: container + 1
+    In an equation for container&#8217;: container&#8217; = container + 1
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>
+</span><span class='line'>&lt;!-- more --&gt;
+</span><span class='line'>
+</span><span class='line'>Haskell has an elegant solution to this problem called a Functor.  Ghci is able to print out the full 
+</span><span class='line'>interface for any typeclass with the `:info` command so let's see what interface is required for a 
+</span><span class='line'>data type to become an instance of the `Functor` typeclass:
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>### Using ghci's :info command</span></code></pre></td></tr></table></div></figure> haskell
+:info Functor
+=&gt; class Functor f where 
+      fmap :: (a -&gt; b) -&gt; f a -&gt; f b
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>
+</span><span class='line'>This says there is a class named `Functor`, its instances will be referred to as `f`.  Instances must define a 
+</span><span class='line'>function called `fmap`.  The first parameter of `fmap`, is `(a -&gt; b)`. This means the first parameter is a 
+</span><span class='line'>function which accepts something of type `a`, and returns something of a possibly different type `b`.  
+</span><span class='line'>
+</span><span class='line'>The second parameter `f a` is a functor (such as `Container`) wrapping a type `a`.  The last thing in a type signature is the 
+</span><span class='line'>return value.  It returns `f b`, which means it returns the same sort of datatype, (Such as `Container`) wrapping something of type `b`.
+</span><span class='line'>
+</span><span class='line'>That can be somewhat difficult to follow at first, but what it is essentially asking you to implement is
+</span><span class='line'>a way to take the data out of the data structure, apply a transformation function to it, and then put it back 
+</span><span class='line'>in the data structure.  Let's make `Container` an instance of `Functor`.
+</span><span class='line'>
+</span><span class='line'>### Making Container an Instance of Functor</span></code></pre></td></tr></table></div></figure> haskell
+instance Functor Container where
+    fmap f (Container contents) = Container (f contents)
+let container = Container 4
+container
+=&gt; Container 4
+fmap (\x -&gt; x + 1) container
+=&gt; Container 5
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>
+</span><span class='line'>In the function fmap above, on the left hand side of the declaration, we are using Haskell's pattern matching 
+</span><span class='line'>feature to deconstruct the container and remove the value from it.  When called `fmap f (Container contents) =` 
+</span><span class='line'>binds the function `(\x -&gt; x + 1)` to `f`, and in this case the integer `4` to `contents`.
+</span><span class='line'>
+</span><span class='line'>This is because during pattern matching, the data constructor function `Container` acts to deconstruct the data
+</span><span class='line'>type into its components.  Later we'll see data types that contain more than one value and see that it can be
+</span><span class='line'>used to access any number of data members.  Haskell is all about composite data structures and wrapping and
+</span><span class='line'>unwrapping the components inside them to do work.
+</span><span class='line'>
+</span><span class='line'>On the right hand side of `fmap` the `Container` data constructor is again used to wrap up this value, but it
+</span><span class='line'>is first transformed by the function `f`.  We get the effect of being able to send any function inside the
+</span><span class='line'>container to be applied to its inner value.
+</span><span class='line'>
+</span><span class='line'>You might be wondering, why wrap this integer in a data structure at all if it just makes it annoying to work
+</span><span class='line'>on it?  The answer is that unless you want to isolate a value or restrict operations that can be performed on
+</span><span class='line'>it, you probably wouldn't want to do this if it only held one value.  This type of isolation is used in Haskell
+</span><span class='line'>to separate functions that work with IO and side effects from pure functional code.  The IO Monad hides
+</span><span class='line'>its data constructor so that you cannot create anything of type IO in 'pure' code, and you can't deconstruct 
+</span><span class='line'>an IO and get its values out.  This causes you to always need to work with 'impure' IO stuff by sending functions
+</span><span class='line'>into or declaring them inside the IO container, and also serves as a marker for impurity.
+</span><span class='line'>
+</span><span class='line'>The Maybe Monad is another type that can still do something interesting while wrapping only one value, but let's
+</span><span class='line'>see an example of a functor working on multiple values first, a list!
+</span><span class='line'>
+</span><span class='line'>##A Linked List as a Functor
+</span><span class='line'>
+</span><span class='line'>The native list type in Haskell is a linked list, and it is also a functor.  Let's reimplement it from scratch
+</span><span class='line'>so that we can see how it works.  In functional languages a linked list is often called a Cons List, and is
+</span><span class='line'>a recursive data structure formed by cons cells in which each cell contains two elements, the first element
+</span><span class='line'>is called the head or car, and is one value in the list, and the second is called the tail or cdr (pronounced kooder) 
+</span><span class='line'>and is another Cons Cell, which in turn holds one value and another cons cell and so on.
+</span><span class='line'>
+</span><span class='line'>The terms cons, car, and cdr come from Lisp, and they are the three main functions used in that language to work
+</span><span class='line'>with lists.  Cons constructs a list, car returns the head of the list, and cdr returns the tail of the list.  
+</span><span class='line'>In haskell, the car and cdr functions for lists are actually just named `head` and `tail`, but I am using 
+</span><span class='line'>the Lisp-named version here to avoid us getting confused by `head` and `tail` already defined in the ghci Prelude's
+</span><span class='line'>namespace.
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>### A Cons List</span></code></pre></td></tr></table></div></figure> haskell
+data MyList a = 
+    Empty |
+    Cons { 
+        car :: a, 
+        cdr :: MyList a
+    } deriving(Show)
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>
+</span><span class='line'>Above we define a type `MyList` to hold a parameterized "variable" type `a`.  This time you can see that there
+</span><span class='line'>are two data constructors, and that they don't have to have the same name as the type itself as we chose in
+</span><span class='line'>the definition of `Container`.  Empty is the data constructor for constructing an empty list, and Cons is 
+</span><span class='line'>a data constructor of two arguments.  This could have been written `data MyList a = Empty | Cons a (MyList a) deriving(Show)`
+</span><span class='line'>but what we've used here is called record syntax.
+</span><span class='line'>
+</span><span class='line'>You can see the first argument to Cons is something of type `a`, and the second is of type `MyList a`, record
+</span><span class='line'>syntax gives names to each argument, and also provides accessor functions by the same name to get at 
+</span><span class='line'>each data member.  This is a recursive data structure because `MyList` itelf is used on the right hand side
+</span><span class='line'>of the definition.  Let's play with this for a moment, and construct some lists.
+</span></code></pre></td></tr></table></div></figure> haskell 
+&#8211;  An empty list
+Empty
+=&gt; Empty
+&#8211;  A list with one item in it
+Cons 1 Empty
+=&gt; Cons {car = 1, cdr = Empty}
+&#8211;  A list with three items in it
+let list = Cons 1 (Cons 2 (Cons 3 Empty))
+list
+=&gt; Cons {car = 1, cdr = Cons {car = 2, cdr = Cons {car = 3, cdr = Empty}}}
+&#8211;  Using the functions provided by record syntax
+car list
+=&gt; 1
+cdr list
+=&gt; Cons {car = 2, cdr = Cons {car = 3, cdr = Empty}}
+car (cdr list)
+=&gt; 2
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>
+</span><span class='line'>A similar C++ class might look like this:
+</span><span class='line'>
+</span><span class='line'>### Quick C++ linked list</span></code></pre></td></tr></table></div></figure> c++
+template <class T="">
+class Cons {
+    T _car;
+    Cons *_cdr;
+    public:
+    Cons(T car, Cons *cdr) : 
+        _car(car), 
+        _cdr(cdr) {}
+    void show(){
+        cout &lt;&lt; _car &lt;&lt; &#8221; &#8220;;
+        if(_cdr){
+            _cdr-&gt;show();
+        }
+    }
+};
+typedef Cons<int> ConsInt;
+ConsInt list = ConsInt(1, new ConsInt(2, new ConsInt(3, NULL)));
+list.show();
+=&gt; 1 2 3
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>
+</span><span class='line'>Haskell itself has a builtin list data type with some syntactic sugar.  The haskell
+</span><span class='line'>equivalent of the Cons data constructor is `:`, the Empty data constructor is `[]`,
+</span><span class='line'>while `car` and `cdr` are `head` and `tail`.  Haskell lists also have a pretty show function
+</span><span class='line'>defined for them.
+</span><span class='line'>
+</span><span class='line'>### Built in List type</span></code></pre></td></tr></table></div></figure> haskell
+&#8211;  An empty list
+[]
+=&gt; []
+&#8211;  A list with one item in it
+1 : []
+=&gt; [1]
+&#8211;  Syntactic Sugar
+[1]
+=&gt; [1]
+&#8211;  A list with three items in it
+let list = [1, 2, 3]
+list
+=&gt; [1, 2, 3]
+&#8211;  Using the functions provided List
+head list
+=&gt; 1
+tail list
+=&gt; [2, 3]
+head (tail list)
+=&gt; 2
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>
+</span><span class='line'>So `MyList` is now a perfectly functioning linked list, but one thing it is missing over the 
+</span><span class='line'>builtin list type is the fact that it is not yet an instance of `Functor`, but we can fix that.
+</span><span class='line'>
+</span><span class='line'>Before, with `Container` the idea behind `fmap` was to unwrap a value, apply a given function to
+</span><span class='line'>it and wrap it back up again, and here the only difference is that there are two data members in a cons 
+</span><span class='line'>cell; the value, and another cons cell.  The recursive nature of a cons list gives us a clue that 
+</span><span class='line'>`fmap` will also be recursive.  We're going to apply the given function to the value in the cell,
+</span><span class='line'>and then call fmap again on the cons cell containing the rest of the list so that each of its values
+</span><span class='line'>will be transformed as well.
+</span><span class='line'>
+</span><span class='line'>### MyList becomes a Functor</span></code></pre></td></tr></table></div></figure> haskell
+instance Functor MyList where
+    fmap _ Empty = Empty
+    fmap f (Cons x xs) = Cons (f x) (fmap f xs)
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>
+</span><span class='line'>Here `fmap` is defined twice.  Again we can see data constructors on the left hand side being used
+</span><span class='line'>to deconstruct our list for pattern matching.  If we try to fmap an empty list the first declaration
+</span><span class='line'>is matched and chosen, the function argument itself is thrown away and and Empty list is constructed
+</span><span class='line'>and returned.  Fmapping an empty list is an empty list.
+</span><span class='line'>
+</span><span class='line'>If a cons cell is matched, the data constructor `Cons` is used to deconstruct the cell and bind its
+</span><span class='line'>two values to `x` and `xs`.  `xs` as in the plural of `x`  What this does is separates the head of the
+</span><span class='line'>list from the rest of it, you perform an operation on the head and send the rest for processing by
+</span><span class='line'>recalling the function recursively.  This is a common pattern you'll see when writing recursive functions.
+</span><span class='line'>
+</span><span class='line'>The base case is encountering the Empty cell at the end of the list, which stops the recursion.  The 
+</span><span class='line'>function only knows how to handle one element at a time, and relegates the rest of the work to itself
+</span><span class='line'>during future calls, and so on until it meets the base case and stops.
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>### Transforming a whole list</span></code></pre></td></tr></table></div></figure> haskell
+let list = Cons 1 (Cons 2 (Cons 3 Empty))
+fmap (\x -&gt; x * 2) list
+=&gt; Cons {car = 2, cdr = Cons {car = 4, cdr = Cons {car = 6, cdr = Empty}}}
+&#8211; Same thing with the builtin list
+fmap (\x -&gt; x * 2) [1, 2, 3]
+=&gt; [2,4,6]
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>
+</span><span class='line'>You've probably seen this before in other non-functional languages since many parts of the
+</span><span class='line'>functional paradigm are being adopted in imperative languages all the time.  Ruby and Python
+</span><span class='line'>both define `map` on their list types. Ruby passes a code block into its `map` method and 
+</span><span class='line'>that looks like this:
+</span><span class='line'>
+</span><span class='line'>### Ruby's map</span></code></pre></td></tr></table></div></figure> ruby
+[1, 2, 3].map do |x|
+  x * 2
+end
+=&gt; [2, 4, 6]
+&#8220;`
+
+*  [Recreating the Haskell List Part 1](/blog/2012/12/03/recreating-the-haskell-list-part-1/)
+*  [Recreating the Haskell List Part 2: Functors](/blog/2012/12/03/recreating-the-haskell-list-part-2-functors/)
+*  [Recreating the Haskell List Part 3: Monoids](/blog/2012/12/03/recreating-the-haskell-list-part-3-monoids/)
+*  [Recreating the Haskell List Part 4: Applicative Functors](/blog/2012/12/03/recreating-the-haskell-list-part-4-applicative-functors/)
+*  [Recreating the Haskell List Part 5: Monads](/blog/2012/12/03/recreating-the-haskell-list-part-5-monads/)
+*  [Recreating the Haskell List Part 6: The IO Monad](/blog/2012/12/03/recreating-the-haskell-list-part-6-the-io-monad/)
+
+</int></class></interactive>
+]]></content>
+  </entry>
+  
+</feed>

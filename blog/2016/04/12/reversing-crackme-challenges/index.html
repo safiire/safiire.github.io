@@ -1,0 +1,971 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Reversing Crackme Challenges - Irken Kitties</title>
+  <meta name="author" content="Safiire">
+
+  
+  <meta name="description" content="You may have noticed that I like to program many things in Ruby. I really do like
+many aspects of this language, and it’s usually the main language &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://irkenkitties.com/blog/2016/04/12/reversing-crackme-challenges">
+  <!-- <link href="/favicon.png" rel="icon"> &#8211;>
+
+  <!-- A million more different sizes and types of favicon -->
+  <link rel="apple-touch-icon" sizes="57x57" href="/favicons/apple-touch-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/favicons/apple-touch-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/favicons/apple-touch-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/favicons/apple-touch-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/favicons/apple-touch-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/favicons/apple-touch-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/favicons/apple-touch-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/favicons/apple-touch-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon-180x180.png">
+  <link rel="icon" type="image/png" href="/favicons/favicon-192x192.png" sizes="192x192">
+  <link rel="icon" type="image/png" href="/favicons/favicon-160x160.png" sizes="160x160">
+  <link rel="icon" type="image/png" href="/favicons/favicon-96x96.png" sizes="96x96">
+  <link rel="icon" type="image/png" href="/favicons/favicon-16x16.png" sizes="16x16">
+  <link rel="icon" type="image/png" href="/favicons/favicon-32x32.png" sizes="32x32">
+  <meta name="msapplication-TileColor" content="#9f00a7">
+  <meta name="msapplication-TileImage" content="/favicons/mstile-144x144.png">
+
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Irken Kitties" type="application/atom+xml">
+
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script src="/javascripts/three.min.js" type="text/javascript"></script>
+  <script src="/javascripts/glsl_header.js" type="text/javascript"></script>
+
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Francois+One' rel='stylesheet' type='text/css'>
+
+<!-- MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript"
+   src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Irken Kitties</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:irkenkitties.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a target="_blank" href="https://github.com/safiire">Github</a></li>
+  <li><a href="/blog/categories/haskell/">Haskell</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Reversing Crackme Challenges</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-04-12T16:27:26-07:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>You may have noticed that I like to program many things in Ruby.  I really do like
+many aspects of this language, and it’s usually the main language that I use at work
+as well.  Lately I’ve been getting the feeling that a programmer can get judged
+and immediately pigeon holed based on using a language a lot at work.  For example
+if you use Ruby you must be “only” a web programmer, if you use a garbage collected
+language, you mustn’t be able to manage memory, or handle programming in languages
+like C or C++, let alone assembly.</p>
+
+<p>So I like to take some of my free time and play hacker wargames like smashthestack.org,
+or reverse engineer crackmes, so I decided to describe my process for solving those
+types of challanges here.</p>
+
+<!-- more -->
+
+<h2 id="crackmes">Crackmes</h2>
+
+<p>“Crackmes” are essentially a compiled binary without source code, which asks you
+for a password or key,  you enter the wrong password you lose, you enter the right
+one and you win and move onto the next.  You need to reverse engineer the binary
+in order to discover the password, and these range from simple to tedious and
+difficult as the creator of the crackme piles on layers of obfuscation, misdirection,
+encryption, and anti-debugging techniques to stop you, not to mention you need
+a good handle on assembly and keeping track of what is in various memory locations
+during runtime.</p>
+
+<h2 id="crackme0x00a">Crackme0x00a</h2>
+
+<p>We start out simple, and so I start with my simplest techniques.  <code>crackme0x00a</code>
+wants a password:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">  ./crackme0x00a
+</span><span class="line">  IOLI Crackme Level 0x09
+</span><span class="line">  Password: blah
+</span><span class="line">  Password Incorrect!
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>So first we think that perhaps the password is simply in the binary, and we can
+find it by running the program <code>strings</code> on it to list every string in the program.
+I think it’s safe to say that will work on this one, but I have a more direct
+approach that I usually take, and that is run the program through <code>ltrace</code>.  <code>ltrace</code>
+outputs all calls to library functions that the program makes, so here we’re looking
+for something like a call to <code>strcmp</code></p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">  ltrace ./crackme0x00a
+</span><span class="line">  __libc_start_main<span class="o">(</span>0x80484e4, 1, 0xffa24724, 0x8048570, 0x80485e0 &lt;unfinished ...&gt;
+</span><span class="line">  <span class="nb">printf</span><span class="o">(</span><span class="s2">&quot;Enter password: &quot;</span><span class="o">)</span> <span class="o">=</span> 16
+</span><span class="line">  __isoc99_scanf<span class="o">(</span>0x8048651, 0xffa24663, 0x8049ff4, 0x8048591, -1Enter password: blah
+</span><span class="line">  <span class="o">)</span> <span class="o">=</span> 1
+</span><span class="line">  strcmp<span class="o">(</span><span class="s2">&quot;g00dJ0B!&quot;</span>, <span class="s2">&quot;blah&quot;</span><span class="o">)</span> <span class="o">=</span> 1
+</span><span class="line">  puts<span class="o">(</span><span class="s2">&quot;Wrong!&quot;</span>Wrong!<span class="o">)</span> <span class="o">=</span> 7
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Simple, we found the call to <code>strcmp</code> the password is <code>g00dJ0B!</code>.  You see how we can
+see each call, with parameters and return value.  This was all that was needed to
+beat this challenge.</p>
+
+<h2 id="crackme0x00b">Crackme0x00b</h2>
+
+<p>Let’s move onto the next one, with the same approach</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">ltrace ./crackme0x00b
+</span><span class="line">__libc_start_main<span class="o">(</span>0x8048494, 1, 0xff82ec54, 0x8048500, 0x8048570 &lt;unfinished ...&gt;
+</span><span class="line"><span class="nb">printf</span><span class="o">(</span><span class="s2">&quot;Enter password: &quot;</span><span class="o">)</span> <span class="o">=</span> 16
+</span><span class="line">__isoc99_scanf<span class="o">(</span>0x80485e1, 0xff82eb4c, 0, 0xf77f249c, 0xff82ebf4Enter password: blah
+</span><span class="line"><span class="o">)</span> <span class="o">=</span> 1
+</span><span class="line">wcscmp<span class="o">(</span>0x804a040, 0xff82eb4c<span class="o">)</span> <span class="o">=</span> 1
+</span><span class="line">puts<span class="o">(</span><span class="s2">&quot;Wrong!&quot;</span>Wrong!<span class="o">)</span> <span class="o">=</span> 7
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>So the difference here is the password is being compared with wcscmp, which has
+the prototype <code>int wcscmp (const wchar_t* wcs1, const wchar_t* wcs2);</code>  It compares
+wide strings where each char is 16-bit.</p>
+
+<p>On Linux most of the time the code and data sections get loaded around the address
+<code>0x08040000</code>, and local variables are stored in the stack, which begins at the
+top of memory and grows upwards from <code>0xffffffff</code>.</p>
+
+<p>The arguments to <code>wcscmp</code> are <code>0x804a040</code>, which I’m guessing is in the initialized
+data section, and is the secret password, and <code>0xff82eb4c</code> which <code>ltrace</code> shows is
+the location on the stack that it wrote our input to.</p>
+
+<p>The trick to this challenge, is that if we were simply to run the <code>strings</code> program
+on the binary, it would have worked in the previous challenge, but not this one
+because each character in a <code>wchar_t</code> string is 32-bits long with the most significant
+bits zeroed out, and terminated by a a 32-bit 0x0000 value.</p>
+
+<p>The quickest way I know to find out the bytes at <code>0x804a040</code> is to load the
+binary into my debugger <code>radare2</code> and just print it out.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="asm"><span class="line"><span class="err">[0</span><span class="nf">x080483e0</span><span class="err">]&gt;</span> <span class="no">px</span> <span class="mi">64</span> <span class="err">@</span><span class="mi">0x804a040</span>
+</span><span class="line"><span class="err">-</span> <span class="nf">offset</span> <span class="p">-</span>   <span class="mi">0</span> <span class="mi">1</span>  <span class="mi">2</span> <span class="mi">3</span>  <span class="mi">4</span> <span class="mi">5</span>  <span class="mi">6</span> <span class="mi">7</span>  <span class="mi">8</span> <span class="mi">9</span>  <span class="no">A</span> <span class="no">B</span>  <span class="no">C</span> <span class="no">D</span>  <span class="no">E</span> <span class="no">F</span>  <span class="mi">0123456789</span><span class="no">ABCDEF</span>
+</span><span class="line"><span class="err">0</span><span class="nf">x0804a040</span>  <span class="mi">7700</span> <span class="mi">0000</span> <span class="mi">3000</span> <span class="mi">0000</span> <span class="mi">7700</span> <span class="mi">0000</span> <span class="mi">6700</span> <span class="mi">0000</span>  <span class="no">w...0...w...g...</span>
+</span><span class="line"><span class="err">0</span><span class="nf">x0804a050</span>  <span class="mi">7200</span> <span class="mi">0000</span> <span class="mi">6500</span> <span class="mi">0000</span> <span class="mi">6100</span> <span class="mi">0000</span> <span class="mi">7400</span> <span class="mi">0000</span>  <span class="no">r...e...a...t...</span>
+</span><span class="line"><span class="err">0</span><span class="nf">x0804a060</span>  <span class="mi">0000</span> <span class="mi">0000</span> <span class="mi">4743</span> <span class="mi">433</span><span class="no">a</span> <span class="mi">2028</span> <span class="mi">5562</span> <span class="mi">756</span><span class="no">e</span> <span class="mi">7475</span>  <span class="no">....GCC</span><span class="p">:</span> <span class="p">(</span><span class="no">Ubuntu</span>
+</span><span class="line"><span class="err">0</span><span class="nf">x0804a070</span>  <span class="mi">2</span><span class="no">f4c</span> <span class="mi">696</span><span class="no">e</span> <span class="mi">6172</span> <span class="mi">6</span><span class="no">f20</span> <span class="mi">342</span><span class="no">e</span> <span class="mi">362</span><span class="no">e</span> <span class="mi">312</span><span class="no">d</span> <span class="mi">3975</span>  <span class="err">/</span><span class="no">Linaro</span> <span class="mi">4</span><span class="no">.6.1-9u</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>The password is <code>w0wgreat</code>.</p>
+
+<h2 id="crackme0x01">Crackme0x01</h2>
+
+<p>Ok, let’s see what’s new in the next one, and hopefully get to use <code>radare2</code>
+some more.  First let’s see what happens with <code>ltrace</code>.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+</pre></td><td class="code"><pre><code class="asm"><span class="line"><span class="nf">ltrace</span> <span class="p">.</span><span class="err">/</span><span class="no">crackme0x01</span>
+</span><span class="line"><span class="nf">__libc_start_main</span><span class="p">(</span><span class="mi">0x80483e4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0xffdd85c4</span><span class="p">,</span> <span class="mi">0x8048460</span><span class="p">,</span> <span class="mi">0x80484d0</span> <span class="err">&lt;</span><span class="no">unfinished</span> <span class="no">...</span><span class="err">&gt;</span>
+</span><span class="line"><span class="nf">printf</span><span class="p">(</span><span class="err">&quot;</span><span class="no">IOLI</span> <span class="no">Crackme</span> <span class="no">Level</span> <span class="mi">0x01</span><span class="err">\</span><span class="no">n</span><span class="err">&quot;</span><span class="no">IOLI</span> <span class="no">Crackme</span> <span class="no">Level</span> <span class="mi">0x01</span><span class="p">)</span> <span class="err">=</span> <span class="mi">24</span>
+</span><span class="line"><span class="nf">printf</span><span class="p">(</span><span class="err">&quot;</span><span class="no">Password</span><span class="p">:</span> <span class="err">&quot;</span><span class="p">)</span> <span class="err">=</span> <span class="mi">10</span>
+</span><span class="line"><span class="nf">scanf</span><span class="p">(</span><span class="mi">0x804854c</span><span class="p">,</span> <span class="mi">0xffdd8524</span><span class="p">,</span> <span class="mi">0xf77a6ff4</span><span class="p">,</span> <span class="mi">0xf7636dd5</span><span class="p">,</span> <span class="mi">0xf77c8660</span>
+</span><span class="line">
+</span><span class="line"><span class="nl">Password:</span> <span class="nf">blah</span>
+</span><span class="line"><span class="err">)</span> <span class="err">=</span> <span class="err">0</span>
+</span><span class="line"><span class="nf">printf</span><span class="p">(</span><span class="err">&quot;</span><span class="no">Invalid</span> <span class="no">Password</span><span class="err">!\</span><span class="no">n</span><span class="err">&quot;</span><span class="no">Invalid</span> <span class="no">Password</span><span class="err">!</span><span class="p">)</span> <span class="err">=</span> <span class="mi">18</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>So usually I just write in <code>blah</code> for a password, but we can see here that <code>scanf</code>
+has returned <code>0</code> in response to my string.  <code>scanf</code> returns the number of things
+it has parsed according to its format string.  So I’m guessing its format string
+was not <code>"%s"</code> this time as it was before.  Maybe it was looking for a number.
+Let’s load it into r2, dissassemble the main function and find out.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+</pre></td><td class="code"><pre><code class="asm"><span class="line"><span class="err">╒</span> <span class="err">(</span><span class="nf">fcn</span><span class="p">)</span> <span class="no">sym.main</span> <span class="mi">113</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">;</span> <span class="nf">arg</span> <span class="no">int</span> <span class="no">arg_149ah</span>    <span class="err">@</span> <span class="no">ebp</span><span class="err">+</span><span class="mi">0x149a</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">;</span> <span class="nf">var</span> <span class="no">int</span> <span class="no">local_4h</span>     <span class="err">@</span> <span class="no">ebp-0x4</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">0</span><span class="nf">x080483e4</span>      <span class="mi">55</span>             <span class="no">push</span> <span class="no">ebp</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">0</span><span class="nf">x080483e5</span>      <span class="mi">89</span><span class="no">e5</span>           <span class="no">mov</span> <span class="no">ebp</span><span class="p">,</span> <span class="no">esp</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">0</span><span class="nf">x080483e7</span>      <span class="mi">83</span><span class="no">ec18</span>         <span class="no">sub</span> <span class="no">esp</span><span class="p">,</span> <span class="mi">0x18</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">0</span><span class="nf">x080483ea</span>      <span class="mi">83</span><span class="no">e4f0</span>         <span class="no">and</span> <span class="no">esp</span><span class="p">,</span> <span class="mi">0xfffffff0</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">0</span><span class="nf">x080483ed</span>      <span class="no">b800000000</span>     <span class="no">mov</span> <span class="no">eax</span><span class="p">,</span> <span class="mi">0</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">0</span><span class="nf">x080483f2</span>      <span class="mi">83</span><span class="no">c00f</span>         <span class="no">add</span> <span class="no">eax</span><span class="p">,</span> <span class="mi">0xf</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">0</span><span class="nf">x080483f5</span>      <span class="mi">83</span><span class="no">c00f</span>         <span class="no">add</span> <span class="no">eax</span><span class="p">,</span> <span class="mi">0xf</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">0</span><span class="nf">x080483f8</span>      <span class="no">c1e804</span>         <span class="no">shr</span> <span class="no">eax</span><span class="p">,</span> <span class="mi">4</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">0</span><span class="nf">x080483fb</span>      <span class="no">c1e004</span>         <span class="no">shl</span> <span class="no">eax</span><span class="p">,</span> <span class="mi">4</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">0</span><span class="nf">x080483fe</span>      <span class="mi">29</span><span class="no">c4</span>           <span class="no">sub</span> <span class="no">esp</span><span class="p">,</span> <span class="no">eax</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">0</span><span class="nf">x08048400</span>      <span class="no">c70424288504.</span>  <span class="no">mov</span> <span class="no">dword</span> <span class="err">[</span><span class="no">esp</span><span class="err">]</span><span class="p">,</span> <span class="no">str.IOLI_Crackme_Level_0x01_n</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">0</span><span class="nf">x08048407</span>      <span class="no">e810ffffff</span>     <span class="no">call</span> <span class="no">sym.imp.printf</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">0</span><span class="nf">x0804840c</span>      <span class="no">c70424418504.</span>  <span class="no">mov</span> <span class="no">dword</span> <span class="err">[</span><span class="no">esp</span><span class="err">]</span><span class="p">,</span> <span class="no">str.Password</span><span class="p">:</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">0</span><span class="nf">x08048413</span>      <span class="no">e804ffffff</span>     <span class="no">call</span> <span class="no">sym.imp.printf</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">0</span><span class="nf">x08048418</span>      <span class="mi">8</span><span class="no">d45fc</span>         <span class="no">lea</span> <span class="no">eax</span><span class="p">,</span> <span class="err">[</span><span class="no">ebp</span> <span class="p">-</span> <span class="no">local_4h</span><span class="err">]</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">0</span><span class="nf">x0804841b</span>      <span class="mi">89442404</span>       <span class="no">mov</span> <span class="no">dword</span> <span class="err">[</span><span class="no">esp</span> <span class="err">+</span> <span class="mi">4</span><span class="err">]</span><span class="p">,</span> <span class="no">eax</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">0</span><span class="nf">x0804841f</span>      <span class="no">c704244c8504.</span>  <span class="no">mov</span> <span class="no">dword</span> <span class="err">[</span><span class="no">esp</span><span class="err">]</span><span class="p">,</span> <span class="mi">0x804854c</span>  <span class="err">;</span> <span class="err">&quot;</span><span class="nv">%d</span><span class="err">&quot;</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">0</span><span class="nf">x08048426</span>      <span class="no">e8e1feffff</span>     <span class="no">call</span> <span class="no">sym.imp.scanf</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">0</span><span class="nf">x0804842b</span>      <span class="mi">817</span><span class="no">dfc9a1400.</span>  <span class="no">cmp</span> <span class="no">dword</span> <span class="err">[</span><span class="no">ebp</span> <span class="p">-</span> <span class="no">local_4h</span><span class="err">]</span><span class="p">,</span> <span class="mi">0x149a</span>
+</span><span class="line"><span class="err">│</span>       <span class="err">┌─&lt;</span> <span class="err">0</span><span class="nf">x08048432</span>      <span class="mi">740</span><span class="no">e</span>           <span class="no">je</span> <span class="mi">0x8048442</span>
+</span><span class="line"><span class="err">│</span>       <span class="err">│</span>   <span class="err">0</span><span class="nf">x08048434</span>      <span class="no">c704244f8504.</span>  <span class="no">mov</span> <span class="no">dword</span> <span class="err">[</span><span class="no">esp</span><span class="err">]</span><span class="p">,</span> <span class="no">str.Invalid_Password__n</span>
+</span><span class="line"><span class="err">│</span>       <span class="err">│</span>   <span class="err">0</span><span class="nf">x0804843b</span>      <span class="no">e8dcfeffff</span>     <span class="no">call</span> <span class="no">sym.imp.printf</span>
+</span><span class="line"><span class="err">│</span>      <span class="err">┌──&lt;</span> <span class="err">0</span><span class="nf">x08048440</span>      <span class="no">eb0c</span>           <span class="no">jmp</span> <span class="mi">0x804844e</span>
+</span><span class="line"><span class="err">│</span>      <span class="err">│└─&gt;</span> <span class="err">0</span><span class="nf">x08048442</span>      <span class="no">c70424628504.</span>  <span class="no">mov</span> <span class="no">dword</span> <span class="err">[</span><span class="no">esp</span><span class="err">]</span><span class="p">,</span> <span class="no">str.Password_OK_</span><span class="p">:</span><span class="no">__n</span>
+</span><span class="line"><span class="err">│</span>      <span class="err">│</span>    <span class="err">0</span><span class="nf">x08048449</span>      <span class="no">e8cefeffff</span>     <span class="no">call</span> <span class="no">sym.imp.printf</span>
+</span><span class="line"><span class="err">│</span>      <span class="err">└──&gt;</span> <span class="err">0</span><span class="nf">x0804844e</span>      <span class="no">b800000000</span>     <span class="no">mov</span> <span class="no">eax</span><span class="p">,</span> <span class="mi">0</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">0</span><span class="nf">x08048453</span>      <span class="no">c9</span>             <span class="no">leave</span>
+</span><span class="line"><span class="err">╘</span>           <span class="err">0</span><span class="nf">x08048454</span>      <span class="no">c3</span>             <span class="no">ret</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>So, woo, radare is the best.  It has added helpful identifiers for us rather
+then make us look up a bunch of addresses.  For example <code>str.Invalid_Password__n</code> is an
+identifier standing in for the address of the string `“Invalid Password\n”.</p>
+
+<p>The assembly listing is easy to follow thanks to the analysis <code>radare2</code> has done,
+and the symbols it has added for us, it even graphically shows branches and loops.</p>
+
+<p>The first thing to know when you look at the assembly listing of a function created
+by a compiler, is that there is going to be 3 main sections: the function prologue,
+the body, and the function epilogue.  If you already know this, you will probably
+want to skip down a little ways.</p>
+
+<h2 id="the-function-prologue">The Function Prologue</h2>
+
+<p>Like I mentioned before, the stack is an area of memory which in Linux begins at
+<code>0xffffffff</code>, and grows upwards in memory, and the CPU register <code>esp</code> points
+to the top of the stack.  To get this analogy you have to think of memory as
+a something like a container that holds plates.  The bottom of the container is
+<code>0xffffff</code>, the top of it is <code>0x000000</code>.  When you place plates onto the stack
+over and over, the pile grows upwards.  That is pushing things onto the stack.</p>
+
+<p>To remove things from the stack, you “pop” them off of it.  You can’t pop a
+plate out of the middle or the bottom, you can only pop a plate off the top.
+It is a LIFO stack, last in is first out.</p>
+
+<p>An x86 CPU has <code>push</code> and <code>pop</code> instructions for this, and guess what, compilers
+don’t use them very much, prefering to instead just do arithmetic
+on <code>esp</code> or <code>ebp</code> in order to get values from the stack or manipulate its
+size.</p>
+
+<p>In a running program, we use the stack as a “function call stack”, which
+is a sequence of “stack frames”, one per function called.</p>
+
+<p>So let’s explain how that’s laid out so we can get back to the crackme. Take this
+example nested function calls:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+</pre></td><td class="code"><pre><code class="c"><span class="line"><span class="kt">int</span> <span class="nf">h</span><span class="p">(</span><span class="n">c</span><span class="p">){</span>
+</span><span class="line">  <span class="kt">int</span> <span class="n">d</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+</span><span class="line">  <span class="k">return</span> <span class="n">c</span> <span class="o">+</span> <span class="n">d</span><span class="p">;</span>
+</span><span class="line"><span class="p">}</span>
+</span><span class="line"><span class="kt">int</span> <span class="nf">g</span><span class="p">(</span><span class="n">b</span><span class="p">){</span>
+</span><span class="line">  <span class="k">return</span> <span class="n">h</span><span class="p">(</span><span class="n">b</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class="line"><span class="p">}</span>
+</span><span class="line"><span class="kt">int</span> <span class="nf">f</span><span class="p">(</span><span class="n">a</span><span class="p">){</span>
+</span><span class="line">  <span class="k">return</span> <span class="n">g</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class="line"><span class="p">}</span>
+</span><span class="line"><span class="n">f</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+</pre></td><td class="code"><pre><code class="asm"><span class="line"><span class="err">|</span>      <span class="err">10</span>          <span class="err">|</span> <span class="nf">Local</span> <span class="no">variable</span> <span class="no">d</span>  <span class="p">(</span><span class="no">esp</span><span class="p">)</span> <span class="p">(</span><span class="no">ebp</span> <span class="p">-</span> <span class="mi">4</span><span class="p">)</span>
+</span><span class="line"><span class="err">|</span>   <span class="err">0</span><span class="nf">xffffffef</span>     <span class="err">|</span> <span class="no">Saved</span> <span class="no">ebp</span> <span class="no">frame</span> <span class="no">pointer</span>
+</span><span class="line"><span class="err">|</span> <span class="nf">h</span> <span class="no">Return</span> <span class="no">Address</span> <span class="err">|</span>
+</span><span class="line"><span class="err">|</span>       <span class="err">2</span>          <span class="err">|</span> <span class="nf">Argument</span> <span class="no">to</span> <span class="no">h</span>
+</span><span class="line"><span class="err">|</span>   <span class="err">0</span><span class="nf">xfffffff7</span>     <span class="err">|</span> <span class="no">Saved</span> <span class="no">ebp</span> <span class="no">frame</span> <span class="no">pointer</span>
+</span><span class="line"><span class="err">|</span> <span class="nf">g</span> <span class="no">Return</span> <span class="no">Address</span> <span class="err">|</span>
+</span><span class="line"><span class="err">|</span>       <span class="err">1</span>          <span class="err">|</span> <span class="nf">Argument</span> <span class="no">to</span> <span class="no">g</span>
+</span><span class="line"><span class="err">|</span>   <span class="err">0</span><span class="nf">xffffffff</span>     <span class="err">|</span> <span class="no">Saved</span> <span class="no">ebp</span> <span class="no">frame</span> <span class="no">pointer</span>
+</span><span class="line"><span class="err">|</span> <span class="nf">f</span> <span class="no">Return</span> <span class="no">Address</span> <span class="err">|</span>
+</span><span class="line"><span class="err">|</span>       <span class="err">0</span>          <span class="err">|</span> <span class="nf">Argument</span> <span class="no">to</span> <span class="no">f</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>The calling convention used here is called <code>cdecl</code>, to call a function we
+put its arguments on the stack in reverse order, and use the <code>call</code> instruction.
+<code>call</code> automatically pushes the address of the next instruction after it
+onto the stack, so we will know where to return to after the function call ends.</p>
+
+<p>Once inside the function, space is made to hold the local variables, usually
+by subtracting the local variables size in bytes from esp, raising the stack
+up higher, sometimes this size is aligned on a 16 byte boundry by using the
+<code>and</code> instruction.  This is why there is junk data in uninitialized local variables,
+they just hold whatever garbage happened to be on the stack.</p>
+
+<p><code>main()</code> like any other function has a prologue.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+</pre></td><td class="code"><pre><code class="asm"><span class="line"><span class="nf">push</span> <span class="no">ebp</span>                 <span class="err">;</span> <span class="no">Push</span> <span class="no">the</span> <span class="no">previous</span> <span class="no">base</span> <span class="no">pointer</span> <span class="no">to</span> <span class="no">the</span> <span class="no">stack</span>
+</span><span class="line"><span class="nf">mov</span> <span class="no">ebp</span><span class="p">,</span> <span class="no">esp</span>             <span class="err">;</span> <span class="no">Make</span> <span class="no">our</span> <span class="no">new</span> <span class="no">base</span> <span class="no">pointer</span> <span class="no">the</span> <span class="no">top</span> <span class="no">of</span> <span class="no">the</span> <span class="no">stack.</span>
+</span><span class="line"><span class="nf">sub</span> <span class="no">esp</span><span class="p">,</span> <span class="mi">0x18</span>            <span class="err">;</span> <span class="no">Increase</span> <span class="no">the</span> <span class="no">stack</span> <span class="no">space</span> <span class="no">by</span> <span class="mi">0x18</span> <span class="no">bytes</span>
+</span><span class="line"><span class="nf">and</span> <span class="no">esp</span><span class="p">,</span> <span class="mi">0xfffffff0</span>      <span class="err">;</span> <span class="no">Align</span> <span class="no">the</span> <span class="no">stack</span> <span class="no">to</span> <span class="mi">16</span> <span class="no">byte</span> <span class="no">boundry.</span>
+</span><span class="line"><span class="nf">mov</span> <span class="no">eax</span><span class="p">,</span> <span class="mi">0</span>               <span class="err">;</span> <span class="no">eax</span> <span class="err">=</span> <span class="mi">0</span>
+</span><span class="line"><span class="nf">add</span> <span class="no">eax</span><span class="p">,</span> <span class="mi">0xf</span>             <span class="err">;</span> <span class="no">eax</span> <span class="err">=</span> <span class="mi">0xf</span>
+</span><span class="line"><span class="nf">add</span> <span class="no">eax</span><span class="p">,</span> <span class="mi">0xf</span>             <span class="err">;</span> <span class="no">eax</span> <span class="err">=</span> <span class="mi">0x1e</span>
+</span><span class="line"><span class="nf">shr</span> <span class="no">eax</span><span class="p">,</span> <span class="mi">4</span>               <span class="err">;</span> <span class="no">eax</span> <span class="err">=</span> <span class="mi">0x1</span>
+</span><span class="line"><span class="nf">shl</span> <span class="no">eax</span><span class="p">,</span> <span class="mi">4</span>               <span class="err">;</span> <span class="no">eax</span> <span class="err">=</span> <span class="mi">0x10</span> <span class="no">A</span> <span class="no">shift</span> <span class="no">right</span> <span class="no">then</span> <span class="no">left</span> <span class="no">also</span> <span class="no">aligns</span>
+</span><span class="line"><span class="nf">sub</span> <span class="no">esp</span><span class="p">,</span> <span class="no">eax</span>             <span class="err">;</span> <span class="no">Increase</span> <span class="no">stack</span> <span class="no">space</span> <span class="no">by</span> <span class="no">another</span> <span class="mi">0x10</span> <span class="no">bytes.</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>So we save the old base pointer (base pointer, frame pointer, same thing) then
+start subtracting from esp to increase the space for local variables.</p>
+
+<p>It makes space twice, using two different methods for aligning it to a
+16-byte boundry.  You could ask, why doesn’t it just do this all in
+one subraction.  I have no idea why it does it this way, but I do know that
+when you compile with optimizations off, the compiler often does redundant
+things.  You might also ask why it reserves so much stack space for
+the one 32-bit local variable that actually exists in this main function.</p>
+
+<p>Your guess is as good as mine.  In the assembly listing we can see that
+the only local variable used is called <code>local_4h</code>, which is the value at
+<code>ebp - 0x4</code>, the <code>int</code> sized local variable that scanf parses our input
+into.</p>
+
+<h2 id="the-function-epilogue">The Function Epilogue</h2>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="asm"><span class="line"><span class="nf">mov</span> <span class="no">eax</span><span class="p">,</span> <span class="mi">0</span>
+</span><span class="line"><span class="nf">leave</span>
+</span><span class="line"><span class="nf">ret</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>The <code>leave</code> instruction is the same as <code>mov esp, ebp</code> <code>pop ebp</code>.  This
+effectively undoes all the stack resizing the prologue did, and then
+restores the base pointer to what it was before <code>main</code> was called.  Yep,
+there is another hidden function that calls <code>main()</code></p>
+
+<p>There is a register called <code>eip</code> that holds the address of the current
+instruction, but you can’t directly assign a value to it except to use
+a branching instruction or <code>ret</code>.  After <code>leave</code> is executed the next
+thing on the stack is the return address of the caller, <code>ret</code> pops that
+address into the <code>eip</code> register and execution continues from there.</p>
+
+<p>A function’s return value is always stored in the <code>eax</code> register, so
+<code>mov eax, 0</code> is the same as <code>return 0</code> at the end of <code>main()</code>.</p>
+
+<h2 id="back-to-scanf">Back to scanf</h2>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="asm"><span class="line"><span class="nf">lea</span> <span class="no">eax</span><span class="p">,</span> <span class="err">[</span><span class="no">ebp</span> <span class="p">-</span> <span class="no">local_4h</span><span class="err">]</span>
+</span><span class="line"><span class="nf">mov</span> <span class="no">dword</span> <span class="err">[</span><span class="no">esp</span> <span class="err">+</span> <span class="mi">4</span><span class="err">]</span><span class="p">,</span> <span class="no">eax</span>
+</span><span class="line"><span class="nf">mov</span> <span class="no">dword</span> <span class="err">[</span><span class="no">esp</span><span class="err">]</span><span class="p">,</span> <span class="mi">0x804854c</span>  <span class="err">;</span> <span class="err">&quot;</span><span class="nv">%d</span><span class="err">&quot;</span>
+</span><span class="line"><span class="nf">call</span> <span class="no">sym.imp.scanf</span>
+</span><span class="line"><span class="nf">cmp</span> <span class="no">dword</span> <span class="err">[</span><span class="no">ebp</span> <span class="p">-</span> <span class="no">local_4h</span><span class="err">]</span><span class="p">,</span> <span class="mi">0x149a</span>
+</span><span class="line"><span class="nf">je</span> <span class="mi">0x8048442</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>The first instruction, <code>lea</code> stands for load effective address, and is
+good at doing pointer arithmetic, calculating the address of elements
+inside arrays, and things like that.  <code>[ebp - 4]</code> is the address of the
+local <code>int</code> sized value on the stack we want <code>scanf</code> to write to.</p>
+
+<p><code>local_4h</code> is just a symbol radare uses to remind us what is in a memory
+location, and it allows us to rename it if we want, it just equals <code>4</code> in
+this case.</p>
+
+<p><code>0x804854c</code> is the address of the constant string “%d” located in the
+data section.  So this code is just moving the value <code>0x804854c</code> to
+the top of the stack, and the address of our local variable 4 bytes after that
+in reverse order that <code>scanf</code> takes them, then we <code>call</code> to <code>scanf</code>.</p>
+
+<p>At this point whatever we wrote, if it was a number, will be located at
+<code>[ebp - 4]</code>, and this value is compared with <code>0x149a</code>, if they are equal
+we jump to the “you win” screen.</p>
+
+<p>So that solves this crackme, all we need to type for a password is, in
+decimal <code>5274</code>.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">./crackme0x01
+</span><span class="line">IOLI Crackme Level 0x01
+</span><span class="line">Password: 5274
+</span><span class="line">Password OK :<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="crackme0x02">Crackme0x02</h2>
+
+<p>Ok, let’s hope they get a bit harder from here on, and this should go
+a lot faster without needing to explain the stack, etc.</p>
+
+<p>A quick run shows that <code>ltrace</code> is not going to help us this time, so
+back into radare we go.  I’ve renamed some of the local variable so it will
+be clearer what is happening after the <code>scanf</code>.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+</pre></td><td class="code"><pre><code class="asm"><span class="line"><span class="nf">call</span> <span class="no">sym.imp.scanf</span>
+</span><span class="line"><span class="nf">mov</span> <span class="no">dword</span> <span class="err">[</span><span class="no">ebp</span> <span class="p">-</span> <span class="no">a</span><span class="err">]</span><span class="p">,</span> <span class="mi">0x5a</span>
+</span><span class="line"><span class="nf">mov</span> <span class="no">dword</span> <span class="err">[</span><span class="no">ebp</span> <span class="p">-</span> <span class="no">b</span><span class="err">]</span><span class="p">,</span> <span class="mi">0x1ec</span>
+</span><span class="line"><span class="nf">mov</span> <span class="no">edx</span><span class="p">,</span> <span class="no">dword</span> <span class="err">[</span><span class="no">ebp</span> <span class="p">-</span> <span class="no">b</span><span class="err">]</span>
+</span><span class="line"><span class="nf">lea</span> <span class="no">eax</span><span class="p">,</span> <span class="err">[</span><span class="no">ebp</span> <span class="p">-</span> <span class="no">a</span><span class="err">]</span>
+</span><span class="line"><span class="nf">add</span> <span class="no">dword</span> <span class="err">[</span><span class="no">eax</span><span class="err">]</span><span class="p">,</span> <span class="no">edx</span>
+</span><span class="line"><span class="nf">mov</span> <span class="no">eax</span><span class="p">,</span> <span class="no">dword</span> <span class="err">[</span><span class="no">ebp</span> <span class="p">-</span> <span class="no">a</span><span class="err">]</span>
+</span><span class="line"><span class="nf">imul</span> <span class="no">eax</span><span class="p">,</span> <span class="no">dword</span> <span class="err">[</span><span class="no">ebp</span> <span class="p">-</span> <span class="no">a</span><span class="err">]</span>
+</span><span class="line"><span class="nf">mov</span> <span class="no">dword</span> <span class="err">[</span><span class="no">ebp</span> <span class="p">-</span> <span class="no">b</span><span class="err">]</span><span class="p">,</span> <span class="no">eax</span>
+</span><span class="line"><span class="nf">mov</span> <span class="no">eax</span><span class="p">,</span> <span class="no">dword</span> <span class="err">[</span><span class="no">ebp</span> <span class="p">-</span> <span class="no">number_entered</span><span class="err">]</span>
+</span><span class="line"><span class="nf">cmp</span> <span class="no">eax</span><span class="p">,</span> <span class="no">dword</span> <span class="err">[</span><span class="no">ebp</span> <span class="p">-</span> <span class="no">b</span><span class="err">]</span>
+</span><span class="line"><span class="nf">jne</span> <span class="mi">0x8048461</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>So we have 3 local variables, <code>number_entered</code>, <code>a</code>, and <code>b</code>.  Let’s translate
+this to C psuedocode and check what the condition for winning is.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+</pre></td><td class="code"><pre><code class="C"><span class="line"><span class="n">scanf</span><span class="p">(</span><span class="s">&quot;%d&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">number_entered</span><span class="p">);</span>
+</span><span class="line"><span class="n">a</span> <span class="o">=</span> <span class="mh">0x5a</span><span class="p">;</span>
+</span><span class="line"><span class="n">b</span> <span class="o">=</span> <span class="mh">0x1ec</span><span class="p">;</span>
+</span><span class="line"><span class="n">edx</span> <span class="o">=</span> <span class="n">b</span><span class="p">;</span>
+</span><span class="line"><span class="n">eax</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">;</span>
+</span><span class="line"><span class="o">*</span><span class="n">a</span> <span class="o">=</span> <span class="o">*</span><span class="n">eax</span> <span class="o">+</span> <span class="n">edx</span>
+</span><span class="line"><span class="n">eax</span> <span class="o">=</span> <span class="n">a</span><span class="p">;</span>
+</span><span class="line"><span class="n">eax</span> <span class="o">*=</span> <span class="n">a</span><span class="p">;</span>
+</span><span class="line"><span class="n">b</span> <span class="o">=</span> <span class="n">eax</span><span class="p">;</span>
+</span><span class="line"><span class="n">eax</span> <span class="o">=</span> <span class="n">number_entered</span><span class="p">;</span>
+</span><span class="line"><span class="k">if</span><span class="p">(</span><span class="n">eax</span> <span class="o">==</span> <span class="n">b</span><span class="p">)</span> <span class="k">goto</span> <span class="n">win</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>After doing that arithmetic and register shuffling, it turns out <code>b = 338724</code>, which
+is the password.</p>
+
+<h2 id="crackme0x03">Crackme0x03</h2>
+
+<p>In <code>crackme0x03</code> we have all the same stuff as in the previous, but now we’re calling
+a function <code>test(number_entered, b)</code> which will test the password.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class="asm"><span class="line"><span class="nf">mov</span> <span class="no">eax</span><span class="p">,</span> <span class="no">dword</span> <span class="err">[</span><span class="no">ebp</span> <span class="p">-</span> <span class="no">b</span><span class="err">]</span>
+</span><span class="line"><span class="nf">mov</span> <span class="no">dword</span> <span class="err">[</span><span class="no">esp</span> <span class="err">+</span> <span class="mi">4</span><span class="err">]</span><span class="p">,</span> <span class="no">eax</span>   <span class="err">;</span> <span class="no">pass</span> <span class="no">b</span>
+</span><span class="line"><span class="nf">mov</span> <span class="no">eax</span><span class="p">,</span> <span class="no">dword</span> <span class="err">[</span><span class="no">ebp</span> <span class="p">-</span> <span class="no">number_entered</span><span class="err">]</span>
+</span><span class="line"><span class="nf">mov</span> <span class="no">dword</span> <span class="err">[</span><span class="no">esp</span><span class="err">]</span><span class="p">,</span> <span class="no">eax</span>       <span class="err">;</span> <span class="no">pass</span> <span class="no">number_entered</span>
+</span><span class="line"><span class="nf">call</span> <span class="no">sym.test</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>So let’s have a look at this <code>test</code> function.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+</pre></td><td class="code"><pre><code class="asm"><span class="line"><span class="err">╒</span> <span class="err">(</span><span class="nf">fcn</span><span class="p">)</span> <span class="no">sym.test</span> <span class="mi">42</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">;</span> <span class="nf">arg</span> <span class="no">int</span> <span class="no">number_entered</span> <span class="err">@</span> <span class="no">ebp</span><span class="err">+</span><span class="mi">0x8</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">;</span> <span class="nf">arg</span> <span class="no">int</span> <span class="no">b</span>            <span class="err">@</span> <span class="no">ebp</span><span class="err">+</span><span class="mi">0xc</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">0</span><span class="nf">x0804846e</span>      <span class="mi">55</span>             <span class="no">push</span> <span class="no">ebp</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">0</span><span class="nf">x0804846f</span>      <span class="mi">89</span><span class="no">e5</span>           <span class="no">mov</span> <span class="no">ebp</span><span class="p">,</span> <span class="no">esp</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">0</span><span class="nf">x08048471</span>      <span class="mi">83</span><span class="no">ec08</span>         <span class="no">sub</span> <span class="no">esp</span><span class="p">,</span> <span class="mi">8</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">0</span><span class="nf">x08048474</span>      <span class="mi">8</span><span class="no">b4508</span>         <span class="no">mov</span> <span class="no">eax</span><span class="p">,</span> <span class="no">dword</span> <span class="err">[</span><span class="no">ebp</span><span class="err">+</span><span class="no">number_entered</span><span class="err">]</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">0</span><span class="nf">x08048477</span>      <span class="mi">3</span><span class="no">b450c</span>         <span class="no">cmp</span> <span class="no">eax</span><span class="p">,</span> <span class="no">dword</span> <span class="err">[</span><span class="no">ebp</span><span class="err">+</span><span class="no">b</span><span class="err">]</span>
+</span><span class="line"><span class="err">│</span>       <span class="err">┌─&lt;</span> <span class="err">0</span><span class="nf">x0804847a</span>      <span class="mi">740</span><span class="no">e</span>           <span class="no">je</span> <span class="mi">0x804848a</span>
+</span><span class="line"><span class="err">│</span>       <span class="err">│</span>   <span class="err">0</span><span class="nf">x0804847c</span>      <span class="no">c70424ec8504.</span>  <span class="no">mov</span> <span class="no">dword</span> <span class="err">[</span><span class="no">esp</span><span class="err">]</span><span class="p">,</span> <span class="no">str.Lqydolg_Sdvvzrug_</span>
+</span><span class="line"><span class="err">│</span>       <span class="err">│</span>   <span class="err">0</span><span class="nf">x08048483</span>      <span class="no">e88cffffff</span>     <span class="no">call</span> <span class="no">sym.shift</span>
+</span><span class="line"><span class="err">│</span>      <span class="err">┌──&lt;</span> <span class="err">0</span><span class="nf">x08048488</span>      <span class="no">eb0c</span>           <span class="no">jmp</span> <span class="mi">0x8048496</span>
+</span><span class="line"><span class="err">│</span>      <span class="err">│└─&gt;</span> <span class="err">0</span><span class="nf">x0804848a</span>      <span class="no">c70424fe8504.</span>  <span class="no">mov</span> <span class="no">dword</span> <span class="err">[</span><span class="no">esp</span><span class="err">]</span><span class="p">,</span> <span class="no">str.Sdvvzrug_RN______</span>
+</span><span class="line"><span class="err">│</span>      <span class="err">│</span>    <span class="err">0</span><span class="nf">x08048491</span>      <span class="no">e87effffff</span>     <span class="no">call</span> <span class="no">sym.shift</span>
+</span><span class="line"><span class="err">│</span>      <span class="err">└──&gt;</span> <span class="err">0</span><span class="nf">x08048496</span>      <span class="no">c9</span>             <span class="no">leave</span>
+</span><span class="line"><span class="err">╘</span>           <span class="err">0</span><span class="nf">x08048497</span>      <span class="no">c3</span>             <span class="no">ret</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Ok so what’s going on in here.  First thing I see is 8 bytes allocated on the stack and
+then never used (for some reason), and I see our two arguments coming in at <code>epb + 0x8</code>
+and <code>ebp + 0xc</code> which I’ve renamed to match the calling code.</p>
+
+<p>We then compare <code>number_entered</code> and <code>b</code> for equality, which chooses one or another
+string containing giberish to be passed to the function <code>shift()</code>.  In either case
+the return value of <code>test()</code> is not checked, and we return from the <code>test()</code> function.</p>
+
+<p>Let’s check the actual contents of these gibberish strings out in radare with the <code>ps</code>
+command to print strings.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">ps @ str.Lqydolg_Sdvvzrug_
+</span><span class="line">Lqydolg#Sdvvzrug<span class="err">$</span>
+</span><span class="line">ps @ str.Sdvvzrug_RN______
+</span><span class="line">Sdvvzrug#RN<span class="nv">$$$#=</span>,
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Let’s remember that, and have a look at the <code>shift()</code> function which I’m going to
+guess is going to decrypt these strings somehow.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+</pre></td><td class="code"><pre><code class="asm"><span class="line"><span class="err">│</span>           <span class="err">;</span> <span class="nf">arg</span> <span class="no">int</span> <span class="no">string</span>       <span class="err">@</span> <span class="no">ebp</span><span class="err">+</span><span class="mi">0x8</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">;</span> <span class="nf">arg</span> <span class="no">int</span> <span class="no">arg_13h</span>      <span class="err">@</span> <span class="no">ebp</span><span class="err">+</span><span class="mi">0x13</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">;</span> <span class="nf">var</span> <span class="no">int</span> <span class="no">decrypted</span>    <span class="err">@</span> <span class="no">ebp-0x78</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">;</span> <span class="nf">var</span> <span class="no">int</span> <span class="no">counter</span>      <span class="err">@</span> <span class="no">ebp-0x7c</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">;</span> <span class="nf">CALL</span> <span class="no">XREF</span> <span class="no">from</span> <span class="mi">0x08048491</span> <span class="p">(</span><span class="no">sym.shift</span><span class="p">)</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">;</span> <span class="nf">CALL</span> <span class="no">XREF</span> <span class="no">from</span> <span class="mi">0x08048483</span> <span class="p">(</span><span class="no">sym.shift</span><span class="p">)</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">0</span><span class="nf">x08048414</span>      <span class="mi">55</span>             <span class="no">push</span> <span class="no">ebp</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">0</span><span class="nf">x08048415</span>      <span class="mi">89</span><span class="no">e5</span>           <span class="no">mov</span> <span class="no">ebp</span><span class="p">,</span> <span class="no">esp</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">0</span><span class="nf">x08048417</span>      <span class="mi">81</span><span class="no">ec98000000</span>   <span class="no">sub</span> <span class="no">esp</span><span class="p">,</span> <span class="mi">0x98</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">0</span><span class="nf">x0804841d</span>      <span class="no">c74584000000.</span>  <span class="no">mov</span> <span class="no">dword</span> <span class="err">[</span><span class="no">ebp</span> <span class="p">-</span> <span class="no">counter</span><span class="err">]</span><span class="p">,</span> <span class="mi">0</span>
+</span><span class="line"><span class="err">│</span>       <span class="err">┌─&gt;</span> <span class="err">0</span><span class="nf">x08048424</span>      <span class="mi">8</span><span class="no">b4508</span>         <span class="no">mov</span> <span class="no">eax</span><span class="p">,</span> <span class="no">dword</span> <span class="err">[</span><span class="no">ebp</span><span class="err">+</span><span class="no">string</span><span class="err">]</span>
+</span><span class="line"><span class="err">│</span>       <span class="err">│</span>   <span class="err">0</span><span class="nf">x08048427</span>      <span class="mi">890424</span>         <span class="no">mov</span> <span class="no">dword</span> <span class="err">[</span><span class="no">esp</span><span class="err">]</span><span class="p">,</span> <span class="no">eax</span>
+</span><span class="line"><span class="err">│</span>       <span class="err">│</span>   <span class="err">0</span><span class="nf">x0804842a</span>      <span class="no">e811ffffff</span>     <span class="no">call</span> <span class="no">sym.imp.strlen</span>
+</span><span class="line"><span class="err">│</span>       <span class="err">│</span>   <span class="err">0</span><span class="nf">x0804842f</span>      <span class="mi">394584</span>         <span class="no">cmp</span> <span class="no">dword</span> <span class="err">[</span><span class="no">ebp</span> <span class="p">-</span> <span class="no">counter</span><span class="err">]</span><span class="p">,</span> <span class="no">eax</span>
+</span><span class="line"><span class="err">│</span>      <span class="err">┌──&lt;</span> <span class="err">0</span><span class="nf">x08048432</span>      <span class="mi">731</span><span class="no">c</span>           <span class="no">jae</span> <span class="mi">0x8048450</span>
+</span><span class="line"><span class="err">│</span>      <span class="err">││</span>   <span class="err">0</span><span class="nf">x08048434</span>      <span class="mi">8</span><span class="no">d4588</span>         <span class="no">lea</span> <span class="no">eax</span><span class="p">,</span> <span class="err">[</span><span class="no">ebp</span> <span class="p">-</span> <span class="no">decrypted</span><span class="err">]</span>
+</span><span class="line"><span class="err">│</span>      <span class="err">││</span>   <span class="err">0</span><span class="nf">x08048437</span>      <span class="mi">89</span><span class="no">c2</span>           <span class="no">mov</span> <span class="no">edx</span><span class="p">,</span> <span class="no">eax</span>
+</span><span class="line"><span class="err">│</span>      <span class="err">││</span>   <span class="err">0</span><span class="nf">x08048439</span>      <span class="mi">035584</span>         <span class="no">add</span> <span class="no">edx</span><span class="p">,</span> <span class="no">dword</span> <span class="err">[</span><span class="no">ebp</span> <span class="p">-</span> <span class="no">counter</span><span class="err">]</span>
+</span><span class="line"><span class="err">│</span>      <span class="err">││</span>   <span class="err">0</span><span class="nf">x0804843c</span>      <span class="mi">8</span><span class="no">b4584</span>         <span class="no">mov</span> <span class="no">eax</span><span class="p">,</span> <span class="no">dword</span> <span class="err">[</span><span class="no">ebp</span> <span class="p">-</span> <span class="no">counter</span><span class="err">]</span>
+</span><span class="line"><span class="err">│</span>      <span class="err">││</span>   <span class="err">0</span><span class="nf">x0804843f</span>      <span class="mi">034508</span>         <span class="no">add</span> <span class="no">eax</span><span class="p">,</span> <span class="no">dword</span> <span class="err">[</span><span class="no">ebp</span><span class="err">+</span><span class="no">string</span><span class="err">]</span>
+</span><span class="line"><span class="err">│</span>      <span class="err">││</span>   <span class="err">0</span><span class="nf">x08048442</span>      <span class="mi">0</span><span class="no">fb600</span>         <span class="no">movzx</span> <span class="no">eax</span><span class="p">,</span> <span class="no">byte</span> <span class="err">[</span><span class="no">eax</span><span class="err">]</span>
+</span><span class="line"><span class="err">│</span>      <span class="err">││</span>   <span class="err">0</span><span class="nf">x08048445</span>      <span class="mi">2</span><span class="no">c03</span>           <span class="no">sub</span> <span class="no">al</span><span class="p">,</span> <span class="mi">3</span>
+</span><span class="line"><span class="err">│</span>      <span class="err">││</span>   <span class="err">0</span><span class="nf">x08048447</span>      <span class="mi">8802</span>           <span class="no">mov</span> <span class="no">byte</span> <span class="err">[</span><span class="no">edx</span><span class="err">]</span><span class="p">,</span> <span class="no">al</span>
+</span><span class="line"><span class="err">│</span>      <span class="err">││</span>   <span class="err">0</span><span class="nf">x08048449</span>      <span class="mi">8</span><span class="no">d4584</span>         <span class="no">lea</span> <span class="no">eax</span><span class="p">,</span> <span class="err">[</span><span class="no">ebp</span> <span class="p">-</span> <span class="no">counter</span><span class="err">]</span>
+</span><span class="line"><span class="err">│</span>      <span class="err">││</span>   <span class="err">0</span><span class="nf">x0804844c</span>      <span class="no">ff00</span>           <span class="no">inc</span> <span class="no">dword</span> <span class="err">[</span><span class="no">eax</span><span class="err">]</span>
+</span><span class="line"><span class="err">│</span>      <span class="err">│└─&lt;</span> <span class="err">0</span><span class="nf">x0804844e</span>      <span class="no">ebd4</span>           <span class="no">jmp</span> <span class="mi">0x8048424</span>
+</span><span class="line"><span class="err">│</span>      <span class="err">└──&gt;</span> <span class="err">0</span><span class="nf">x08048450</span>      <span class="mi">8</span><span class="no">d4588</span>         <span class="no">lea</span> <span class="no">eax</span><span class="p">,</span> <span class="err">[</span><span class="no">ebp</span> <span class="p">-</span> <span class="no">decrypted</span><span class="err">]</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">0</span><span class="nf">x08048453</span>      <span class="mi">034584</span>         <span class="no">add</span> <span class="no">eax</span><span class="p">,</span> <span class="no">dword</span> <span class="err">[</span><span class="no">ebp</span> <span class="p">-</span> <span class="no">counter</span><span class="err">]</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">0</span><span class="nf">x08048456</span>      <span class="no">c60000</span>         <span class="no">mov</span> <span class="no">byte</span> <span class="err">[</span><span class="no">eax</span><span class="err">]</span><span class="p">,</span> <span class="mi">0</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">0</span><span class="nf">x08048459</span>      <span class="mi">8</span><span class="no">d4588</span>         <span class="no">lea</span> <span class="no">eax</span><span class="p">,</span> <span class="err">[</span><span class="no">ebp</span> <span class="p">-</span> <span class="no">decrypted</span><span class="err">]</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">0</span><span class="nf">x0804845c</span>      <span class="mi">89442404</span>       <span class="no">mov</span> <span class="no">dword</span> <span class="err">[</span><span class="no">esp</span> <span class="err">+</span> <span class="mi">4</span><span class="err">]</span><span class="p">,</span> <span class="no">eax</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">0</span><span class="nf">x08048460</span>      <span class="no">c70424e88504.</span>  <span class="no">mov</span> <span class="no">dword</span> <span class="err">[</span><span class="no">esp</span><span class="err">]</span><span class="p">,</span> <span class="mi">0x80485e8</span>  <span class="err">;</span> <span class="err">&quot;</span><span class="nv">%s.</span><span class="err">&quot;</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">0</span><span class="nf">x08048467</span>      <span class="no">e8e4feffff</span>     <span class="no">call</span> <span class="no">sym.imp.printf</span>
+</span><span class="line"><span class="err">│</span>           <span class="err">0</span><span class="nf">x0804846c</span>      <span class="no">c9</span>             <span class="no">leave</span>
+</span><span class="line"><span class="err">╘</span>           <span class="err">0</span><span class="nf">x0804846d</span>      <span class="no">c3</span>             <span class="no">ret</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>I’ve renamed the local stack variables to be what I believe their purpose is.
+This is a bigger function than we’ve seen so far, this loop pattern we see
+here is what a <code>for</code> loop looks like in assembly.  You can see how <code>counter</code>
+is initialized to <code>0</code>, then a condition is checked which either processes
+the body and increments <code>counter</code>, or it jumps out of the loop.</p>
+
+<p>I guess is going to iterate over the string that was passed in, and probably
+“decrypt” it.  Maybe it will help if we translate this back into C.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+</pre></td><td class="code"><pre><code class="c"><span class="line"><span class="kt">void</span> <span class="nf">shift</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">string</span><span class="p">){</span>
+</span><span class="line">  <span class="kt">char</span> <span class="n">decrypted</span><span class="p">[</span><span class="mi">120</span><span class="p">];</span>
+</span><span class="line">  <span class="kt">int</span> <span class="n">counter</span><span class="p">;</span>
+</span><span class="line">  <span class="k">for</span><span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">strlen</span><span class="p">(</span><span class="n">string</span><span class="p">);</span> <span class="o">++</span><span class="n">i</span><span class="p">){</span>
+</span><span class="line">    <span class="n">decrypted</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">string</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="mi">3</span><span class="p">;</span>
+</span><span class="line">  <span class="p">}</span>
+</span><span class="line">  <span class="n">decrypted</span><span class="p">[</span><span class="n">counter</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span>
+</span><span class="line">  <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%s.&quot;</span><span class="p">,</span> <span class="n">decrypted</span><span class="p">);</span>
+</span><span class="line"><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>All it did was subtract <code>3</code> from the ascii code of the gibberish string, which
+is why we say it is “decrypting” in quotes :)  Remember we still have not run
+this binary yet, so let’s just write up a quick Ruby script to see what the
+giberish decodes to.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line"><span class="s2">&quot;Lqydolg#Sdvvzrug$&quot;</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">map</span> <span class="k">do</span> <span class="o">|</span><span class="n">c</span><span class="o">|</span>
+</span><span class="line">  <span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">ord</span> <span class="o">-</span> <span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">chr</span>
+</span><span class="line"><span class="k">end</span><span class="o">.</span><span class="n">join</span>
+</span><span class="line"> <span class="o">=&gt;</span> <span class="s2">&quot;Invalid Password!&quot;</span>
+</span><span class="line"><span class="s2">&quot;Sdvvzrug#RN$$$#=,&quot;</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">map</span> <span class="k">do</span> <span class="o">|</span><span class="n">c</span><span class="o">|</span>
+</span><span class="line">  <span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">ord</span> <span class="o">-</span> <span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">chr</span><span class="p">}</span><span class="o">.</span><span class="n">join</span>
+</span><span class="line"><span class="k">end</span>
+</span><span class="line"><span class="o">=&gt;</span> <span class="s2">&quot;Password OK!!! :)&quot;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Ok so we’ve learned that if the password you enter is equal to the variable
+calculated to <code>b</code>, we will select and decode the “Password Ok” string, and win,
+that was pretty obvious from before even looking at this function, but we got
+to make sure we got to the bottom of each function.  So if I remember right,
+<code>b</code> was <code>338724</code>, the same password as last time, real sneaky guys.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">./crackme0x03
+</span><span class="line">IOLI Crackme Level 0x02
+</span><span class="line">Password: 338724
+</span><span class="line">Password OK :<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Safiire</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-04-12T16:27:26-07:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/fun/'>fun</a>, <a class='category' href='/blog/categories/radare2/'>radare2</a>, <a class='category' href='/blog/categories/reverse-engineering/'>reverse engineering</a>
+  
+</span>
+
+
+    </p>
+    
+      
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/02/10/glsl-shaders-with-webgl/" title="Previous Post: GLSL Shaders with WebGL">&laquo; GLSL Shaders with WebGL</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/04/12/reversing-crackme-challenges/">Reversing Crackme Challenges</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/02/10/glsl-shaders-with-webgl/">GLSL Shaders With WebGL</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/29/creating-sound-on-the-nes/">Creating Sound on the NES</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/17/matrices-as-linear-operations/">Matrices as Linear Operators</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/12/13/building-my-shruthi-1/">Building My Shruthi-1</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/safiire">@safiire</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'safiire',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2017 - Safiire
+</p>
+
+</footer>
+  
+
+
+</body>
+</html>

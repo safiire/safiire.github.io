@@ -1,0 +1,724 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Math | Irken Kitties]]></title>
+  <link href="http://irkenkitties.com/blog/categories/math/atom.xml" rel="self"/>
+  <link href="http://irkenkitties.com/"/>
+  <updated>2017-06-29T16:17:35-07:00</updated>
+  <id>http://irkenkitties.com/</id>
+  <author>
+    <name><![CDATA[Safiire]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Matrices as Linear Operators]]></title>
+    <link href="http://irkenkitties.com/blog/2014/10/17/matrices-as-linear-operations/"/>
+    <updated>2014-10-17T07:57:55+00:00</updated>
+    <id>http://irkenkitties.com/blog/2014/10/17/matrices-as-linear-operations</id>
+    <content type="html"><![CDATA[<p>Since they are my favourite, let’s learn something neat about matrices, something that can also
+serve as the first post on this new blog of mine about math, programming, and DSP.</p>
+
+<!-- more -->
+
+<h2 id="matrix-multiplication-as-a-linear-operator">Matrix Multiplication as a Linear Operator</h2>
+
+<p>It turns out that matrix multiplication can be used to perform any linear mathematical operation, and
+a whole lot of interesting things are linear.  Geometrically speaking, scaling, rotation, and skewing 
+are linear operations.</p>
+
+<p>First let’s say we want to model multiplication of two complex numbers by matrices. First we need some
+complex numbers to multiply, and I happen to like $(3 + 4i) \cdot i$.</p>
+
+<p>So that is pretty easy it is just polynomial multiplication, so we distribute $i$ onto both terms.</p>
+
+<p><img class="center" src="/images/math/complex_rotation.png"></p>
+
+<script type="math/tex; mode=display">(3 + 4i) \cdot i \\
+  4i^2 + 3i \\
+  4 \cdot (-1) + 3i \\
+  -4 + 3i \\</script>
+
+<p>Yep, multiplying by $i$ is a rotation $90^{\circ}$ counter clockwise. So anyways the thing I think is cool, 
+is how it can be represented as a matrix multiply instead of looking like a polynomial multiply.</p>
+
+<h2 id="identity-operation">Identity Operation</h2>
+
+<p>The identiy matrix, the matrix that if you multiply by it, it is basically a no-op, why does it act like
+that, and why is it shaped the way it is?  Say you have this matrix multiply:</p>
+
+<script type="math/tex; mode=display">% &lt;![CDATA[
+\begin{bmatrix} 
+  c & 0 \\ 
+  0 & c 
+\end{bmatrix}
+
+\cdot
+
+\begin{bmatrix} 
+  a \\ 
+  b 
+\end{bmatrix}
+
+= 
+
+\begin{bmatrix} 
+  c \cdot a + 0 \cdot b \\ 
+  0 \cdot a + c \cdot b
+\end{bmatrix}
+
+= 
+
+\begin{bmatrix} 
+  ca  \\ 
+  cb
+\end{bmatrix} %]]&gt;</script>
+
+<p>If $c = 1$ then there is your identity operation.  But did you ever think:</p>
+
+<blockquote>
+  <p>What are these rows and columns in a matrix really all about?</p>
+</blockquote>
+
+<p>Say you view that $2x2$ matrix as two unit length column vectors sitting side by side.</p>
+
+<script type="math/tex; mode=display">% &lt;![CDATA[
+\begin{bmatrix} 
+  1 & 0    \\ 
+  0 & 1 
+\end{bmatrix} %]]&gt;</script>
+
+<p>The first column $\begin{bmatrix} 1 &amp; 0 \end{bmatrix}^{T}$ and the second column 
+$\begin{bmatrix} 0 &amp; 1 \end{bmatrix}^{T}$ are exactly the basis vectors which define and span 
+$\mathbb{R}^{2}$.  Otherwise known as either the x-y or real-imaginary axis.</p>
+
+<h2 id="change-of-basis">Change of Basis</h2>
+
+<p>So we saw that multiplication by the identity matrix performs no operation at all, because there
+is just no change to the basis vectors for that space $\mathbb{R}^{2}$.  We also saw if we perform
+a simple change of basis where we scale by $c$, it just scales everything by $c$. The
+diagonal numbers don’t have to be the same as each other either, if they were different you would get a 
+skewing operation instead of a scaling operation.</p>
+
+<script type="math/tex; mode=display">% &lt;![CDATA[
+\begin{bmatrix} 
+  2 & 0 \\ 
+  0 & 4 
+\end{bmatrix}
+
+\cdot
+
+\begin{bmatrix} 
+  a \\ 
+  b 
+\end{bmatrix}
+
+= 
+
+\begin{bmatrix} 
+  2 \cdot a + 0 \cdot b \\ 
+  0 \cdot a + 4 \cdot b
+\end{bmatrix}
+
+= 
+
+\begin{bmatrix} 
+  2a  \\ 
+  4b
+\end{bmatrix} %]]&gt;</script>
+
+<p>Great, so what do the other numbers on the opposite diagonal that have always been $0$ up to this
+point do?  Those numbers let you perform rotations.</p>
+
+<h2 id="time-to-define-the-i-matrix">Time to Define the $i$ Matrix</h2>
+
+<p>If we take the two column matrices we are using as our basis, and rotate them counter clockwise 
+by $90^{\circ}$, which should be easy because they are so simple, we should get the new basis we’re
+looking for.</p>
+
+<script type="math/tex; mode=display">% &lt;![CDATA[
+identity =
+\begin{bmatrix} 
+  1 & 0    \\ 
+  0 & 1 
+\end{bmatrix}
+
+and, \\
+
+i =
+\begin{bmatrix} 
+  0 & -1    \\ 
+  1 & 0 
+\end{bmatrix} %]]&gt;</script>
+
+<p>You can see how the first column, instead of being a vector pointing horizontally, is now pointing vertically,
+and how the second column, which used to, by chance be pointing vertically is now pointing horizontally but in
+the negative direction, each vector is pointing $90^{\circ}$ counter clockwise to where it used to be pointing.</p>
+
+<p>So what that means, is since we’ve rotated each component $90^{\circ}$ anything vector we multiply by $i$ will also 
+rotate in the same way.</p>
+
+<h2 id="square-root-of-negative-one">Square Root of Negative One</h2>
+
+<p>This should totally be true of a matrix that we decide to name $i$, that is $i^2 = -1$, or well it should 
+equal the matrix version of $-1$.</p>
+
+<script type="math/tex; mode=display">% &lt;![CDATA[
+\begin{bmatrix} 
+  0 & -1    \\ 
+  1 & 0 
+\end{bmatrix}
+
+\cdot
+
+\begin{bmatrix} 
+  0 & -1    \\ 
+  1 & 0 
+\end{bmatrix}
+
+= 
+
+\begin{bmatrix} 
+  -1 & 0    \\ 
+  0 & -1 
+\end{bmatrix} %]]&gt;</script>
+
+<p>Further proof that this makes any sense:</p>
+
+<script type="math/tex; mode=display">% &lt;![CDATA[
+\begin{bmatrix} 
+  0 & -1    \\ 
+  1 & 0 
+\end{bmatrix}
+
+\cdot
+
+\begin{bmatrix} 
+  3    \\ 
+  4 
+\end{bmatrix}
+
+= 
+
+\begin{bmatrix} 
+  -4  \\ 
+  3
+\end{bmatrix} %]]&gt;</script>
+
+<p>Just as the old “graph paper” example predicted.  So, I am pretty happy with my explaination of this phenomenon.
+I have to admit I am <em>just</em> getting used to this Mathjax Latex formatting stuff.</p>
+
+<p>Normally I am happy with a code example, so here is a Ruby example of the same thing:</p>
+
+<h2 id="ruby-example">Ruby example</h2>
+
+<p>&#8220;` ruby
+require ‘matrix’</p>
+
+<p>v = Vector[3, 4]</p>
+
+<p>i = Matrix.columns([[0, 1],[-1, 0]])
+i * Vector[3, 4]</p>
+
+<p>=&gt; Vector[-4, 3]</p>
+
+<p>i * i
+=&gt; Matrix[[-1, 0], [0, -1]]
+&#8220;`</p>
+
+<h2 id="other-rotations">Other Rotations</h2>
+
+<p>We don’t alway want to rotate by $90^{\circ}$, but there is an equation that will let us create a matrix
+for any arbitrary rotation by $\omega$ radians.  And that happens to look like this:</p>
+
+<script type="math/tex; mode=display">% &lt;![CDATA[
+\begin{bmatrix} 
+  cos(\omega) & -sin(\omega) \\
+  sin(\omega) &  cos(\omega) \\
+\end{bmatrix} %]]&gt;</script>
+
+<p>Let’s write a Ruby method to create rotation matrices for us, just by passing an angle in radians.</p>
+
+<p>&#8220;` ruby
+require ‘matrix’</p>
+
+<p>def create_rotation_matrix(w)
+  sin_w = Math.sin(w)
+  cos_w = Math.cos(w)
+  Matrix.columns([
+      [cos_w,  sin_w],
+      [-sin_w, cos_w]]
+  )
+end</p>
+
+<p>w = Math::PI / 4.0
+=&gt; 0.7853981633974483</p>
+
+<p>forty_five = create_rotation_matrix(w)
+=&gt; Matrix[[0.7071067811865476, -0.7071067811865475], [0.7071067811865475, 0.7071067811865476]]</p>
+
+<p>v = Vector[3, 4]</p>
+
+<p>forty_five * v
+=&gt; Vector[-0.707106781186547, 4.949747468305833]</p>
+
+<h2 id="nice-and-rotate-by-45-degrees-twice">Nice, and rotate by 45 degrees twice?</h2>
+<p>forty_five * forty_five * v
+=&gt; Vector[-3.999999999999999, 3.000000000000001]</p>
+
+<h2 id="now-thats-a-computer-close-type-of-answer-if-i-ever-saw-one-">Now that’s a “computer close” type of answer if I ever saw one :)</h2>
+<p>##  Very close to Vector[-4, 3]</p>
+
+<p>&#8220;`</p>
+
+<h2 id="matrix-form">Matrix Form</h2>
+
+<p>Now that we’ve established all that stuff about complex numbers and matrices works we sort of
+have a formula for represeenting a complex number as a matrix.</p>
+
+<script type="math/tex; mode=display">% &lt;![CDATA[
+3 + 4i = 
+
+  \begin{bmatrix} 
+    3 & -4 \\
+    4 &  3
+  \end{bmatrix} %]]&gt;</script>
+
+<p>So what happens if we use some other sorta pattern besides that?   What if we use some other dimension besides
+the imaginary dimension?  What if that dimension was infinitesimal.  Most people learn calculus by learning
+about limits first, but for some reason I didn’t, I learned on my own, and the first calculus textbook that
+made sense to me taught derivitives using infinitesimals, it’s really similar in some ways, but revolves around
+the number $\varepsilon$</p>
+
+<h2 id="derivitives">Derivitives</h2>
+
+<p>Derivitives calculate the slope at one point on a curve, when it takes two actual points to calculate a slope,
+“Rise over Run” style.  Usually you see a formula for derivitive using a variable $h$ or $\Delta x$, and take the limit as
+it goes to 0</p>
+
+<script type="math/tex; mode=display">f'(x) = \lim\limits_{\Delta x \to 0} \dfrac{f(x+\Delta x)-f(x)}{\Delta x}</script>
+
+<p>…but in this “style” of calculus, instead of that, you use $\varepsilon$ where $\varepsilon^{2} = 0$.
+In math, they say that if there is some positive integer $n$ where $x^n = 0$ then you would call $x$ a nilpotent number</p>
+
+<p>So, example:</p>
+
+<script type="math/tex; mode=display">f(x) = x^2    \\ \\
+
+  f'(x) = \dfrac{f(x + \varepsilon) - f(x)}{\varepsilon}   \\ \\
+
+  f'(x) = \dfrac{(x + \varepsilon)^{2} - x^{2}}{\varepsilon} \\ \\
+
+  f'(x) = \dfrac{x^{2} + x\varepsilon + x\varepsilon + \varepsilon^{2} - x^{2}}{\varepsilon} \\ \\ 
+
+  f'(x) = \dfrac{2x\varepsilon}{\varepsilon} \\ \\
+
+  f'(x) = 2x</script>
+
+<p>And that all worked out correctly, because $2x$ is totally the derivitive of $x^{2}$.  The key to that working
+out was that we defined $\varepsilon^{2} = 0$, which is something that totally reminds me of defining $i^{2} = -1$.</p>
+
+<h2 id="dual-numbers">Dual Numbers</h2>
+
+<p>Like a complex number has the form $a + bi$, a dual number has the form $a + b\varepsilon$.  The imaginary number $i$
+has magic powers, in that it can magically do rotations that you would normally have to use trigonometry for, but
+a dual number, has the magic power that it can automatically calculate the derivitive of a function.</p>
+
+<p>All you need to do to simultaneously calculate the value of a function, and its derivitive, is pass the function
+a value of $x + \varepsilon$, that’s whatever $x$ happens to be + $1\varepsilon$.</p>
+
+<p>Simple example again.</p>
+
+<script type="math/tex; mode=display">f(x) = x^2    \\ \\
+
+  f(x + \varepsilon) = (x + \varepsilon)^{2} \\ \\
+
+  f(x + \varepsilon) = x^{2} + x\varepsilon + x\varepsilon + \varepsilon^{2} \\ \\
+
+  f(x + \varepsilon) = x^{2} + 2x\varepsilon</script>
+
+<p>The result of the function is another dual number, the real part of which is $x^{2}$, and the dual part is $2x$,
+which the value and derivitive at $f(x)$ and $f’(x)$ respectively.</p>
+
+<h2 id="dual-numbers-as-matrices">Dual Numbers as Matrices</h2>
+
+<p>So just like we can encode a complex number into a 2x2 matrix, we can also encode a dual number in a similar way.</p>
+
+<script type="math/tex; mode=display">% &lt;![CDATA[
+\varepsilon = 
+
+  \begin{bmatrix} 
+    0 &  1 \\
+    0 &  0
+  \end{bmatrix}  \\ \\ %]]&gt;</script>
+
+<p>So if we multiply $\varepsilon \cdot \varepsilon$, we should get 0.</p>
+
+<script type="math/tex; mode=display">% &lt;![CDATA[
+\begin{bmatrix} 
+    0 &  1 \\
+    0 &  0
+  \end{bmatrix} 
+
+  \cdot
+
+  \begin{bmatrix} 
+    0 &  1 \\
+    0 &  0
+  \end{bmatrix} 
+
+  = 
+
+  \begin{bmatrix} 
+    0 \cdot 0 + 1 \cdot 0 &  0 \cdot 1 + 1 \cdot 0 \\
+    0 \cdot 0 + 0 \cdot 0 &  0 \cdot 1 + 0 \cdot 0
+  \end{bmatrix} 
+
+  =
+
+  \begin{bmatrix} 
+    
+    0 &  0 \\
+    0 &  0
+  \end{bmatrix} %]]&gt;</script>
+
+<h2 id="ruby-class-for-dual-numbers">Ruby Class for Dual Numbers</h2>
+
+<p><code>ruby 
+####
+##  Here is a class that implements Dual numbers, with addition,
+##  multiplication, and exponentiation
+class Dual
+    attr_accessor :matrix
+    def initialize(real, dual)
+        @matrix = Matrix[[real, dual], [0, real]]
+    end
+    def +(other)
+        result = @matrix + other.matrix
+        Dual.new(result[0, 0], result[0, 1])
+    end
+    def *(other)
+        result = @matrix * other.matrix
+        Dual.new(result[0, 0], result[0, 1])
+    end
+    def **(exponent)
+        result = @matrix**exponent
+        Dual.new(result[0, 0], result[0, 1])
+    end
+    def to_s
+        "#{real} + #{dual}ε"
+    end
+    def inspect
+        to_s
+    end
+    def real
+        @matrix[0, 0]
+    end
+    def dual
+        @matrix[0, 1]
+    end
+end
+#
+####
+##  Now let's have f(x) = x**2
+def f(x)
+    x**2
+end
+####
+##  Let's print a few values of this function
+print "f(x) = "
+p (0..15).map{|x| f(x) }
+## This prints:
+## f(x) = [0, 1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169, 196, 225]
+#  
+#  
+####
+##  Now lets run function f on a dual number, f(x + ε)
+print "f(x + ε) = "
+p (0..15).map{|x| f(Dual.new(x, 1)) }
+# 
+# 
+##  This prints
+##  f(x + ε) = [0 + 0ε, 1 + 2ε, 4 + 4ε, 9 + 6ε, 16 + 8ε, 25 + 10ε, 36 + 12ε, 
+##              49 + 14ε, 64 + 16ε, 81 + 18ε, 100 + 20ε, 121 + 22ε, 144 + 24ε, 
+##              169 + 26ε, 196 + 28ε, 225 + 30ε]
+# 
+# 
+##  The real part of the dual number in f(x + ε) is exactly the same as f(x)
+##  Let's just print out the dual component instead
+# 
+print "Dual{f(x + ε)} = "
+p (0..15).map{|x| f(Dual.new(x, 1)).dual }
+# 
+# 
+##  This prints
+##  Dual{f(x + ε)} = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30]
+</code></p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>I dunno, thought that was pretty cool.  Actually the more I figure out about matrices
+the more I am understanding how they can be used to implement any linear operator.  Actually the reasoning
+behind me even caring about matrices or linear operators at all (or math really), is that works together
+well with my obsession for digital audio filters.  Because a digital filter is usually a linear operation, yep,
+matrices can be used to calculate filters :)  Hopefully I will get more into describing how filters work in
+future blog posts.</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Consonant Intervals and Orthogonality]]></title>
+    <link href="http://irkenkitties.com/blog/2012/11/28/consonant-intervals-and-orthogonality/"/>
+    <updated>2012-11-28T01:46:00-08:00</updated>
+    <id>http://irkenkitties.com/blog/2012/11/28/consonant-intervals-and-orthogonality</id>
+    <content type="html"><![CDATA[<p>In this article I am going to explore some factors which are involved in the perception of
+consonance and dissonance of notes in the chromatic and major musical scales.  The distance 
+between two notes is called an interval, and there are 12 notes in the western chromatic scale.
+There are two common methods of calculating the frequencies of these notes.</p>
+
+<h2 id="equal-temperment">Equal Temperment</h2>
+
+<p>The most common method used in modern times is called Equal Temperment.  In this tuning, each
+adjacent note is related by the ratio of a 12th root of 2 or:</p>
+
+<script type="math/tex; mode=display">2^{1/12} = 1.0594630943592953...</script>
+
+<p>Starting from <code>A 440hz</code> and calculating each of the 12 notes of the chromatic scale up to the
+next A, looks like this:</p>
+
+<p><code>ruby Equal Tempered Note Frequencies
+r = 2.**(1/12.0)
+start_note = 440.0
+1.upto(12).map {|interval| start_note *= r }
+=&gt; [466.1637615180899, 493.8833012561241, 523.2511306011974, 
+    554.3652619537443, 587.3295358348153, 622.253967444162, 
+    659.2551138257401, 698.456462866008, 739.988845423269, 
+    783.9908719634989, 830.6093951598906, 880.000000000000]
+</code></p>
+
+<!-- more -->
+
+<p>This tuning has the benefit of being able to switch musical keys without retuning your instrument, 
+and allowing different types of instruments to play together.  This is the way a guitar, MIDI synthesizer,
+or piano is usually tuned.  The problems with it are that essentially every note frequency besides the Octave 
+is slightly wrong, and when calculated this way even that is a bit wrong due to floating point error and 
+cumulative error of multiplying irrational numbers.</p>
+
+<p>The benefits usually outweigh its problems, but for the purposes of this article I will be using…</p>
+
+<h2 id="just-intonation">Just Intonation</h2>
+
+<p>The ratios in Just Intonation are not all equal, but are based on the harmonic series.  You find each
+ratio by mutiplying the root note or tonic by increasing whole numbers, and then dividing by a denominator
+that will bring the frequency back into the octave’s range.  Here is a data structure we can use to look
+up the ratios and names for each degree in the chromatic scale.</p>
+
+<p><code>ruby Chromatic Scale Lookup Table
+start_note = 440.0    
+Ratios= [
+        {:ratio =&gt; 1,                   :name =&gt; 'Unison'},
+        {:ratio =&gt; Rational(25,24),     :name =&gt; 'Minor Second'},
+        {:ratio =&gt; Rational(9,8),       :name =&gt; 'Major Second'},
+        {:ratio =&gt; Rational(6,5),       :name =&gt; 'Minor Third'},
+        {:ratio =&gt; Rational(5,4),       :name =&gt; 'Major Third'},      
+        {:ratio =&gt; Rational(4,3),       :name =&gt; 'Perfect Fourth'},
+        {:ratio =&gt; Rational(45,32),     :name =&gt; 'Diminished Fifth'},
+        {:ratio =&gt; Rational(3,2),       :name =&gt; 'Perfect Fifth'},
+        {:ratio =&gt; Rational(8,5),       :name =&gt; 'Minor Sixth'},
+        {:ratio =&gt; Rational(5,3),       :name =&gt; 'Major Sixth'},
+        {:ratio =&gt; Rational(9,5),       :name =&gt; 'Minor Seventh'},
+        {:ratio =&gt; Rational(15,8),      :name =&gt; 'Major Seventh'},
+        {:ratio =&gt; 2,                   :name =&gt; 'Octave'} ]    
+Ratios.map{|ratio| start_note * ratio[:ratio].to_f }
+=&gt; [440.0, 458.33333333333337, 495.0, 528.0, 550.0, 586.6666666666666, 
+    618.75, 660.0, 704.0, 733.3333333333334, 792.0, 825.0, 880.0]
+</code></p>
+
+<p>This is already producing rational frequencies, and they are numbers I can work with mathematically
+in this example.  So, what is going on when an A Major chord <code>A C♯ E</code> sounds consonant and pleasing to
+people, and what causes a disonanant sound?</p>
+
+<p>A broad answer, is that the smaller the whole numbers are which are involved in the ratio, the more pleasing 
+(or even boring) two notes will sound in relation to one another. You can see for yourself that the ratio 
+of a relatively dissonant interval like the Diminished Fifth, also called The Tritone or Devil’s note, 
+has much higher whole numbers in the numerator and denominator with <code>45:32</code>.</p>
+
+<p>This interval is so interesting sounding, hanging out on the verge of consonance and dissonance that it is also called 
+the Blue Note, and plays a large part in the sound of Blues, Jazz, Rock, and Metal.</p>
+
+<p>While I was playing with the math described on the excellent DSP website
+<a href="http://www.katjaas.nl/complane/complexplane.html">A Trip on the Complex Plane</a>, I started playing with dot products 
+and it was mentioned that a pure sine wave at frequency $f$ is orthogonal to a sine wave one octave higher at
+$2f$.  I began to wonder what a dot product reveals about the orthogonality of other inervals besides the octave.</p>
+
+<h2 id="orthogonality">Orthogonality</h2>
+
+<p>One specific example of orthogonality that is easy to understand is on a 2D plane.  Visually you can see 
+it as two points that are rotated $90^{\circ}$or equivilenly $\pi/2$ radians from one another. Like these points 
+at  $(0, 0.5)$ and $(0.5, 0)$.</p>
+
+<p>Here you can see points</p>
+
+<p><img src="/images/polar_orthogonal.jpg" alt="Orthogonal points" title="Orthogonal Points" /></p>
+
+<p>It’s easy to see in this image, but you can figure out if any two points are orthogonal using a dot product. This is
+because the dot product of two vectors is equal to the cosine of the angle between them.  The cosine of $90^{\circ}$, or from now
+on using radians, $\pi/2$, is $0$, therefore if the dot product of two vectors is $0$ they are orthogonal.</p>
+
+<p>We can extend Ruby’s Array class to add some methods for working with orthogonality and dot products.  There is already a 
+Vector class in Ruby which does this, but it will be easier to show what’s happening by adding methods to Array and using
+it as a vector.</p>
+
+<p>The formula for dot product is to multiply each element in the vector element-wise producing a third
+vector, then all elements of this resulting vector are summed.</p>
+
+<script type="math/tex; mode=display">\vec{v} \cdot \vec{u} = \sum\limits_{i=1}^n \vec{v}_i \vec{u}_i</script>
+
+<p>&#8220;`ruby Dot Product
+class Array 
+    def dot_product(ary)
+        self.zip(ary).inject(0) do |sum, pairs|
+            sum += pairs.first * pairs.last rescue 0
+        end
+    end</p>
+
+<pre><code>def is_orthogonal?(other)
+    self.dot_product(other).abs &lt; Epsilon
+end end p1 = [1, 0] p2 = [0, 1] p1.is_orthogonal?(p2) =&gt; true ```
+</code></pre>
+
+<h2 id="audio-as-n-dimentional-vectors">Audio as N-Dimentional Vectors</h2>
+
+<p>So it’s great to be able to calculate if 2D points are orthogonal and all, but what about audio and musical 
+notes?  How can we prove that an <code>A 440hz</code> note is orthogonal to <code>A 880hz</code>, and what about the other notes in
+the chromatic scale?</p>
+
+<p>A pure note with no overtones being played is just air pressure oscillating back and forth at a specific number
+of times per second, or frequency.  That can be modeled using a sinusoidal function like sine or cosine.  Generating
+a cosine wave to represent <code>A 440hz</code> can be done with the equation $cos(2\pi \cdot 440 \cdot t)$ where $t$ is time in seconds.</p>
+
+<p>In the computer we can represent this digitally by sampling the values that come out of the above equation at regular
+time intervals, we can specify a ratio, number of cycles to generate, and a rate at which to sample the cosine function
+with the following code.  This effectively makes our digital sampling the same as an N-dimentional vector, similar to
+the 2 dimentional vectors shown above.</p>
+
+<p><code>ruby
+def create_scale_degree(ratio, num_cycles = 1, sample_rate = 32)
+    degree = 0.step(num_cycles, Rational(1,sample_rate)).map do |t| 
+        Math::cos(ratio * 2 * Math::PI * t)
+    end
+    degree.pop # One sample too many
+    degree
+end
+</code></p>
+
+<p>Instead of using <code>440hz</code> as the tonic, this code is just using <code>1hz</code> to simplify things.  It is also dropping
+the last sample because that sample actually belongs to the beginning of the next period of the cosine. 
+Now we should be able to prove what we already knew, two cosine waves that are in phase but an octave higher (double
+the frequency) are orthogonal to each other.</p>
+
+<p><code>ruby Octaves are Orthogonal
+p1 = create_scale_degree(1, 1, 5)
+=&gt; [1.0, 0.30901699437494745, -0.8090169943749473, 
+    -0.8090169943749475, 0.30901699437494723] 
+p2 = create_scale_degree(2, 1, 5)
+=&gt; [1.0, -0.8090169943749473, 0.30901699437494723, 
+    0.30901699437494773, -0.8090169943749477] 
+p1.is_orthogonal?(p2)
+=&gt; true 
+p1.is_orthogonal?([2,3,4,21,])
+=&gt; false
+</code></p>
+
+<p>Above I am genrating 1 cycle of a <code>1hz</code> and a <code>2hz</code> cosine wave at a sample rate of 5 samples per second.  These results
+can sometimes be hard to see due to floating point error, but we can unwind the dot product method and show it working
+manually.</p>
+
+<p><code>ruby Manual Calculation showing orthogonality
+1.0 * 1.0
+=&gt; 1.0
+0.30901699437494745 * -0.8090169943749473
+=&gt; -0.25
+-0.8090169943749473 * 0.30901699437494723
+=&gt; -0.2499999999999998 
+-0.8090169943749475 * 0.30901699437494773 + 
+=&gt; -0.2500000000000003
+0.30901699437494723 * -0.8090169943749477
+=&gt; -0.24999999999999992
+1.0 - 0.25 - 0.2499999999999998 - 0.2500000000000003 - 0.24999999999999992
+=&gt; 2.7755575615628914e-17
+#  Without floating point error: 1.0 - 0.25 - 0.25 - 0.25 - 0.25 == 0.0
+</code></p>
+
+<p>The above floating point error is the reasoning behind <code>self.dot_product(other).abs &lt; Epsilon</code> in the method <code>is_orthogonal?</code>
+Epsilon is just set to some very small number to deal with floting point comparisons.</p>
+
+<h2 id="are-the-other-intervals-orthogonal-too">Are the other intervals orthogonal too?</h2>
+
+<p>Using all this, we should be able to answer the original question, are the other intervals in the chromatic scale 
+all orthogonal to each other?  The answer I found was no, not after only one cycle of the cosine waves.  But, if you
+keep them running together for longer periods of time and more cycles, there is eventually a time when the waveform’s intervals
+will match up in period and the full waveform up until that point will be completely orthogonal to each other.</p>
+
+<p><code>ruby Checking Each Interval for Orthogonality
+MaxCycles = 200
+Ratios.each_with_index do |ratio, i|
+    next if i == 0   #  Not orthogonal to itself!
+    1.upto(MaxCycles) do |num_cycles|
+        tonic = create_scale_degree(Ratios.first[:ratio], num_cycles)
+        note = create_scale_degree(ratio[:ratio], num_cycles)
+        if tonic.is_orthogonal?(note)
+            puts "#{ratio[:name]} #{ratio[:ratio].inspect} is orthogonal to Unison after #{num_cycles} cycles"
+            break;
+        end
+    end
+end
+</code></p>
+
+<h2 id="results">Results</h2>
+
+<p>Below is a chart of the results sorted by how many cycles it takes for each interval to sync up and become
+orthogonal, which they all do after few relatively few cycles.</p>
+
+<p><code>ruby Results
+| Cycles   | Ratio    |  Decimal  | Interval Name    |
+| -------- | -------- | --------- | ---------------- |
+|  1       |  2:1     | 2.0       | Octave           |
+|  2       |  3:2     | 1.5       | Perfect Fifth    |
+|  3       |  4:3     | 1.3333333 | Perfect Fourth   |
+|  3       |  5:3     | 1.6666667 | Major Sixth      |
+|  4       |  5:4     | 1.25      | Major Third      |
+|  5       |  6:5     | 1.2       | Minor Third      |
+|  5       |  8:5     | 1.6       | Minor Sixth      |
+|  5       |  9:5     | 1.8       | Minor Seventh    |
+|  8       |  9:8     | 1.125     | Major Second     |
+|  8       | 15:8     | 1.875     | Major Seventh    |
+| 24       | 25:24    | 1.0417    | Minor Second     |
+| 32       | 45:32    | 1.40625   | Diminished Fifth |
+</code></p>
+
+<p>The first things I notice about the results are:</p>
+
+<ul>
+  <li>The number of cycles required is equal to the denominator</li>
+  <li>The decimal value of the interval’s ratio doesn’t follow the number of cycles</li>
+  <li>The Perfect Fifth is the quickest to sync up (Circle of fifths?)</li>
+  <li>The Perfect Fourth is next</li>
+  <li>When DJing you generally mix songs in keys which are perfect fourths and fifths</li>
+  <li>My two favourite intervals take the longest to sync</li>
+</ul>
+
+<p>What I can take away from this experiment, is that the human brain is basing its perception
+of consonance and dissonance on how long two frequencies or notes played together take 
+until they match up in period and become orthogonal.  This probably gives those intervals
+a feeling both of balance, but also temporary dissonance which resolves after a short period
+of time.  Two sounds played at once which never resolve to orthogonality are considered 
+noisey or out of tune.</p>
+
+]]></content>
+  </entry>
+  
+</feed>

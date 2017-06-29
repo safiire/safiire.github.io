@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Dsp | Irken Kitties]]></title>
+  <link href="http://irkenkitties.com/blog/categories/dsp/atom.xml" rel="self"/>
+  <link href="http://irkenkitties.com/"/>
+  <updated>2017-06-29T16:17:35-07:00</updated>
+  <id>http://irkenkitties.com/</id>
+  <author>
+    <name><![CDATA[Safiire]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Building My Shruthi-1]]></title>
+    <link href="http://irkenkitties.com/blog/2012/12/13/building-my-shruthi-1/"/>
+    <updated>2012-12-13T17:54:00-08:00</updated>
+    <id>http://irkenkitties.com/blog/2012/12/13/building-my-shruthi-1</id>
+    <content type="html"><![CDATA[<p>Last year I built a small MIDI controlled polyphonic synthesizer called KittySynth using a <a href="http://leaflabs.com/devices/maple/">72MHz LeafLabs Maple</a> 
+microcontroller board, an <a href="http://www.openmusiclabs.com/projects/codec-shield/">Audio Codec Shield</a> from Open Music Labs,
+and some C++.  I had originally had some ideas to try to build something like this by abusing the timers and PWM duty cycles
+on a 16MHz Arduino Mega I have, but quickly realized there was no way on earth I could build what I wanted to with the small
+amount of resources on an Arduino.  The ARM based STM32 chip on the Maple had just enough resources available to create 
+an 8-voice polyphonic wavetable synth, which I should write about sooner or later.</p>
+
+<p>Anyway, while researching for that project I found out that someone actually has created a perfectly viable synthesizer
+based around a 20MHz ATMega chip (as in the Arduino) called the <a href="http://mutable-instruments.net/">Shruthi-1</a>.  I thought this was a perfect
+opportunity to go through the steps of actually building a proper synth of the sort I would someday like to design,
+so I ordered the Shruth-1 4-Pole Mission Kit, and decided to put it together from scratch.</p>
+
+<p><img src="/images/shruthi/shruthi_01.jpg" alt="The Parts Arrived" title="The Parts Arrive" /></p>
+
+<!-- more -->
+
+<p>Shruthies are only really offered as kits you put together, they’re about $180 Canadian, and come from France.  If you
+want a real, working, and fun synth for not a lot of money and can use a soldering iron, it’s probably the way to go.</p>
+
+<p>Olivier Gillet, the designer of the Shruthi, is pretty inspirational to me, but how did he design an awesome synth around
+a little 20MHz ATMega chip?  First thing, is that the Shruth-1 4-Pole Mission is a hybrid digital-analog monosynth.  The synth
+is divided into two PCBs, the top PCB is the digital control board, which contains the ATMega chip, LCD, knobs, and buttons.  It is 
+running software responsible for handling MIDI, generating the digital wavetable oscillators, envelopes, LFOs, reading the
+knobs.  There are 20 pins connecting it to the bottom PCB that primarily contains the analog filter, but also has the
+power regulator, MIDI and audio inputs and outputs.</p>
+
+<p><img src="/images/shruthi/shruthi_03.jpg" alt="Starting the Filter Board" title="Starting the Filter Board" /></p>
+
+<p>Having an analog filter is a common cause for a synth to be monophonic, ie. only one voice or 
+note at a time.  This is because in order to be polyphonic an analog synth would need separate circuitry
+for oscillator, envelope, and filter for each possible voice that could sound at once, making it much
+more expensive for each voice.  There are <a href="http://electronicmusic.wikia.com/wiki/Paraphonic">paraphonic</a> 
+synthesizers which can assign a note to more than one oscillator and sound them simultaneously, but
+uses only one envelope and one filter.  The Shruthi-1 does something similar with its duophony mode.
+Since it has two oscillators it allows you to play two notes at once, the first is assigned to Osc1,
+and the second to Osc2, however they are both enveloped and filtered together.</p>
+
+<h1 id="digital-board">Digital Board</h1>
+
+<p>Shruthi-1 has two 8-bit digital oscillators, and either a square or triangle sub oscillator, or a click generator to 
+create nice transients during a note’s attack.  The main and sub oscillators have a vibrato setting, the main
+oscs are also able to be detuned separately, and have a PWM control.</p>
+
+<p><img src="/images/shruthi/shruthi_04.jpg" alt="Filter Board" title="Filter Board" /></p>
+
+<p>Looking at the code, the Shruthi-1 generates its 8-bit oscillators in a few different ways, I can see code for rendering
+pure wavetables with interpolation, some code where it is waveshaping a static wavetable, some for interpolating two wavetables
+together, and some which outright generates a signal in real-time.</p>
+
+<p>The sub osc or click/noise generator is sent straight to a digital mixer for summation, while the two main oscs 
+enter a modulator first.  The modulator is where a significant amount of character is introduced in the synth.<br />
+The default algorithm in the modulator is a simple balance control between the two oscillators, but there are 
+many other algorithms such as:</p>
+
+<ul>
+  <li>Mixing with balance</li>
+  <li>Syncing - Osc2’s phase resets when Osc1’s does</li>
+  <li>Ring Modulation - Multiply and scales</li>
+  <li>XOR - Combines the two Oscs with bitwise xor</li>
+  <li>Fuzz - Osc1 &amp; 2 are shaped by tanh(), like a soft clipper</li>
+  <li>4 or 8 bit sample rate reduction</li>
+  <li>Bit Crusher</li>
+  <li>Duo - Let’s Osc1 &amp; 2 play two different notes at once</li>
+  <li>More I haven’t figured out :)</li>
+</ul>
+
+<p><img src="/images/shruthi/shruthi_06.jpg" alt="Filter Board" title="Filter Board" /></p>
+
+<h1 id="analog-board">Analog Board</h1>
+
+<p>Next in the signal chain, the output received in the digital mixer is converted to 10MHz/1-bit audio.  This means
+the audio can be represented by a pulse width modulated square wave.  A PWM waveform is literally only ever on
+or off, hence the 1-bit depth, but it can be used to represent any fractional voltage between 0GND and whatever
+is your high voltage.  For example if you attach an LED to a PWM output and the square wave is at 100% duty cycle
+it will shine the brightest it can, but if you alternate between turning it on and off for exactly half the time,
+50% duty cycle, it will shine half as bright.  It is really turning on and off really fast, but that is imperceptable
+to us most of the time.  Duty cycles from 0% to 100% can be created to represent the internal 8-bit digital 
+values from 0-255, and in PWM form, the audio can be sent electrically to the filter board for processing.</p>
+
+<p><img src="/images/shruthi/shruthi_07.jpg" alt="Digital Board" title="Digital Board" /></p>
+
+<p>The filter board on my Shruthi-1 is a 4-pole ladder filter, which is essentially four 1-pole filters connected in
+series.  The current is delayed in phase by 90° by each 1-pole component, usually caused by the reactance of a
+capacitor in a simple RC filter, and I assume something similar must be going on here.  After going through
+all four stages, the phase has gone around to 360°, and so is back where it started.  Variably mixing its output
+back into the first pole’s input causes the sick resonance ladder filters are known for because the phase lines 
+up again and reinforces frequencies in a loop at the filter’s cutoff frequency.</p>
+
+<p><img src="/images/shruthi/shruthi_08.jpg" alt="Digital Board" title="Digital Board" /></p>
+
+<p>Other synths using laddder filters are Moogs and the TB-303, though they are constructed differently.  The Shruthi
+also let’s you use the output at 1,2, or 3 poles which affects the slope of the stop-band.  You can also use the
+audio input in the back of the synth to apply the filter to whatever external sounds you want, provided you hold
+the envelope open.</p>
+
+<h2 id="building-it">Building it</h2>
+
+<p>The kit was actually pretty easy to assemble, and I spent a few hours per day on it and had it done over a weekend.
+Since I don’t have one of those fancy stands with clips to hold the boards for me, it was important to solder all
+the components in order of height, which meant doing all the resistors first, etc.  That way when you flip it over
+to solder the joint it will be held in place by resting on your work surface.</p>
+
+<p><img src="/images/shruthi/shruthi_09.jpg" alt="Boards Connected" title="Boards Connected" /></p>
+
+<p>I chose to do the filter board first, as it seemed like the hardest to do, but it was quite easy.  The digital board
+was a little tricky with its LCD screen probably being the hardest part out of the whole project.  A found the case
+kind of sucky, mine looked like it was cut out of the end of a huge piece of plastic, which had ugly green print on
+some of it, luckily it was on the bottom, and it was missing a screw hole on the top face.</p>
+
+<p>The 20 pins which connect the top and bottom boards are sort of haphhazardly connected, because they don’t reach
+so well, but they are firmly together, even if not perfect, and I haven’t had a problem with it.</p>
+
+<p><img src="/images/shruthi/shruthi_10.jpg" alt="Glowing In the Dark" title="Glowing in the Dark" /></p>
+
+<h2 id="sound">Sound</h2>
+
+<p>So far, I’ve found that the Shruthi-1 makes one crazy analog sounding bassline, so here is an example of the track
+I wrote after I finished the build. :)  I used the Shruthi-1 for bass, and a few other parts here and there.</p>
+
+<iframe width="100%" height="450" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/69901992&amp;auto_play=false&amp;hide_related=false&amp;show_comments=true&amp;show_user=true&amp;show_reposts=false&amp;visual=true"></iframe>
+
+<h2 id="finished-pic">Finished Pic!</h2>
+
+<p><img src="/images/shruthi/shruthi_11.jpg" alt="Finished and Working" title="Finished and Working" /></p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Consonant Intervals and Orthogonality]]></title>
+    <link href="http://irkenkitties.com/blog/2012/11/28/consonant-intervals-and-orthogonality/"/>
+    <updated>2012-11-28T01:46:00-08:00</updated>
+    <id>http://irkenkitties.com/blog/2012/11/28/consonant-intervals-and-orthogonality</id>
+    <content type="html"><![CDATA[<p>In this article I am going to explore some factors which are involved in the perception of
+consonance and dissonance of notes in the chromatic and major musical scales.  The distance 
+between two notes is called an interval, and there are 12 notes in the western chromatic scale.
+There are two common methods of calculating the frequencies of these notes.</p>
+
+<h2 id="equal-temperment">Equal Temperment</h2>
+
+<p>The most common method used in modern times is called Equal Temperment.  In this tuning, each
+adjacent note is related by the ratio of a 12th root of 2 or:</p>
+
+<script type="math/tex; mode=display">2^{1/12} = 1.0594630943592953...</script>
+
+<p>Starting from <code>A 440hz</code> and calculating each of the 12 notes of the chromatic scale up to the
+next A, looks like this:</p>
+
+<p><code>ruby Equal Tempered Note Frequencies
+r = 2.**(1/12.0)
+start_note = 440.0
+1.upto(12).map {|interval| start_note *= r }
+=&gt; [466.1637615180899, 493.8833012561241, 523.2511306011974, 
+    554.3652619537443, 587.3295358348153, 622.253967444162, 
+    659.2551138257401, 698.456462866008, 739.988845423269, 
+    783.9908719634989, 830.6093951598906, 880.000000000000]
+</code></p>
+
+<!-- more -->
+
+<p>This tuning has the benefit of being able to switch musical keys without retuning your instrument, 
+and allowing different types of instruments to play together.  This is the way a guitar, MIDI synthesizer,
+or piano is usually tuned.  The problems with it are that essentially every note frequency besides the Octave 
+is slightly wrong, and when calculated this way even that is a bit wrong due to floating point error and 
+cumulative error of multiplying irrational numbers.</p>
+
+<p>The benefits usually outweigh its problems, but for the purposes of this article I will be using…</p>
+
+<h2 id="just-intonation">Just Intonation</h2>
+
+<p>The ratios in Just Intonation are not all equal, but are based on the harmonic series.  You find each
+ratio by mutiplying the root note or tonic by increasing whole numbers, and then dividing by a denominator
+that will bring the frequency back into the octave’s range.  Here is a data structure we can use to look
+up the ratios and names for each degree in the chromatic scale.</p>
+
+<p><code>ruby Chromatic Scale Lookup Table
+start_note = 440.0    
+Ratios= [
+        {:ratio =&gt; 1,                   :name =&gt; 'Unison'},
+        {:ratio =&gt; Rational(25,24),     :name =&gt; 'Minor Second'},
+        {:ratio =&gt; Rational(9,8),       :name =&gt; 'Major Second'},
+        {:ratio =&gt; Rational(6,5),       :name =&gt; 'Minor Third'},
+        {:ratio =&gt; Rational(5,4),       :name =&gt; 'Major Third'},      
+        {:ratio =&gt; Rational(4,3),       :name =&gt; 'Perfect Fourth'},
+        {:ratio =&gt; Rational(45,32),     :name =&gt; 'Diminished Fifth'},
+        {:ratio =&gt; Rational(3,2),       :name =&gt; 'Perfect Fifth'},
+        {:ratio =&gt; Rational(8,5),       :name =&gt; 'Minor Sixth'},
+        {:ratio =&gt; Rational(5,3),       :name =&gt; 'Major Sixth'},
+        {:ratio =&gt; Rational(9,5),       :name =&gt; 'Minor Seventh'},
+        {:ratio =&gt; Rational(15,8),      :name =&gt; 'Major Seventh'},
+        {:ratio =&gt; 2,                   :name =&gt; 'Octave'} ]    
+Ratios.map{|ratio| start_note * ratio[:ratio].to_f }
+=&gt; [440.0, 458.33333333333337, 495.0, 528.0, 550.0, 586.6666666666666, 
+    618.75, 660.0, 704.0, 733.3333333333334, 792.0, 825.0, 880.0]
+</code></p>
+
+<p>This is already producing rational frequencies, and they are numbers I can work with mathematically
+in this example.  So, what is going on when an A Major chord <code>A C♯ E</code> sounds consonant and pleasing to
+people, and what causes a disonanant sound?</p>
+
+<p>A broad answer, is that the smaller the whole numbers are which are involved in the ratio, the more pleasing 
+(or even boring) two notes will sound in relation to one another. You can see for yourself that the ratio 
+of a relatively dissonant interval like the Diminished Fifth, also called The Tritone or Devil’s note, 
+has much higher whole numbers in the numerator and denominator with <code>45:32</code>.</p>
+
+<p>This interval is so interesting sounding, hanging out on the verge of consonance and dissonance that it is also called 
+the Blue Note, and plays a large part in the sound of Blues, Jazz, Rock, and Metal.</p>
+
+<p>While I was playing with the math described on the excellent DSP website
+<a href="http://www.katjaas.nl/complane/complexplane.html">A Trip on the Complex Plane</a>, I started playing with dot products 
+and it was mentioned that a pure sine wave at frequency $f$ is orthogonal to a sine wave one octave higher at
+$2f$.  I began to wonder what a dot product reveals about the orthogonality of other inervals besides the octave.</p>
+
+<h2 id="orthogonality">Orthogonality</h2>
+
+<p>One specific example of orthogonality that is easy to understand is on a 2D plane.  Visually you can see 
+it as two points that are rotated $90^{\circ}$or equivilenly $\pi/2$ radians from one another. Like these points 
+at  $(0, 0.5)$ and $(0.5, 0)$.</p>
+
+<p>Here you can see points</p>
+
+<p><img src="/images/polar_orthogonal.jpg" alt="Orthogonal points" title="Orthogonal Points" /></p>
+
+<p>It’s easy to see in this image, but you can figure out if any two points are orthogonal using a dot product. This is
+because the dot product of two vectors is equal to the cosine of the angle between them.  The cosine of $90^{\circ}$, or from now
+on using radians, $\pi/2$, is $0$, therefore if the dot product of two vectors is $0$ they are orthogonal.</p>
+
+<p>We can extend Ruby’s Array class to add some methods for working with orthogonality and dot products.  There is already a 
+Vector class in Ruby which does this, but it will be easier to show what’s happening by adding methods to Array and using
+it as a vector.</p>
+
+<p>The formula for dot product is to multiply each element in the vector element-wise producing a third
+vector, then all elements of this resulting vector are summed.</p>
+
+<script type="math/tex; mode=display">\vec{v} \cdot \vec{u} = \sum\limits_{i=1}^n \vec{v}_i \vec{u}_i</script>
+
+<p>&#8220;`ruby Dot Product
+class Array 
+    def dot_product(ary)
+        self.zip(ary).inject(0) do |sum, pairs|
+            sum += pairs.first * pairs.last rescue 0
+        end
+    end</p>
+
+<pre><code>def is_orthogonal?(other)
+    self.dot_product(other).abs &lt; Epsilon
+end end p1 = [1, 0] p2 = [0, 1] p1.is_orthogonal?(p2) =&gt; true ```
+</code></pre>
+
+<h2 id="audio-as-n-dimentional-vectors">Audio as N-Dimentional Vectors</h2>
+
+<p>So it’s great to be able to calculate if 2D points are orthogonal and all, but what about audio and musical 
+notes?  How can we prove that an <code>A 440hz</code> note is orthogonal to <code>A 880hz</code>, and what about the other notes in
+the chromatic scale?</p>
+
+<p>A pure note with no overtones being played is just air pressure oscillating back and forth at a specific number
+of times per second, or frequency.  That can be modeled using a sinusoidal function like sine or cosine.  Generating
+a cosine wave to represent <code>A 440hz</code> can be done with the equation $cos(2\pi \cdot 440 \cdot t)$ where $t$ is time in seconds.</p>
+
+<p>In the computer we can represent this digitally by sampling the values that come out of the above equation at regular
+time intervals, we can specify a ratio, number of cycles to generate, and a rate at which to sample the cosine function
+with the following code.  This effectively makes our digital sampling the same as an N-dimentional vector, similar to
+the 2 dimentional vectors shown above.</p>
+
+<p><code>ruby
+def create_scale_degree(ratio, num_cycles = 1, sample_rate = 32)
+    degree = 0.step(num_cycles, Rational(1,sample_rate)).map do |t| 
+        Math::cos(ratio * 2 * Math::PI * t)
+    end
+    degree.pop # One sample too many
+    degree
+end
+</code></p>
+
+<p>Instead of using <code>440hz</code> as the tonic, this code is just using <code>1hz</code> to simplify things.  It is also dropping
+the last sample because that sample actually belongs to the beginning of the next period of the cosine. 
+Now we should be able to prove what we already knew, two cosine waves that are in phase but an octave higher (double
+the frequency) are orthogonal to each other.</p>
+
+<p><code>ruby Octaves are Orthogonal
+p1 = create_scale_degree(1, 1, 5)
+=&gt; [1.0, 0.30901699437494745, -0.8090169943749473, 
+    -0.8090169943749475, 0.30901699437494723] 
+p2 = create_scale_degree(2, 1, 5)
+=&gt; [1.0, -0.8090169943749473, 0.30901699437494723, 
+    0.30901699437494773, -0.8090169943749477] 
+p1.is_orthogonal?(p2)
+=&gt; true 
+p1.is_orthogonal?([2,3,4,21,])
+=&gt; false
+</code></p>
+
+<p>Above I am genrating 1 cycle of a <code>1hz</code> and a <code>2hz</code> cosine wave at a sample rate of 5 samples per second.  These results
+can sometimes be hard to see due to floating point error, but we can unwind the dot product method and show it working
+manually.</p>
+
+<p><code>ruby Manual Calculation showing orthogonality
+1.0 * 1.0
+=&gt; 1.0
+0.30901699437494745 * -0.8090169943749473
+=&gt; -0.25
+-0.8090169943749473 * 0.30901699437494723
+=&gt; -0.2499999999999998 
+-0.8090169943749475 * 0.30901699437494773 + 
+=&gt; -0.2500000000000003
+0.30901699437494723 * -0.8090169943749477
+=&gt; -0.24999999999999992
+1.0 - 0.25 - 0.2499999999999998 - 0.2500000000000003 - 0.24999999999999992
+=&gt; 2.7755575615628914e-17
+#  Without floating point error: 1.0 - 0.25 - 0.25 - 0.25 - 0.25 == 0.0
+</code></p>
+
+<p>The above floating point error is the reasoning behind <code>self.dot_product(other).abs &lt; Epsilon</code> in the method <code>is_orthogonal?</code>
+Epsilon is just set to some very small number to deal with floting point comparisons.</p>
+
+<h2 id="are-the-other-intervals-orthogonal-too">Are the other intervals orthogonal too?</h2>
+
+<p>Using all this, we should be able to answer the original question, are the other intervals in the chromatic scale 
+all orthogonal to each other?  The answer I found was no, not after only one cycle of the cosine waves.  But, if you
+keep them running together for longer periods of time and more cycles, there is eventually a time when the waveform’s intervals
+will match up in period and the full waveform up until that point will be completely orthogonal to each other.</p>
+
+<p><code>ruby Checking Each Interval for Orthogonality
+MaxCycles = 200
+Ratios.each_with_index do |ratio, i|
+    next if i == 0   #  Not orthogonal to itself!
+    1.upto(MaxCycles) do |num_cycles|
+        tonic = create_scale_degree(Ratios.first[:ratio], num_cycles)
+        note = create_scale_degree(ratio[:ratio], num_cycles)
+        if tonic.is_orthogonal?(note)
+            puts "#{ratio[:name]} #{ratio[:ratio].inspect} is orthogonal to Unison after #{num_cycles} cycles"
+            break;
+        end
+    end
+end
+</code></p>
+
+<h2 id="results">Results</h2>
+
+<p>Below is a chart of the results sorted by how many cycles it takes for each interval to sync up and become
+orthogonal, which they all do after few relatively few cycles.</p>
+
+<p><code>ruby Results
+| Cycles   | Ratio    |  Decimal  | Interval Name    |
+| -------- | -------- | --------- | ---------------- |
+|  1       |  2:1     | 2.0       | Octave           |
+|  2       |  3:2     | 1.5       | Perfect Fifth    |
+|  3       |  4:3     | 1.3333333 | Perfect Fourth   |
+|  3       |  5:3     | 1.6666667 | Major Sixth      |
+|  4       |  5:4     | 1.25      | Major Third      |
+|  5       |  6:5     | 1.2       | Minor Third      |
+|  5       |  8:5     | 1.6       | Minor Sixth      |
+|  5       |  9:5     | 1.8       | Minor Seventh    |
+|  8       |  9:8     | 1.125     | Major Second     |
+|  8       | 15:8     | 1.875     | Major Seventh    |
+| 24       | 25:24    | 1.0417    | Minor Second     |
+| 32       | 45:32    | 1.40625   | Diminished Fifth |
+</code></p>
+
+<p>The first things I notice about the results are:</p>
+
+<ul>
+  <li>The number of cycles required is equal to the denominator</li>
+  <li>The decimal value of the interval’s ratio doesn’t follow the number of cycles</li>
+  <li>The Perfect Fifth is the quickest to sync up (Circle of fifths?)</li>
+  <li>The Perfect Fourth is next</li>
+  <li>When DJing you generally mix songs in keys which are perfect fourths and fifths</li>
+  <li>My two favourite intervals take the longest to sync</li>
+</ul>
+
+<p>What I can take away from this experiment, is that the human brain is basing its perception
+of consonance and dissonance on how long two frequencies or notes played together take 
+until they match up in period and become orthogonal.  This probably gives those intervals
+a feeling both of balance, but also temporary dissonance which resolves after a short period
+of time.  Two sounds played at once which never resolve to orthogonality are considered 
+noisey or out of tune.</p>
+
+]]></content>
+  </entry>
+  
+</feed>

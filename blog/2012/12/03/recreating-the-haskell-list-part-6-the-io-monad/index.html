@@ -1,0 +1,373 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Recreating the Haskell List Part 6: The IO Monad - Irken Kitties</title>
+  <meta name="author" content="Safiire">
+
+  
+  <meta name="description" content="This is part 6 of a 6 part tutorial The IO Monad In pure functional programming, all functions are supposed to be referentially
+transparent, and that &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://irkenkitties.com/blog/2012/12/03/recreating-the-haskell-list-part-6-the-io-monad">
+  <!-- <link href="/favicon.png" rel="icon"> &#8211;>
+
+  <!-- A million more different sizes and types of favicon -->
+  <link rel="apple-touch-icon" sizes="57x57" href="/favicons/apple-touch-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/favicons/apple-touch-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/favicons/apple-touch-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/favicons/apple-touch-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/favicons/apple-touch-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/favicons/apple-touch-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/favicons/apple-touch-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/favicons/apple-touch-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon-180x180.png">
+  <link rel="icon" type="image/png" href="/favicons/favicon-192x192.png" sizes="192x192">
+  <link rel="icon" type="image/png" href="/favicons/favicon-160x160.png" sizes="160x160">
+  <link rel="icon" type="image/png" href="/favicons/favicon-96x96.png" sizes="96x96">
+  <link rel="icon" type="image/png" href="/favicons/favicon-16x16.png" sizes="16x16">
+  <link rel="icon" type="image/png" href="/favicons/favicon-32x32.png" sizes="32x32">
+  <meta name="msapplication-TileColor" content="#9f00a7">
+  <meta name="msapplication-TileImage" content="/favicons/mstile-144x144.png">
+
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Irken Kitties" type="application/atom+xml">
+
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script src="/javascripts/three.min.js" type="text/javascript"></script>
+  <script src="/javascripts/glsl_header.js" type="text/javascript"></script>
+
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Francois+One' rel='stylesheet' type='text/css'>
+
+<!-- MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript"
+   src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Irken Kitties</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:irkenkitties.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a target="_blank" href="https://github.com/safiire">Github</a></li>
+  <li><a href="/blog/categories/haskell/">Haskell</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Recreating the Haskell List Part 6: The IO Monad</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-03T23:55:00-08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>This is part 6 of a 6 part tutorial</p>
+
+<h2 id="the-io-monad">The IO Monad</h2>
+
+<p>In pure functional programming, all functions are supposed to be referentially
+transparent, and that means that each time you call a function with the same
+arguments, it should give you the exact same result.  When functions are
+referentially transparent, you have a lot less worries about whether or not it
+will always work correctly.</p>
+
+<p>A mathematical function is never going to give you a different answer no matter
+how many times you give it the same argument.  The reason for that is pretty
+much that it cannot get any values from anywhere other than what you passed
+it, so it can never be any different.</p>
+
+<!-- more -->
+
+<p>In an imperative programming language you could write a <code>sin(x)</code> function which
+was completely evil and called <code>time()</code>, getting a value from somewhere besides
+the <code>x</code> parameter.  If the time in seconds was even, it would add 1 to the result
+it returns, and if not it wouldn’t.</p>
+
+<p>This example is just plain evil, especially if every time you happen to test
+the <code>sin()</code> function it happened to be an odd time in seconds, until one
+important day a million astronauts burn to death in the depths of space because
+it was run on an even second.  Silly example but that is the nature of many
+bugs in the imperative programming world.</p>
+
+<p>All of these problems involve IO.  If you say no functions can do any input
+or output to the OS, then the problem is solved, except you can also never
+interact with the program in any way.</p>
+
+<p>The answer is to let some functions do IO, but do it inside a container called
+the IO Monad from which you aren’t supposed to be able to escape.  The reason
+you aren’t able to escape, is because the data constructor for IO is hidden
+from use, by hiding it in the IO Module.  This means the type signature for
+every function which does IO will be something like <code>main :: IO ()</code>.</p>
+
+<p>Any function which calls another function that does IO, <code>getLine :: IO String</code>,
+for example, must also return something wrapped in IO.  It can’t deconstruct
+the return value from <code>getLine</code> into just a <code>String</code> using the IO data
+constructor and return that.  It can pass the pure string to a pure function
+though, by using bind.</p>
+
+<p>Here is an example of doing IO to get a number to pass to the pure function sin.</p>
+
+<h3 id="doing-some-io-in-the-io-monad">Doing some IO in the IO Monad</h3>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class="haskell"><span class="line"><span class="nf">getSin</span> <span class="ow">::</span> <span class="kt">IO</span> <span class="nb">()</span>
+</span><span class="line"><span class="nf">getSin</span> <span class="ow">=</span> <span class="kr">do</span>
+</span><span class="line">    <span class="n">valueStr</span> <span class="ow">&lt;-</span> <span class="n">getLine</span>
+</span><span class="line">    <span class="kr">let</span> <span class="n">result</span> <span class="ow">=</span> <span class="n">sin</span> <span class="p">(</span><span class="n">read</span> <span class="n">valueStr</span> <span class="ow">::</span> <span class="kt">Float</span><span class="p">)</span>
+</span><span class="line">    <span class="n">putStrLn</span> <span class="o">$</span> <span class="s">&quot;sin(&quot;</span> <span class="o">++</span> <span class="n">valueStr</span> <span class="o">++</span> <span class="s">&quot;) = &quot;</span> <span class="o">++</span> <span class="p">(</span><span class="n">show</span> <span class="n">result</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>This looks like imperative code, telling you which order to do things and
+sharing the results of subsequent function calls.  <code>getLine</code> returns a type <code>IO String</code>,
+remember this is like <code>Container String</code> from part 1.</p>
+
+<p>The function <code>putStrLn</code> always returns <code>IO ()</code>, read IO null, and since it is the
+last thing, that is returned from the entire function, as you would expect.</p>
+
+<p>In reality, it is converted to this:</p>
+
+<h3 id="explicitly-using-bind">Explicitly using bind</h3>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class="haskell"><span class="line"><span class="nf">getSin2</span> <span class="ow">::</span> <span class="kt">IO</span> <span class="nb">()</span>
+</span><span class="line"><span class="nf">getSin2</span> <span class="ow">=</span>
+</span><span class="line">    <span class="n">getLine</span> <span class="o">&gt;&gt;=</span>
+</span><span class="line">        <span class="p">(</span><span class="nf">\</span><span class="n">valueStr</span> <span class="ow">-&gt;</span> <span class="kr">let</span> <span class="n">result</span> <span class="ow">=</span> <span class="n">sin</span> <span class="p">(</span><span class="n">read</span> <span class="n">valueStr</span> <span class="ow">::</span> <span class="kt">Float</span><span class="p">)</span> <span class="kr">in</span>
+</span><span class="line">            <span class="n">putStrLn</span> <span class="o">$</span> <span class="s">&quot;sin(&quot;</span> <span class="o">++</span> <span class="n">valueStr</span> <span class="o">++</span> <span class="s">&quot;) = &quot;</span> <span class="o">++</span> <span class="p">(</span><span class="n">show</span> <span class="n">result</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>This is really one long expression, and not a recipe as it looks in do
+notation.  Since haskell is lazy, it probably does not do any computation until
+it reaches the <code>putStrLn</code> function, which I think is strict (evaluates it as soon as it sees it).</p>
+
+<p>When <code>putStrLn</code> evaluates its argument it finds <code>valueStr</code> and finds that it
+does’t have the value worked out yet.  It sees that it comes passed in through
+the lambda and that forces it to call <code>getLine</code>, and the use enters their text.
+Then it evaluates the let statement to find the result, has a complete
+string, prints it out, and <code>putStrln</code> returns IO () from the lambda, and
+according to the definition of bind, also returns <code>IO ()</code> from the bind
+expression, and then the function <code>getSin2</code> itself.</p>
+
+<ul>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-1/">Recreating the Haskell List Part 1</a></li>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-2-functors/">Recreating the Haskell List Part 2: Functors</a></li>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-3-monoids/">Recreating the Haskell List Part 3: Monoids</a></li>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-4-applicative-functors/">Recreating the Haskell List Part 4: Applicative Functors</a></li>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-5-monads/">Recreating the Haskell List Part 5: Monads</a></li>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-6-the-io-monad/">Recreating the Haskell List Part 6: The IO Monad</a></li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Safiire</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-03T23:55:00-08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/functional-programming/'>functional programming</a>, <a class='category' href='/blog/categories/haskell/'>haskell</a>
+  
+</span>
+
+
+    </p>
+    
+      
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/12/03/recreating-the-haskell-list-part-5-monads/" title="Previous Post: Recreating the Haskell List Part 5: Monads">&laquo; Recreating the Haskell List Part 5: Monads</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/12/13/building-my-shruthi-1/" title="Next Post: Building My Shruthi-1">Building My Shruthi-1 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/04/12/reversing-crackme-challenges/">Reversing Crackme Challenges</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/02/10/glsl-shaders-with-webgl/">GLSL Shaders With WebGL</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/29/creating-sound-on-the-nes/">Creating Sound on the NES</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/17/matrices-as-linear-operations/">Matrices as Linear Operators</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/12/13/building-my-shruthi-1/">Building My Shruthi-1</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/safiire">@safiire</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'safiire',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2017 - Safiire
+</p>
+
+</footer>
+  
+
+
+</body>
+</html>

@@ -1,0 +1,452 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Recreating the Haskell List Part 4: Applicative Functors - Irken Kitties</title>
+  <meta name="author" content="Safiire">
+
+  
+  <meta name="description" content="This is part 4 of a 6 part tutorial Applicative Functors A Haskell list is also an Applicative Functor. If we want to make MyList one too, we can &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://irkenkitties.com/blog/2012/12/03/recreating-the-haskell-list-part-4-applicative-functors">
+  <!-- <link href="/favicon.png" rel="icon"> &#8211;>
+
+  <!-- A million more different sizes and types of favicon -->
+  <link rel="apple-touch-icon" sizes="57x57" href="/favicons/apple-touch-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/favicons/apple-touch-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/favicons/apple-touch-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/favicons/apple-touch-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/favicons/apple-touch-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/favicons/apple-touch-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/favicons/apple-touch-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/favicons/apple-touch-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon-180x180.png">
+  <link rel="icon" type="image/png" href="/favicons/favicon-192x192.png" sizes="192x192">
+  <link rel="icon" type="image/png" href="/favicons/favicon-160x160.png" sizes="160x160">
+  <link rel="icon" type="image/png" href="/favicons/favicon-96x96.png" sizes="96x96">
+  <link rel="icon" type="image/png" href="/favicons/favicon-16x16.png" sizes="16x16">
+  <link rel="icon" type="image/png" href="/favicons/favicon-32x32.png" sizes="32x32">
+  <meta name="msapplication-TileColor" content="#9f00a7">
+  <meta name="msapplication-TileImage" content="/favicons/mstile-144x144.png">
+
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Irken Kitties" type="application/atom+xml">
+
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script src="/javascripts/three.min.js" type="text/javascript"></script>
+  <script src="/javascripts/glsl_header.js" type="text/javascript"></script>
+
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Francois+One' rel='stylesheet' type='text/css'>
+
+<!-- MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript"
+   src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Irken Kitties</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:irkenkitties.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a target="_blank" href="https://github.com/safiire">Github</a></li>
+  <li><a href="/blog/categories/haskell/">Haskell</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Recreating the Haskell List Part 4: Applicative Functors</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-03T23:55:00-08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>This is part 4 of a 6 part tutorial</p>
+
+<h2 id="applicative-functors">Applicative Functors</h2>
+
+<p>A Haskell list is also an Applicative Functor.  If we want to make <code>MyList</code> one too, we can 
+look at the interface for the Applicative class, and implement the right functions.</p>
+
+<h3 id="interface-for-the-applicative-typeclass">Interface for the Applicative Typeclass</h3>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="haskell"><span class="line"><span class="kt">:</span><span class="n">info</span> <span class="kt">Applicative</span>
+</span><span class="line"><span class="ow">=&gt;</span> <span class="kr">class</span> <span class="p">(</span><span class="kt">Functor</span> <span class="n">f</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="kt">Applicative</span> <span class="n">f</span> <span class="kr">where</span>
+</span><span class="line">    <span class="n">pure</span> <span class="ow">::</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">f</span> <span class="n">a</span>
+</span><span class="line">    <span class="p">(</span><span class="o">&lt;*&gt;</span><span class="p">)</span> <span class="ow">::</span> <span class="n">f</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">f</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">f</span> <span class="n">b</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>So, it looks as though we need to implement the functions <code>pure</code> and <code>&lt;*&gt;</code> in order to be an 
+instance of Applicative.  This also says that whatever is Applictaive has the prerequisite of 
+also being a Functor.  The function <code>pure</code> must take any type <code>a</code> and wrap it in the container MyList.
+This is also called lifting <code>a</code> into the Functor.  Implementing <code>pure</code> is easy enough, because it
+is the same thing as our data constructor, <code>Cons</code>.</p>
+
+<!-- more-->
+
+<p>The function <code>&lt;*&gt;</code> has the type signature <code>(&lt;*&gt;) :: f (a -&gt; b) -&gt; f a -&gt; f b</code> and represents function
+application for types that are wrapped in our data structure <code>f</code>, where the function is also wrapped in
+the same data structure <code>f</code>.</p>
+
+<p>Functions that represent applying functions is sort of weird concept, but I can think of three functions
+offhand that do accomplish this in different ways.  The three are: <code>$</code>, <code>&lt;$&gt;</code>, and <code>&lt;*&gt;</code>, so let’s look
+at their type signatures.</p>
+
+<h3 id="function-application">Function Application</h3>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="haskell"><span class="line"><span class="kt">:</span><span class="n">t</span> <span class="p">(</span><span class="o">$</span><span class="p">)</span>
+</span><span class="line"><span class="ow">=&gt;</span> <span class="p">(</span><span class="o">$</span><span class="p">)</span> <span class="ow">::</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">b</span>
+</span><span class="line"><span class="kt">:</span><span class="n">t</span> <span class="p">(</span><span class="o">&lt;$&gt;</span><span class="p">)</span>
+</span><span class="line"><span class="ow">=&gt;</span> <span class="p">(</span><span class="o">&lt;$&gt;</span><span class="p">)</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">Functor</span> <span class="n">f</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">f</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">f</span> <span class="n">b</span>
+</span><span class="line"><span class="kt">:</span><span class="n">t</span> <span class="p">(</span><span class="o">&lt;*&gt;</span><span class="p">)</span>
+</span><span class="line"><span class="ow">=&gt;</span> <span class="p">(</span><span class="o">&lt;*&gt;</span><span class="p">)</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">Applicative</span> <span class="n">f</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="n">f</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">f</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">f</span> <span class="n">b</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>The <code>$</code> function takes a function <code>(a -&gt; b)</code> and applies to an <code>a</code>, not surprisingly
+giving you a <code>b</code>.  This is regular function application like <code>odd 3</code> returning
+True.  Here I show different ways to use <code>$</code>, implicitly, explicitly, and infix.</p>
+
+<h3 id="functon-application-using-">Functon application using $</h3>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+</pre></td><td class="code"><pre><code class="haskell"><span class="line"><span class="nf">odd</span> <span class="mi">3</span>
+</span><span class="line"><span class="ow">=&gt;</span> <span class="kt">True</span>
+</span><span class="line"><span class="p">(</span><span class="o">$</span><span class="p">)</span> <span class="n">odd</span> <span class="mi">3</span>
+</span><span class="line"><span class="ow">=&gt;</span> <span class="kt">True</span>
+</span><span class="line"><span class="nf">odd</span> <span class="o">$</span> <span class="mi">3</span>
+</span><span class="line"><span class="ow">=&gt;</span> <span class="kt">True</span>
+</span><span class="line"><span class="c1">--  Precedence issue here</span>
+</span><span class="line"><span class="c1">--  Haskell parses this as (Container 2) + 1</span>
+</span><span class="line"><span class="kt">Container</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span class="line"><span class="ow">=&gt;</span> <span class="o">&lt;</span><span class="n">interactive</span><span class="o">&gt;:</span><span class="mi">1</span><span class="kt">:</span><span class="mi">0</span><span class="kt">:</span>
+</span><span class="line">    <span class="kt">No</span> <span class="kr">instance</span> <span class="n">for</span> <span class="p">(</span><span class="kt">Num</span> <span class="p">(</span><span class="kt">Container</span> <span class="n">t</span><span class="p">))</span>
+</span><span class="line">        <span class="n">arising</span> <span class="n">from</span> <span class="n">a</span> <span class="n">use</span> <span class="kr">of</span> <span class="p">`</span><span class="o">+</span><span class="n">&#39;</span> <span class="n">at</span> <span class="o">&lt;</span><span class="n">interactive</span><span class="o">&gt;:</span><span class="mi">1</span><span class="kt">:</span><span class="mi">0</span><span class="o">-</span><span class="mi">14</span>
+</span><span class="line">    <span class="kt">Possible</span> <span class="n">fix</span><span class="kt">:</span> <span class="n">add</span> <span class="n">an</span> <span class="kr">instance</span> <span class="n">declaration</span> <span class="n">for</span> <span class="p">(</span><span class="kt">Num</span> <span class="p">(</span><span class="kt">Container</span> <span class="n">t</span><span class="p">))</span>
+</span><span class="line">        <span class="kt">In</span> <span class="n">the</span> <span class="n">expression</span><span class="kt">:</span> <span class="kt">Container</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span class="line">        <span class="kt">In</span> <span class="n">the</span> <span class="n">definition</span> <span class="kr">of</span> <span class="p">`</span><span class="n">it&#39;</span><span class="kt">:</span> <span class="n">it</span> <span class="ow">=</span> <span class="kt">Container</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span class="line"><span class="c1">--  Ways to fix this</span>
+</span><span class="line"><span class="kt">Container</span> <span class="p">(</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class="line"><span class="ow">=&gt;</span> <span class="kt">Container</span> <span class="mi">3</span>
+</span><span class="line"><span class="kt">Container</span> <span class="o">$</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span class="line"><span class="ow">=&gt;</span> <span class="kt">Container</span> <span class="mi">3</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>People generally use <code>$</code> when they want to change the precedence of an expression
+without using a lot of parenthesis.</p>
+
+<p>Look at the type signature of <code>&lt;$&gt;</code>, and the one for <code>fmap</code>.</p>
+
+<h3 id="type-signatures-of--and-fmap">Type signatures of &lt;$&gt; and fmap</h3>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="haskell"><span class="line"><span class="kt">:</span><span class="n">t</span> <span class="p">(</span><span class="o">&lt;$&gt;</span><span class="p">)</span>
+</span><span class="line"><span class="ow">=&gt;</span> <span class="p">(</span><span class="o">&lt;$&gt;</span><span class="p">)</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">Functor</span> <span class="n">f</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">f</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">f</span> <span class="n">b</span>
+</span><span class="line"><span class="kt">:</span><span class="n">t</span> <span class="n">fmap</span>
+</span><span class="line"><span class="ow">=&gt;</span>  <span class="n">fmap</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">Functor</span> <span class="n">f</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">f</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">f</span> <span class="n">b</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>The function <code>&lt;$&gt;</code> <em>is</em> <code>fmap</code>.  It is applying a function to the Functor <code>f a</code>
+producing <code>f b</code>.  The angle brackets around the $ are indicating that this is
+application inside a container.  This is called lifting the normal function <code>(a -&gt; b)</code> 
+into the Functor.  What if the function itself is wrapped inside a Functor container?</p>
+
+<p>The answer is that function <code>&lt;*&gt;</code> is used instead.  Why wrap a function in a container to
+apply it to some value in the same type of container?  Why not just not have
+anything in containers at all?  Remember that a list is a container and check
+this out:</p>
+
+<h3 id="the--function">The &lt;*&gt; function</h3>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="haskell"><span class="line"><span class="c1">-- Type signature</span>
+</span><span class="line"><span class="kt">:</span><span class="n">t</span> <span class="p">(</span><span class="o">&lt;*&gt;</span><span class="p">)</span>
+</span><span class="line"><span class="ow">=&gt;</span> <span class="p">(</span><span class="o">&lt;*&gt;</span><span class="p">)</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">Applicative</span> <span class="n">f</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="n">f</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">f</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">f</span> <span class="n">b</span>
+</span><span class="line"><span class="c1">--  Applying a list of functions to a list of numbers</span>
+</span><span class="line"><span class="p">[(</span><span class="o">+</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="o">*</span><span class="mi">2</span><span class="p">)]</span> <span class="o">&lt;*&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
+</span><span class="line"><span class="ow">=&gt;</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Since lists are applicative functors, you may combine a list of functions to a list of 
+values and have it do the obvious thing, apply everything to everything, and then either <code>mconcat</code> or <code>mappend</code> 
+the results into a single flat list.  This just happens to be how <code>&lt;*&gt;</code> is implemented for a Haskell 
+list, because it is really the only way that makes sense to implement it.</p>
+
+<h3 id="making-mylist-an-instance-of-applicative">Making MyList an Instance of Applicative</h3>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+</pre></td><td class="code"><pre><code class="haskell"><span class="line"><span class="kr">instance</span> <span class="kt">Applicative</span> <span class="kt">MyList</span> <span class="kr">where</span>
+</span><span class="line">    <span class="n">pure</span> <span class="n">a</span> <span class="ow">=</span> <span class="kt">Cons</span> <span class="n">a</span> <span class="kt">Empty</span>  <span class="c1">-- like [a] for lists</span>
+</span><span class="line">    <span class="kt">Empty</span> <span class="o">&lt;*&gt;</span> <span class="n">m</span> <span class="ow">=</span> <span class="kt">Empty</span>
+</span><span class="line">    <span class="p">(</span><span class="kt">Cons</span> <span class="n">f</span> <span class="n">cdr</span><span class="p">)</span> <span class="o">&lt;*&gt;</span> <span class="n">m</span> <span class="ow">=</span> <span class="p">(</span><span class="n">fmap</span> <span class="n">f</span> <span class="n">m</span><span class="p">)</span> <span class="p">`</span><span class="n">mappend</span><span class="p">`</span> <span class="p">(</span><span class="n">cdr</span> <span class="o">&lt;*&gt;</span> <span class="n">m</span><span class="p">)</span>
+</span><span class="line"><span class="c1">--  Make a list</span>
+</span><span class="line"><span class="kr">let</span> <span class="n">list</span> <span class="ow">=</span> <span class="kt">Cons</span> <span class="mi">1</span> <span class="p">(</span><span class="kt">Cons</span> <span class="mi">2</span> <span class="p">(</span><span class="kt">Cons</span> <span class="mi">3</span> <span class="kt">Empty</span><span class="p">))</span>
+</span><span class="line"><span class="c1">--  Make a list of functions</span>
+</span><span class="line"><span class="kr">let</span> <span class="n">functions</span> <span class="ow">=</span> <span class="kt">Cons</span> <span class="p">(</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span> <span class="p">(</span><span class="kt">Cons</span> <span class="p">(</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span> <span class="kt">Empty</span><span class="p">)</span>
+</span><span class="line"><span class="c1">-- We get the same result with MyList</span>
+</span><span class="line"><span class="nf">functions</span> <span class="o">&lt;*&gt;</span> <span class="n">list</span>
+</span><span class="line"><span class="ow">=&gt;</span> <span class="kt">Cons</span> <span class="p">{</span><span class="n">car</span> <span class="ow">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">cdr</span> <span class="ow">=</span> <span class="kt">Cons</span> <span class="p">{</span><span class="n">car</span> <span class="ow">=</span> <span class="mi">4</span><span class="p">,</span> <span class="n">cdr</span> <span class="ow">=</span> <span class="kt">Cons</span> <span class="p">{</span><span class="n">car</span> <span class="ow">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">cdr</span> <span class="ow">=</span>
+</span><span class="line">   <span class="kt">Cons</span> <span class="p">{</span><span class="n">car</span> <span class="ow">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">cdr</span> <span class="ow">=</span> <span class="kt">Cons</span> <span class="p">{</span><span class="n">car</span> <span class="ow">=</span> <span class="mi">4</span><span class="p">,</span> <span class="n">cdr</span> <span class="ow">=</span> <span class="kt">Cons</span> <span class="p">{</span><span class="n">car</span> <span class="ow">=</span> <span class="mi">6</span><span class="p">,</span> <span class="n">cdr</span> <span class="ow">=</span> <span class="kt">Empty</span><span class="p">}}}}}}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>The definition of <code>&lt;*&gt;</code> is just building on <code>fmap</code> and <code>mappend</code>.  Which is neat and shows how all 
+of these things are related.  For a list, <code>&lt;*&gt;</code> just maps each function over each item in the 
+list like a nested loop, and appends them together into one list.</p>
+
+<ul>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-1/">Recreating the Haskell List Part 1</a></li>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-2-functors/">Recreating the Haskell List Part 2: Functors</a></li>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-3-monoids/">Recreating the Haskell List Part 3: Monoids</a></li>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-4-applicative-functors/">Recreating the Haskell List Part 4: Applicative Functors</a></li>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-5-monads/">Recreating the Haskell List Part 5: Monads</a></li>
+  <li><a href="/blog/2012/12/03/recreating-the-haskell-list-part-6-the-io-monad/">Recreating the Haskell List Part 6: The IO Monad</a></li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Safiire</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-03T23:55:00-08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/functional-programming/'>functional programming</a>, <a class='category' href='/blog/categories/haskell/'>haskell</a>
+  
+</span>
+
+
+    </p>
+    
+      
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/12/03/recreating-the-haskell-list-part-3-monoids/" title="Previous Post: Recreating the Haskell List Part 3: Monoids">&laquo; Recreating the Haskell List Part 3: Monoids</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/12/03/recreating-the-haskell-list-part-5-monads/" title="Next Post: Recreating the Haskell List Part 5: Monads">Recreating the Haskell List Part 5: Monads &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/04/12/reversing-crackme-challenges/">Reversing Crackme Challenges</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/02/10/glsl-shaders-with-webgl/">GLSL Shaders With WebGL</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/29/creating-sound-on-the-nes/">Creating Sound on the NES</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/17/matrices-as-linear-operations/">Matrices as Linear Operators</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/12/13/building-my-shruthi-1/">Building My Shruthi-1</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/safiire">@safiire</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'safiire',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2017 - Safiire
+</p>
+
+</footer>
+  
+
+
+</body>
+</html>

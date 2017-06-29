@@ -1,0 +1,1289 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Ruby | Irken Kitties]]></title>
+  <link href="http://irkenkitties.com/blog/categories/ruby/atom.xml" rel="self"/>
+  <link href="http://irkenkitties.com/"/>
+  <updated>2017-06-29T16:17:35-07:00</updated>
+  <id>http://irkenkitties.com/</id>
+  <author>
+    <name><![CDATA[Safiire]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Creating Sound on the NES]]></title>
+    <link href="http://irkenkitties.com/blog/2015/03/29/creating-sound-on-the-nes/"/>
+    <updated>2015-03-29T10:51:44-07:00</updated>
+    <id>http://irkenkitties.com/blog/2015/03/29/creating-sound-on-the-nes</id>
+    <content type="html"><![CDATA[<p>I am into all types of synthesizers, old and new, and recently I’ve taken to the sound of
+older video game sound chips.  I recently desoldered the NES’s 2A03 processor off its mainboard
+and have it in partial communication with an Arudino, but rewind, do I really know enough
+about composing music on that chip?  Not yet.  So there’s only one thing to do about that.</p>
+
+<h2 id="assembler">6502 Assembler</h2>
+
+<p>The NES was programmed in 6502 assembly language, and lucky for me, it actually has a really
+straight forward instruction set, but still, last month I was still not familiar with it 
+enough to make anything.  Now, usually when I don’t understand something, I write a program
+that somehow involves whatever topic I’m learning.  You can’t write a program like an assembler 
+without understanding how the processor for that assembler works, so I wrote my own assembler 
+for the NES called <a href="https://github.com/safiire/n65">n65</a>.</p>
+
+<p>This is the assembler I will be using in this article, and to help me compose music on the NES.</p>
+
+<p>You can easily install n65 through RubyGems.org:</p>
+
+<pre><code>gem install n65
+</code></pre>
+
+<!-- more -->
+
+<h2 id="programming-basics">Programming Basics</h2>
+
+<p>Before we can get the NES to make any sounds, there are a few things to know about writing
+programs for it.  The 6502 is an 8-bit processor, because most of its internal work registers
+are 8 bits wide.  The general purpose registers you have direct control over are named 
+<code>A</code>, <code>X</code>, and <code>Y</code>.   There are a few other 8 bit registers, such as the status register
+and the stack pointer.  The <code>PC</code>, or program counter though, is 16 bits wide, which means
+the processor can address memory from <code>$0000</code> to <code>$ffff</code>, a total of 65536 addressable bytes.</p>
+
+<p>A NES does not have 64KB of actual RAM, the mainboard comes with 2KB of work RAM attached to
+the CPU, and 2KB of video RAM attached to the Picture Processing Unit, or PPU, which is 
+actually a separate processor entirely, both of these processors run independantly of one 
+another, but they can communicate through memory mapped registers.</p>
+
+<p>The Audio Processing Unit, or APU, is also very much like a separate processor, although it
+is on the 2A03 chip, and is one of the things that makes a 2A03 different than other 6502s.
+You also communicate with the APU by writing values to memory mapped registers.</p>
+
+<p><img src="/images/NES-memory.png" alt="NES Memory Map" /></p>
+
+<p><small>Image from <a href="http://www.jfbillingsley.com">www.jfbillingsley.com</a></small></p>
+
+<p>Tiny, tiny amount of work RAM <code>$800</code> bytes or 2KB.  If you’ve never worked on anything
+with such a small amount of RAM, well that’s actually the challenge here, that and having
+no operating system is what makes it fun in my opinion :)</p>
+
+<p>You don’t have to do everything yourself however, the PPU <em>is</em> a hardware tile and sprite
+engine, and the APU <em>is</em> a synthesizer.  When the machine starts up, it is ready to 
+display graphics and play sounds all by itself, all you need to do, and the majority
+of what your code is about, is moving the right data into the right places, and the 
+hardware does the rest.  This is typical of older generation consoles, and even newer
+ones up to at least the Nintendo DS.</p>
+
+<h2 id="program-skeleton">Program Skeleton</h2>
+
+<p>Before we make our first beep, let’s set up a project skeleton that does the initialization
+that all NES games need to do.  This involves setting the hardware into a known state,
+setting up the stack pointer, and clearing the work RAM.</p>
+
+<p>When we produce a binary from our assembly code listing, we are writing code located
+in the cartridge ROM area, shown above starting at <code>$8000</code>.  The ROM binary we produce
+would be written onto an actual ROM chip inside a NES cartridge, or more likely we’re
+going to run this on an emulator, in which case <code>n65</code> is setup to produce iNES formatted
+“roms”.</p>
+
+<p>The iNES file format is simply a 32 byte header, followed by at least one 16KB PROG ROM, and
+zero or more 8KB CHAR ROM sections.  For now we can forget about CHAR ROM, let’s just create
+one PROG ROM section.  These sections are either PROG for code or CHAR for graphics data, 
+and are numbered in banks.</p>
+
+<p>One last thing, the cartridge program ROM section is shown to be mapped from <code>$8000 - $ffff</code>,
+this is 32KB total, not 16KB.  If we specify 1 PROG ROM section in the header, that section
+will be mirrored twice to cover that area of memory.  This is important because we must
+remember to write an interrupt vector table to <code>$fffa</code>.  This is why we will assemble our
+prog section bank 0 at <code>$C000</code>, because we are only using one bank of 16KB, it tends to
+make more sense as far as addressing is concerned.</p>
+
+<p>The interrupt vector is 3 16-bit addresses, that point to code for handling VBlank, Reset,
+and IRQ respectively.  Every ROM must specify these, because the Reset vector points to
+the beginning of our code, think of it like specifying your main() function in a C program.</p>
+
+<p>Ok here is an NES project skeleton that just initializes the hardware:</p>
+
+<p>&#8220;` ca65</p>
+
+<p>;;;;
+;  Create an iNES header
+.ines {“prog”: 1, “char”: 0, “mapper”: 0, “mirror”: 0}</p>
+
+<p>;;;;
+;  Include all the symbols in the nes library
+.inc <nes.sym></nes.sym></p>
+
+<p>;;;;
+;  Open the prog section bank 0
+.segment prog 0</p>
+
+<p>;;;;
+;  Setup the interrupt vectors
+.org $FFFA
+.dw vblank
+.dw reset
+.dw irq</p>
+
+<p>;;;;
+;  Here is our code entry point
+.org $C000
+.scope reset
+  sei                   ; SEt Interrupt (disables them)
+  cld                   ; CLear Decimal Mode</p>
+
+<p>ldx #$ff            <br />
+  txs                   ; Set the stack pointer</p>
+
+<p>ldx #$00
+  stx nes.ppu.control
+  stx nes.ppu.mask      ; Disable Vblank &amp; Rendering</p>
+
+<p>jsr zero_apu          ; Zero all APU registers</p>
+
+<p>;  We need to wait for at least 2 Vblanks to happen
+  ;  before we know the PPU has stabilized at startup
+  ;  Here we wait for the first one.
+  bit nes.ppu.status
+  wait_vblank1:
+    bit nes.ppu.status
+    bpl wait_vblank1</p>
+
+<p>;  Before we wait for the second vblank, lets
+  ;  zero all of the working RAM $0 to $800
+  ;  The $200s are shadow sprite OAM, and should be set to $fe
+  clear_ram:
+    lda #$00
+    sta $00, x
+    sta $100, x
+    sta $300, x
+    sta $400, x
+    sta $500, x
+    sta $600, x
+    sta $700, x
+    lda #$fe
+    sta $200, x
+    inx
+    bne clear_ram</p>
+
+<p>;  Now wait for the second vblank
+  wait_vblank2:
+    bit nes.ppu.status
+    bpl wait_vblank2</p>
+
+<p>;  Loop here forever
+  forever:
+    jmp forever</p>
+
+<p>rti
+.</p>
+
+<p>;;;;
+;  VBlank is called 60 times per second
+.scope vblank
+  rti
+.</p>
+
+<p>;;;;
+;  IRQ, we are not using
+.scope irq
+  rti
+.</p>
+
+<p>;;;;
+;  Zero all the APU registers
+.scope zero_apu
+  lda #$00
+  ldx #$00
+  loop:
+    sta $4000, x
+    inx
+    cpx $18
+    bne loop
+  rts
+.</p>
+
+<p>&#8220;`</p>
+
+<p>So, let’s assemble this file using n65, and load it into an emulator.  This means running n65
+in your terminal.</p>
+
+<p>&#8220;` bash</p>
+
+<p>$ n65 program_skeleton.asm</p>
+
+<p>Building program_skeleton.asm
+……………………………………………………………………………………..
+Second pass, resolving symbols… Done.
+iNES Header
++ 1 PROG ROM bank
++ 0 CHAR ROM banks
+= Output ROM will be 16400 bytes
+All Done :)</p>
+
+<p>&#8220;`</p>
+
+<p>I develop on OSX, though n65 works under Linux, and probably Windows if you have Ruby installed.</p>
+
+<p>If you named your assembly file <code>program_skeleton.asm</code>,  by default you’re going to get a NES rom 
+file with the name <code>program_skeleton.nes</code>.  The output filename can be changed to whatever you like
+with the <code>-o</code> flag.</p>
+
+<p>For an emulator, I am a fan of FCEUX because of its debugging and memory viewing
+capabilities, but the native version of FCEUX for OSX does not seem to include those features.</p>
+
+<p>So, for debugging on OSX, I’ve taken to running FCEUX under Wine, which works well enough for that
+purpose.  With FCEUX under Wine I can use the debugger, and if you run this ROM and open the memory
+hex editor you should see the first bit of RAM initialized like this:</p>
+
+<p><img src="/images/initialized_ram.png" alt="Initialized RAM" /></p>
+
+<p>So, why did we initialize <code>$200 - $2ff</code> to <code>$fe</code>?</p>
+
+<p>That 256 byte page of memory is typically used as “shadow OAM”.  OAM is Object Attribute Memory,
+and resides in the PPU’s video RAM, but rather than update it directly, most people keep 
+a copy of it here in CPU RAM, and transfer this copy to the PPU once per frame.</p>
+
+<p>Remember how I said the NES has a hardware tile and sprite engine built into the PPU that
+just starts running on its own provided you put data in the right spots?</p>
+
+<p>OAM has the <code>x</code> and <code>y</code> coordinates (among other attributes) of the 64 possible 
+hardware sprites on the NES, each sprite OAM is 4 bytes, and <code>64 * 4 = 256</code>.  Shoving <code>$fe</code> into
+that area, will have moved all the sprites offscreen, because it is possible we’d see a bunch of
+garbage sprites if we turned on the PPU and started coppying it over, so shadow OAM is typically 
+initialized with this value.</p>
+
+<p>That’s enough about sprites and graphics though, since for now we are just interested in 
+getting a simple sound out of the APU.  In fact this program skeleton has turned off the PPU, 
+and VBlank for now, and so rendering is totally disabled.  We will turn it on again later
+when we want a stable timer for our music.</p>
+
+<h2 id="next-step">Next Step</h2>
+
+<p>The next easiest step to keep us moving forward, we can get the NES to 
+make a beep using its APU.  I’ve found a ton of good info on <a href="http://wiki.nesdev.com/w/index.php/APU_basics">NESDev</a>.</p>
+
+<p>So here is a rundown of the parts of the APU:</p>
+
+<ul>
+  <li><code>$4000 - $4003</code> Pulse 1</li>
+  <li><code>$4004 - $4007</code> Pulse 2</li>
+  <li><code>$4008 - $400B</code> Triangle</li>
+  <li><code>$400C - $400F</code> Noise</li>
+  <li><code>$4010 - $4013</code> DCM</li>
+  <li><code>$4015</code> Channel Enable</li>
+</ul>
+
+<p>We’re going to want to use one of the Pulse oscillators to make a beep, so let’s use Pulse1.</p>
+
+<p>We want to use the channel enable to enable that oscillator, then write the correct values into
+the area <code>$4000 - $4003</code>, to make a concert <code>A 440hz</code> note come out with the right duty cycle.</p>
+
+<p>Here is what the four bytes that control Pulse 1 do, notice that many things are packed into 
+one 8-bit byte.  Here is what each bit does:</p>
+
+<pre><code>nes.apu.pulse1.control
+$4000 DDLC VVVV
+D : Duty cycle of the pulse wave 00 = 12.5% 01 = 25% 10 = 50% 11 = 75%
+L : Length Counter Halt
+C : Constant Volume
+V : 4-bit volume
+
+nes.apu.pulse1.ramp_control
+$4001 EPPP NSSS
+E : Enabled flag
+P : Sweep Divider Period
+N : Negate flag, inverts the sweep envelope
+S : Shift count
+
+nes.apu.pulse1.ft
+$4002 TTTT TTTT
+T : Low 8 bits of the timer that controls the frequency
+
+nes.apu.pulse1.ct
+$4003 LLLL LTTT
+L : Length counter, if Length Counter Halt is 0, timer for note length
+T : High 3 bits of timer that controls frequency
+</code></pre>
+
+<p>APU register <code>$4001</code> does pitch sweeps, so let’s ignore that for now, and set up enough registers
+to get a beep at our desired frequency of <code>440hz</code>.  I’ve listed symbolic names for each of the
+registers as well, you get these symbolic names by the assembler directive <code>.inc &lt;nes.sym&gt;</code> in 
+the above code listing.</p>
+
+<p>A pulse wave is a type of function generator that is either on or off, and the duty cycle parameter
+tells the APU what percentage of the time the wave is on or high.</p>
+
+<p><img src="/images/duty_cycle.jpg" alt="Duty Cycle" /></p>
+
+<h2 id="setting-nesapupulse1control">Setting nes.apu.pulse1.control</h2>
+
+<p>Setting this effects the timbre of the sound, let’s just set it to 50% for now, this is a 2-bit 
+parameter and that corresponds to <code>%10</code> in binary.  The percentage sign prefix on a number means
+binary, whereas the dollar sign means hexcidecimal, if you were wondering.</p>
+
+<p>For volume, parameter V, we are allowed 4-bits of resolution, let’s play it as loud as possible,
+<code>%1111</code>.  We should also set bit C to <code>%1</code>, to allow constant volume throughout the whole time the note is 
+played, and set L to <code>%0</code>, because, we want to use the Length Counter, not halt it.</p>
+
+<p>In the end, when we put all these parameters together into <code>nes.apu.pulse1.control</code> register, we
+get the final value of <code>%10011111</code>, or <code>$9f</code> in hex.  I find it a lot clearer to write out registers
+with composite values in binary rather than hexcidecimal though.</p>
+
+<h2 id="setting-nesapupulse1ft">Setting nes.apu.pulse1.ft</h2>
+
+<p>This register is for setting the frequency of the generated sound.  An oscillator generates a waveform
+that resets itself periodically, and repeats a certain number of times per second.  We want the pulse
+wave to reset at 440 times per second so we will get the note concert A, below middle C.</p>
+
+<p>Internal to the APU is a counter which counts at a specific rate, related to the speed of the 2A03
+processor, when it reaches the value we set to <code>T</code>, it will reset the period of the waveform, giving
+us the right frequency.  But it turns out the size of a register, being 8-bit cannot count high enough
+to give us the low notes we expect to be able to produce in music.</p>
+
+<p>Frequency in hertz has an inverse relationship to time in seconds:</p>
+
+<script type="math/tex; mode=display">t = 1/f \\
+  f = 1/t</script>
+
+<p>That means the lower the note in hertz, the longer the timer will have to count, and means the counter
+has to be at least 11-bits, so the value T spans all of the 8 bits in <code>nes.apu.pulse1.ft</code> and the 
+three extra high bits end up in <code>nes.apu.pulse1.ct</code></p>
+
+<p>There is a formula for determining this 11-bit counter number <code>T</code> from frequency in hertz:</p>
+
+<script type="math/tex; mode=display">T = (CPU / (16 \cdot f)) - 1</script>
+
+<p>Where <code>CPU = 1789773.0</code>, which is the speed of an NTSC Nintendo’s processor in hertz.  This value
+is different on a PAL NES, in that case <code>CPU = 1662607.0</code>.</p>
+
+<p>Here is a Ruby function for determining the value of <code>T</code>:</p>
+
+<p>&#8220;` ruby</p>
+
+<p>CPU = 1789773.0</p>
+
+<p>####
+  ##  Midi note to NES timer
+  def midi_note_to_nes_timer(frequency)
+    timer = (CPU / (16 * frequency)) - 1
+    timer.round
+  end</p>
+
+<p>midi_note_to_nes_timer(440.0)
+   =&gt; 253</p>
+
+<p>midi_note_to_nes_timer(220.0)
+   =&gt; 507</p>
+
+<p>&#8220;`</p>
+
+<p>Hey, lucky us, the value <code>253</code> actually does fit within 8-bits.  But that’s cutting it pretty close,
+very much lower in frequency that number would have been higher than <code>255</code>, and we would have needed
+to put extra bits into <code>nes.apu.pulse1.ct</code>.</p>
+
+<p>This gives me an idea, let’s allow both frequencies to be played.  Let’s create a NES ROM that plays 
+a <code>220hz</code> note if the B button is pushed, and a <code>440hz</code> note if the A button is pushed.</p>
+
+<p>So the 11-bit value of <code>T</code> for each frequency is then:</p>
+
+<ul>
+  <li><code>440hz = %000 11111101</code></li>
+  <li><code>220hz = %001 11111011</code></li>
+</ul>
+
+<h2 id="setting-nesapupulse1ct">Setting nes.apu.pulse1.ct</h2>
+
+<p>Like we just mentioned, <code>nes.apu.pulse1.ct</code> contains 5 bits of length counter, to control the duration
+of our note, and the 3 high bits from <code>T</code> the frequency counter.</p>
+
+<p>For now let’s set the note length counter to its highest value, <code>%11111</code></p>
+
+<h2 id="reading-from-the-controller">Reading from the Controller</h2>
+
+<p>Since we just decided to allow button B to make one note, and button A to make another, we need to 
+learn how to read the NES’s controller buttons.  The best way to do this, is to create a subroutine
+which reads each of the buttons we care about, and stores their states into the work RAM area.  This
+way, we can detect when the button is first pressed, and not just held down.</p>
+
+<p>Controller 1, like everything else, is a memory mapped device, and it is mapped to address <code>$4016</code>,
+or, if we’re using my symbolic names, simply <code>nes.controller1</code>.</p>
+
+<p>To tell the controller we want to read its button states, we have to “strobe” the controller, which
+just means to write a <code>$01</code> and then a <code>$00</code> to it in succession.  Then bit 0 of the next eight bytes
+that we read out of that location reveal the state of each button in the following order:</p>
+
+<ul>
+  <li>A</li>
+  <li>B</li>
+  <li>Select</li>
+  <li>Start</li>
+  <li>Up</li>
+  <li>Down</li>
+  <li>Left</li>
+  <li>Right</li>
+</ul>
+
+<h2 id="putting-it-all-together">Putting it all together</h2>
+
+<p>Here are some modifications and additions.  First we add an initialize subroutine to our reset 
+which enables both pulse1 and pulse2, and turns the PPU back on so that we get VBlank interrupts again.</p>
+
+<p>The VBlank is the portion of time when the screen is in-between drawing, and is a handy place you
+can put code you would like run every frame, at 60 frames per second.  We use this to call our
+<code>read_input</code> subroutine repeatedly.</p>
+
+<p>The <code>read_input</code> subroutine strobes controller1 and reads the state of the <code>A</code> and <code>B</code> buttons,
+and stores their state into <code>controller_state</code> as defined in RAM at address <code>$0000</code> in the zero
+page.  The zero page is the first 256 bytes of RAM, which can be quickly accessed using only
+an 8-bit address, when you see a <code>zp</code> suffix on an instruction, you are telling the assembler
+it can use the quick zero page addressing mode.</p>
+
+<p>We store the state of the <code>A</code> and <code>B</code> buttons in RAM so that we can tell when they are first
+changing state, so that we only play our notes once per button press.</p>
+
+<p>Then we’ve added two subroutines which load the values discussed above into the APU to get
+our notes to play.  <code>nes.apu.pulse1</code> and <code>nes.apu.pulse2</code> both operate in the exact same way,
+which is why we turned them both on, each button triggers one of the two pulse generators,
+which means we can hear both sounds at once, overlapping if needed.</p>
+
+<p>&#8220;` ca65</p>
+
+<p>;;;;
+;  Structure to keep track of input
+;  Add this before your reset subroutine
+.org $0000
+.scope controller_state
+  .space b 1
+  .space a 1
+.</p>
+
+<p>;;;;
+;  Initialize everything
+;  Call this subroutine before your infinite loop in reset
+.scope initialize
+  ;  Enable pulse1 and pulse2 in the APU
+  lda #%00000011
+  sta nes.apu.channel_enable</p>
+
+<p>;  Initialize the controller states
+  lda #$00
+  sta controller_state.a zp
+  sta controller_state.b zp</p>
+
+<p>;  Reenable interrupts, Turn Vblank back on
+  lda #%10000000
+  sta nes.ppu.control
+  cli
+  rts
+.</p>
+
+<p>;;;;
+;  VBlank is called 60 times per second
+.scope vblank
+  jsr read_input
+  rti
+.</p>
+
+<p>;;;;
+;  Read input from controller 1
+.scope read_input
+  lda #$01                ; strobe joypad
+  sta nes.controller1
+  lda #$00
+  sta nes.controller1</p>
+
+<p>;  Handle Button A
+  lda nes.controller1
+  and #$01
+  beq update_a_state</p>
+
+<p>;  A is pressed, but did it just change to being pressed now?
+  ldx controller_state.a zp
+  bne update_a_state</p>
+
+<p>;  do the thing A does
+  jsr play_a440</p>
+
+<p>update_a_state:
+    sta controller_state.a zp</p>
+
+<p>;  Handle Button B
+  lda nes.controller1
+  and #$01
+  beq update_b_state</p>
+
+<p>;  B is pressed, but did it just change to being pressed now?
+  ldx controller_state.b zp
+  bne update_b_state</p>
+
+<p>;  Do the thing B does
+  jsr play_a220</p>
+
+<p>update_b_state:
+    sta controller_state.b zp</p>
+
+<p>rts
+.</p>
+
+<p>;;;;
+;;  This will play an A 220hz note
+;;  On the pulse1 generator
+.scope play_a220
+  pha
+  lda #%10011111
+  sta nes.apu.pulse1.control</p>
+
+<p>lda #%11111011
+  sta nes.apu.pulse1.ft</p>
+
+<p>lda #%11111001
+  sta nes.apu.pulse1.ct</p>
+
+<p>pla
+  rts
+.</p>
+
+<p>;;;;
+;;  This will play an A 440hz note
+;;  On the pulse2 generator
+.scope play_a440
+  pha
+  lda #%10011111
+  sta nes.apu.pulse2.control</p>
+
+<p>lda #%11111101
+  sta nes.apu.pulse2.ft</p>
+
+<p>lda #%11111000
+  sta nes.apu.pulse2.ct</p>
+
+<p>pla
+  rts
+.</p>
+
+<p>&#8220;`</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>So that’s it for our first attempts to get the NES to make sounds.  I have actually been working
+on MIDI to NES converter, which converts a MIDI file into a byte stream that can be quickly written
+to the APU registers at the correct tempo, which is almost complete.  That will be the topic of my
+next post.</p>
+
+<p>You can find n65, <a href="https://github.com/safiire/n65">my NES assembler here</a>.</p>
+
+<p>And the source code for this <a href="https://gist.github.com/safiire/66746adc460abad3a429">NES sound example here</a></p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Matrices as Linear Operators]]></title>
+    <link href="http://irkenkitties.com/blog/2014/10/17/matrices-as-linear-operations/"/>
+    <updated>2014-10-17T07:57:55+00:00</updated>
+    <id>http://irkenkitties.com/blog/2014/10/17/matrices-as-linear-operations</id>
+    <content type="html"><![CDATA[<p>Since they are my favourite, let’s learn something neat about matrices, something that can also
+serve as the first post on this new blog of mine about math, programming, and DSP.</p>
+
+<!-- more -->
+
+<h2 id="matrix-multiplication-as-a-linear-operator">Matrix Multiplication as a Linear Operator</h2>
+
+<p>It turns out that matrix multiplication can be used to perform any linear mathematical operation, and
+a whole lot of interesting things are linear.  Geometrically speaking, scaling, rotation, and skewing 
+are linear operations.</p>
+
+<p>First let’s say we want to model multiplication of two complex numbers by matrices. First we need some
+complex numbers to multiply, and I happen to like $(3 + 4i) \cdot i$.</p>
+
+<p>So that is pretty easy it is just polynomial multiplication, so we distribute $i$ onto both terms.</p>
+
+<p><img class="center" src="/images/math/complex_rotation.png"></p>
+
+<script type="math/tex; mode=display">(3 + 4i) \cdot i \\
+  4i^2 + 3i \\
+  4 \cdot (-1) + 3i \\
+  -4 + 3i \\</script>
+
+<p>Yep, multiplying by $i$ is a rotation $90^{\circ}$ counter clockwise. So anyways the thing I think is cool, 
+is how it can be represented as a matrix multiply instead of looking like a polynomial multiply.</p>
+
+<h2 id="identity-operation">Identity Operation</h2>
+
+<p>The identiy matrix, the matrix that if you multiply by it, it is basically a no-op, why does it act like
+that, and why is it shaped the way it is?  Say you have this matrix multiply:</p>
+
+<script type="math/tex; mode=display">% &lt;![CDATA[
+\begin{bmatrix} 
+  c & 0 \\ 
+  0 & c 
+\end{bmatrix}
+
+\cdot
+
+\begin{bmatrix} 
+  a \\ 
+  b 
+\end{bmatrix}
+
+= 
+
+\begin{bmatrix} 
+  c \cdot a + 0 \cdot b \\ 
+  0 \cdot a + c \cdot b
+\end{bmatrix}
+
+= 
+
+\begin{bmatrix} 
+  ca  \\ 
+  cb
+\end{bmatrix} %]]&gt;</script>
+
+<p>If $c = 1$ then there is your identity operation.  But did you ever think:</p>
+
+<blockquote>
+  <p>What are these rows and columns in a matrix really all about?</p>
+</blockquote>
+
+<p>Say you view that $2x2$ matrix as two unit length column vectors sitting side by side.</p>
+
+<script type="math/tex; mode=display">% &lt;![CDATA[
+\begin{bmatrix} 
+  1 & 0    \\ 
+  0 & 1 
+\end{bmatrix} %]]&gt;</script>
+
+<p>The first column $\begin{bmatrix} 1 &amp; 0 \end{bmatrix}^{T}$ and the second column 
+$\begin{bmatrix} 0 &amp; 1 \end{bmatrix}^{T}$ are exactly the basis vectors which define and span 
+$\mathbb{R}^{2}$.  Otherwise known as either the x-y or real-imaginary axis.</p>
+
+<h2 id="change-of-basis">Change of Basis</h2>
+
+<p>So we saw that multiplication by the identity matrix performs no operation at all, because there
+is just no change to the basis vectors for that space $\mathbb{R}^{2}$.  We also saw if we perform
+a simple change of basis where we scale by $c$, it just scales everything by $c$. The
+diagonal numbers don’t have to be the same as each other either, if they were different you would get a 
+skewing operation instead of a scaling operation.</p>
+
+<script type="math/tex; mode=display">% &lt;![CDATA[
+\begin{bmatrix} 
+  2 & 0 \\ 
+  0 & 4 
+\end{bmatrix}
+
+\cdot
+
+\begin{bmatrix} 
+  a \\ 
+  b 
+\end{bmatrix}
+
+= 
+
+\begin{bmatrix} 
+  2 \cdot a + 0 \cdot b \\ 
+  0 \cdot a + 4 \cdot b
+\end{bmatrix}
+
+= 
+
+\begin{bmatrix} 
+  2a  \\ 
+  4b
+\end{bmatrix} %]]&gt;</script>
+
+<p>Great, so what do the other numbers on the opposite diagonal that have always been $0$ up to this
+point do?  Those numbers let you perform rotations.</p>
+
+<h2 id="time-to-define-the-i-matrix">Time to Define the $i$ Matrix</h2>
+
+<p>If we take the two column matrices we are using as our basis, and rotate them counter clockwise 
+by $90^{\circ}$, which should be easy because they are so simple, we should get the new basis we’re
+looking for.</p>
+
+<script type="math/tex; mode=display">% &lt;![CDATA[
+identity =
+\begin{bmatrix} 
+  1 & 0    \\ 
+  0 & 1 
+\end{bmatrix}
+
+and, \\
+
+i =
+\begin{bmatrix} 
+  0 & -1    \\ 
+  1 & 0 
+\end{bmatrix} %]]&gt;</script>
+
+<p>You can see how the first column, instead of being a vector pointing horizontally, is now pointing vertically,
+and how the second column, which used to, by chance be pointing vertically is now pointing horizontally but in
+the negative direction, each vector is pointing $90^{\circ}$ counter clockwise to where it used to be pointing.</p>
+
+<p>So what that means, is since we’ve rotated each component $90^{\circ}$ anything vector we multiply by $i$ will also 
+rotate in the same way.</p>
+
+<h2 id="square-root-of-negative-one">Square Root of Negative One</h2>
+
+<p>This should totally be true of a matrix that we decide to name $i$, that is $i^2 = -1$, or well it should 
+equal the matrix version of $-1$.</p>
+
+<script type="math/tex; mode=display">% &lt;![CDATA[
+\begin{bmatrix} 
+  0 & -1    \\ 
+  1 & 0 
+\end{bmatrix}
+
+\cdot
+
+\begin{bmatrix} 
+  0 & -1    \\ 
+  1 & 0 
+\end{bmatrix}
+
+= 
+
+\begin{bmatrix} 
+  -1 & 0    \\ 
+  0 & -1 
+\end{bmatrix} %]]&gt;</script>
+
+<p>Further proof that this makes any sense:</p>
+
+<script type="math/tex; mode=display">% &lt;![CDATA[
+\begin{bmatrix} 
+  0 & -1    \\ 
+  1 & 0 
+\end{bmatrix}
+
+\cdot
+
+\begin{bmatrix} 
+  3    \\ 
+  4 
+\end{bmatrix}
+
+= 
+
+\begin{bmatrix} 
+  -4  \\ 
+  3
+\end{bmatrix} %]]&gt;</script>
+
+<p>Just as the old “graph paper” example predicted.  So, I am pretty happy with my explaination of this phenomenon.
+I have to admit I am <em>just</em> getting used to this Mathjax Latex formatting stuff.</p>
+
+<p>Normally I am happy with a code example, so here is a Ruby example of the same thing:</p>
+
+<h2 id="ruby-example">Ruby example</h2>
+
+<p>&#8220;` ruby
+require ‘matrix’</p>
+
+<p>v = Vector[3, 4]</p>
+
+<p>i = Matrix.columns([[0, 1],[-1, 0]])
+i * Vector[3, 4]</p>
+
+<p>=&gt; Vector[-4, 3]</p>
+
+<p>i * i
+=&gt; Matrix[[-1, 0], [0, -1]]
+&#8220;`</p>
+
+<h2 id="other-rotations">Other Rotations</h2>
+
+<p>We don’t alway want to rotate by $90^{\circ}$, but there is an equation that will let us create a matrix
+for any arbitrary rotation by $\omega$ radians.  And that happens to look like this:</p>
+
+<script type="math/tex; mode=display">% &lt;![CDATA[
+\begin{bmatrix} 
+  cos(\omega) & -sin(\omega) \\
+  sin(\omega) &  cos(\omega) \\
+\end{bmatrix} %]]&gt;</script>
+
+<p>Let’s write a Ruby method to create rotation matrices for us, just by passing an angle in radians.</p>
+
+<p>&#8220;` ruby
+require ‘matrix’</p>
+
+<p>def create_rotation_matrix(w)
+  sin_w = Math.sin(w)
+  cos_w = Math.cos(w)
+  Matrix.columns([
+      [cos_w,  sin_w],
+      [-sin_w, cos_w]]
+  )
+end</p>
+
+<p>w = Math::PI / 4.0
+=&gt; 0.7853981633974483</p>
+
+<p>forty_five = create_rotation_matrix(w)
+=&gt; Matrix[[0.7071067811865476, -0.7071067811865475], [0.7071067811865475, 0.7071067811865476]]</p>
+
+<p>v = Vector[3, 4]</p>
+
+<p>forty_five * v
+=&gt; Vector[-0.707106781186547, 4.949747468305833]</p>
+
+<h2 id="nice-and-rotate-by-45-degrees-twice">Nice, and rotate by 45 degrees twice?</h2>
+<p>forty_five * forty_five * v
+=&gt; Vector[-3.999999999999999, 3.000000000000001]</p>
+
+<h2 id="now-thats-a-computer-close-type-of-answer-if-i-ever-saw-one-">Now that’s a “computer close” type of answer if I ever saw one :)</h2>
+<p>##  Very close to Vector[-4, 3]</p>
+
+<p>&#8220;`</p>
+
+<h2 id="matrix-form">Matrix Form</h2>
+
+<p>Now that we’ve established all that stuff about complex numbers and matrices works we sort of
+have a formula for represeenting a complex number as a matrix.</p>
+
+<script type="math/tex; mode=display">% &lt;![CDATA[
+3 + 4i = 
+
+  \begin{bmatrix} 
+    3 & -4 \\
+    4 &  3
+  \end{bmatrix} %]]&gt;</script>
+
+<p>So what happens if we use some other sorta pattern besides that?   What if we use some other dimension besides
+the imaginary dimension?  What if that dimension was infinitesimal.  Most people learn calculus by learning
+about limits first, but for some reason I didn’t, I learned on my own, and the first calculus textbook that
+made sense to me taught derivitives using infinitesimals, it’s really similar in some ways, but revolves around
+the number $\varepsilon$</p>
+
+<h2 id="derivitives">Derivitives</h2>
+
+<p>Derivitives calculate the slope at one point on a curve, when it takes two actual points to calculate a slope,
+“Rise over Run” style.  Usually you see a formula for derivitive using a variable $h$ or $\Delta x$, and take the limit as
+it goes to 0</p>
+
+<script type="math/tex; mode=display">f'(x) = \lim\limits_{\Delta x \to 0} \dfrac{f(x+\Delta x)-f(x)}{\Delta x}</script>
+
+<p>…but in this “style” of calculus, instead of that, you use $\varepsilon$ where $\varepsilon^{2} = 0$.
+In math, they say that if there is some positive integer $n$ where $x^n = 0$ then you would call $x$ a nilpotent number</p>
+
+<p>So, example:</p>
+
+<script type="math/tex; mode=display">f(x) = x^2    \\ \\
+
+  f'(x) = \dfrac{f(x + \varepsilon) - f(x)}{\varepsilon}   \\ \\
+
+  f'(x) = \dfrac{(x + \varepsilon)^{2} - x^{2}}{\varepsilon} \\ \\
+
+  f'(x) = \dfrac{x^{2} + x\varepsilon + x\varepsilon + \varepsilon^{2} - x^{2}}{\varepsilon} \\ \\ 
+
+  f'(x) = \dfrac{2x\varepsilon}{\varepsilon} \\ \\
+
+  f'(x) = 2x</script>
+
+<p>And that all worked out correctly, because $2x$ is totally the derivitive of $x^{2}$.  The key to that working
+out was that we defined $\varepsilon^{2} = 0$, which is something that totally reminds me of defining $i^{2} = -1$.</p>
+
+<h2 id="dual-numbers">Dual Numbers</h2>
+
+<p>Like a complex number has the form $a + bi$, a dual number has the form $a + b\varepsilon$.  The imaginary number $i$
+has magic powers, in that it can magically do rotations that you would normally have to use trigonometry for, but
+a dual number, has the magic power that it can automatically calculate the derivitive of a function.</p>
+
+<p>All you need to do to simultaneously calculate the value of a function, and its derivitive, is pass the function
+a value of $x + \varepsilon$, that’s whatever $x$ happens to be + $1\varepsilon$.</p>
+
+<p>Simple example again.</p>
+
+<script type="math/tex; mode=display">f(x) = x^2    \\ \\
+
+  f(x + \varepsilon) = (x + \varepsilon)^{2} \\ \\
+
+  f(x + \varepsilon) = x^{2} + x\varepsilon + x\varepsilon + \varepsilon^{2} \\ \\
+
+  f(x + \varepsilon) = x^{2} + 2x\varepsilon</script>
+
+<p>The result of the function is another dual number, the real part of which is $x^{2}$, and the dual part is $2x$,
+which the value and derivitive at $f(x)$ and $f’(x)$ respectively.</p>
+
+<h2 id="dual-numbers-as-matrices">Dual Numbers as Matrices</h2>
+
+<p>So just like we can encode a complex number into a 2x2 matrix, we can also encode a dual number in a similar way.</p>
+
+<script type="math/tex; mode=display">% &lt;![CDATA[
+\varepsilon = 
+
+  \begin{bmatrix} 
+    0 &  1 \\
+    0 &  0
+  \end{bmatrix}  \\ \\ %]]&gt;</script>
+
+<p>So if we multiply $\varepsilon \cdot \varepsilon$, we should get 0.</p>
+
+<script type="math/tex; mode=display">% &lt;![CDATA[
+\begin{bmatrix} 
+    0 &  1 \\
+    0 &  0
+  \end{bmatrix} 
+
+  \cdot
+
+  \begin{bmatrix} 
+    0 &  1 \\
+    0 &  0
+  \end{bmatrix} 
+
+  = 
+
+  \begin{bmatrix} 
+    0 \cdot 0 + 1 \cdot 0 &  0 \cdot 1 + 1 \cdot 0 \\
+    0 \cdot 0 + 0 \cdot 0 &  0 \cdot 1 + 0 \cdot 0
+  \end{bmatrix} 
+
+  =
+
+  \begin{bmatrix} 
+    
+    0 &  0 \\
+    0 &  0
+  \end{bmatrix} %]]&gt;</script>
+
+<h2 id="ruby-class-for-dual-numbers">Ruby Class for Dual Numbers</h2>
+
+<p><code>ruby 
+####
+##  Here is a class that implements Dual numbers, with addition,
+##  multiplication, and exponentiation
+class Dual
+    attr_accessor :matrix
+    def initialize(real, dual)
+        @matrix = Matrix[[real, dual], [0, real]]
+    end
+    def +(other)
+        result = @matrix + other.matrix
+        Dual.new(result[0, 0], result[0, 1])
+    end
+    def *(other)
+        result = @matrix * other.matrix
+        Dual.new(result[0, 0], result[0, 1])
+    end
+    def **(exponent)
+        result = @matrix**exponent
+        Dual.new(result[0, 0], result[0, 1])
+    end
+    def to_s
+        "#{real} + #{dual}ε"
+    end
+    def inspect
+        to_s
+    end
+    def real
+        @matrix[0, 0]
+    end
+    def dual
+        @matrix[0, 1]
+    end
+end
+#
+####
+##  Now let's have f(x) = x**2
+def f(x)
+    x**2
+end
+####
+##  Let's print a few values of this function
+print "f(x) = "
+p (0..15).map{|x| f(x) }
+## This prints:
+## f(x) = [0, 1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169, 196, 225]
+#  
+#  
+####
+##  Now lets run function f on a dual number, f(x + ε)
+print "f(x + ε) = "
+p (0..15).map{|x| f(Dual.new(x, 1)) }
+# 
+# 
+##  This prints
+##  f(x + ε) = [0 + 0ε, 1 + 2ε, 4 + 4ε, 9 + 6ε, 16 + 8ε, 25 + 10ε, 36 + 12ε, 
+##              49 + 14ε, 64 + 16ε, 81 + 18ε, 100 + 20ε, 121 + 22ε, 144 + 24ε, 
+##              169 + 26ε, 196 + 28ε, 225 + 30ε]
+# 
+# 
+##  The real part of the dual number in f(x + ε) is exactly the same as f(x)
+##  Let's just print out the dual component instead
+# 
+print "Dual{f(x + ε)} = "
+p (0..15).map{|x| f(Dual.new(x, 1)).dual }
+# 
+# 
+##  This prints
+##  Dual{f(x + ε)} = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30]
+</code></p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>I dunno, thought that was pretty cool.  Actually the more I figure out about matrices
+the more I am understanding how they can be used to implement any linear operator.  Actually the reasoning
+behind me even caring about matrices or linear operators at all (or math really), is that works together
+well with my obsession for digital audio filters.  Because a digital filter is usually a linear operation, yep,
+matrices can be used to calculate filters :)  Hopefully I will get more into describing how filters work in
+future blog posts.</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Consonant Intervals and Orthogonality]]></title>
+    <link href="http://irkenkitties.com/blog/2012/11/28/consonant-intervals-and-orthogonality/"/>
+    <updated>2012-11-28T01:46:00-08:00</updated>
+    <id>http://irkenkitties.com/blog/2012/11/28/consonant-intervals-and-orthogonality</id>
+    <content type="html"><![CDATA[<p>In this article I am going to explore some factors which are involved in the perception of
+consonance and dissonance of notes in the chromatic and major musical scales.  The distance 
+between two notes is called an interval, and there are 12 notes in the western chromatic scale.
+There are two common methods of calculating the frequencies of these notes.</p>
+
+<h2 id="equal-temperment">Equal Temperment</h2>
+
+<p>The most common method used in modern times is called Equal Temperment.  In this tuning, each
+adjacent note is related by the ratio of a 12th root of 2 or:</p>
+
+<script type="math/tex; mode=display">2^{1/12} = 1.0594630943592953...</script>
+
+<p>Starting from <code>A 440hz</code> and calculating each of the 12 notes of the chromatic scale up to the
+next A, looks like this:</p>
+
+<p><code>ruby Equal Tempered Note Frequencies
+r = 2.**(1/12.0)
+start_note = 440.0
+1.upto(12).map {|interval| start_note *= r }
+=&gt; [466.1637615180899, 493.8833012561241, 523.2511306011974, 
+    554.3652619537443, 587.3295358348153, 622.253967444162, 
+    659.2551138257401, 698.456462866008, 739.988845423269, 
+    783.9908719634989, 830.6093951598906, 880.000000000000]
+</code></p>
+
+<!-- more -->
+
+<p>This tuning has the benefit of being able to switch musical keys without retuning your instrument, 
+and allowing different types of instruments to play together.  This is the way a guitar, MIDI synthesizer,
+or piano is usually tuned.  The problems with it are that essentially every note frequency besides the Octave 
+is slightly wrong, and when calculated this way even that is a bit wrong due to floating point error and 
+cumulative error of multiplying irrational numbers.</p>
+
+<p>The benefits usually outweigh its problems, but for the purposes of this article I will be using…</p>
+
+<h2 id="just-intonation">Just Intonation</h2>
+
+<p>The ratios in Just Intonation are not all equal, but are based on the harmonic series.  You find each
+ratio by mutiplying the root note or tonic by increasing whole numbers, and then dividing by a denominator
+that will bring the frequency back into the octave’s range.  Here is a data structure we can use to look
+up the ratios and names for each degree in the chromatic scale.</p>
+
+<p><code>ruby Chromatic Scale Lookup Table
+start_note = 440.0    
+Ratios= [
+        {:ratio =&gt; 1,                   :name =&gt; 'Unison'},
+        {:ratio =&gt; Rational(25,24),     :name =&gt; 'Minor Second'},
+        {:ratio =&gt; Rational(9,8),       :name =&gt; 'Major Second'},
+        {:ratio =&gt; Rational(6,5),       :name =&gt; 'Minor Third'},
+        {:ratio =&gt; Rational(5,4),       :name =&gt; 'Major Third'},      
+        {:ratio =&gt; Rational(4,3),       :name =&gt; 'Perfect Fourth'},
+        {:ratio =&gt; Rational(45,32),     :name =&gt; 'Diminished Fifth'},
+        {:ratio =&gt; Rational(3,2),       :name =&gt; 'Perfect Fifth'},
+        {:ratio =&gt; Rational(8,5),       :name =&gt; 'Minor Sixth'},
+        {:ratio =&gt; Rational(5,3),       :name =&gt; 'Major Sixth'},
+        {:ratio =&gt; Rational(9,5),       :name =&gt; 'Minor Seventh'},
+        {:ratio =&gt; Rational(15,8),      :name =&gt; 'Major Seventh'},
+        {:ratio =&gt; 2,                   :name =&gt; 'Octave'} ]    
+Ratios.map{|ratio| start_note * ratio[:ratio].to_f }
+=&gt; [440.0, 458.33333333333337, 495.0, 528.0, 550.0, 586.6666666666666, 
+    618.75, 660.0, 704.0, 733.3333333333334, 792.0, 825.0, 880.0]
+</code></p>
+
+<p>This is already producing rational frequencies, and they are numbers I can work with mathematically
+in this example.  So, what is going on when an A Major chord <code>A C♯ E</code> sounds consonant and pleasing to
+people, and what causes a disonanant sound?</p>
+
+<p>A broad answer, is that the smaller the whole numbers are which are involved in the ratio, the more pleasing 
+(or even boring) two notes will sound in relation to one another. You can see for yourself that the ratio 
+of a relatively dissonant interval like the Diminished Fifth, also called The Tritone or Devil’s note, 
+has much higher whole numbers in the numerator and denominator with <code>45:32</code>.</p>
+
+<p>This interval is so interesting sounding, hanging out on the verge of consonance and dissonance that it is also called 
+the Blue Note, and plays a large part in the sound of Blues, Jazz, Rock, and Metal.</p>
+
+<p>While I was playing with the math described on the excellent DSP website
+<a href="http://www.katjaas.nl/complane/complexplane.html">A Trip on the Complex Plane</a>, I started playing with dot products 
+and it was mentioned that a pure sine wave at frequency $f$ is orthogonal to a sine wave one octave higher at
+$2f$.  I began to wonder what a dot product reveals about the orthogonality of other inervals besides the octave.</p>
+
+<h2 id="orthogonality">Orthogonality</h2>
+
+<p>One specific example of orthogonality that is easy to understand is on a 2D plane.  Visually you can see 
+it as two points that are rotated $90^{\circ}$or equivilenly $\pi/2$ radians from one another. Like these points 
+at  $(0, 0.5)$ and $(0.5, 0)$.</p>
+
+<p>Here you can see points</p>
+
+<p><img src="/images/polar_orthogonal.jpg" alt="Orthogonal points" title="Orthogonal Points" /></p>
+
+<p>It’s easy to see in this image, but you can figure out if any two points are orthogonal using a dot product. This is
+because the dot product of two vectors is equal to the cosine of the angle between them.  The cosine of $90^{\circ}$, or from now
+on using radians, $\pi/2$, is $0$, therefore if the dot product of two vectors is $0$ they are orthogonal.</p>
+
+<p>We can extend Ruby’s Array class to add some methods for working with orthogonality and dot products.  There is already a 
+Vector class in Ruby which does this, but it will be easier to show what’s happening by adding methods to Array and using
+it as a vector.</p>
+
+<p>The formula for dot product is to multiply each element in the vector element-wise producing a third
+vector, then all elements of this resulting vector are summed.</p>
+
+<script type="math/tex; mode=display">\vec{v} \cdot \vec{u} = \sum\limits_{i=1}^n \vec{v}_i \vec{u}_i</script>
+
+<p>&#8220;`ruby Dot Product
+class Array 
+    def dot_product(ary)
+        self.zip(ary).inject(0) do |sum, pairs|
+            sum += pairs.first * pairs.last rescue 0
+        end
+    end</p>
+
+<pre><code>def is_orthogonal?(other)
+    self.dot_product(other).abs &lt; Epsilon
+end end p1 = [1, 0] p2 = [0, 1] p1.is_orthogonal?(p2) =&gt; true ```
+</code></pre>
+
+<h2 id="audio-as-n-dimentional-vectors">Audio as N-Dimentional Vectors</h2>
+
+<p>So it’s great to be able to calculate if 2D points are orthogonal and all, but what about audio and musical 
+notes?  How can we prove that an <code>A 440hz</code> note is orthogonal to <code>A 880hz</code>, and what about the other notes in
+the chromatic scale?</p>
+
+<p>A pure note with no overtones being played is just air pressure oscillating back and forth at a specific number
+of times per second, or frequency.  That can be modeled using a sinusoidal function like sine or cosine.  Generating
+a cosine wave to represent <code>A 440hz</code> can be done with the equation $cos(2\pi \cdot 440 \cdot t)$ where $t$ is time in seconds.</p>
+
+<p>In the computer we can represent this digitally by sampling the values that come out of the above equation at regular
+time intervals, we can specify a ratio, number of cycles to generate, and a rate at which to sample the cosine function
+with the following code.  This effectively makes our digital sampling the same as an N-dimentional vector, similar to
+the 2 dimentional vectors shown above.</p>
+
+<p><code>ruby
+def create_scale_degree(ratio, num_cycles = 1, sample_rate = 32)
+    degree = 0.step(num_cycles, Rational(1,sample_rate)).map do |t| 
+        Math::cos(ratio * 2 * Math::PI * t)
+    end
+    degree.pop # One sample too many
+    degree
+end
+</code></p>
+
+<p>Instead of using <code>440hz</code> as the tonic, this code is just using <code>1hz</code> to simplify things.  It is also dropping
+the last sample because that sample actually belongs to the beginning of the next period of the cosine. 
+Now we should be able to prove what we already knew, two cosine waves that are in phase but an octave higher (double
+the frequency) are orthogonal to each other.</p>
+
+<p><code>ruby Octaves are Orthogonal
+p1 = create_scale_degree(1, 1, 5)
+=&gt; [1.0, 0.30901699437494745, -0.8090169943749473, 
+    -0.8090169943749475, 0.30901699437494723] 
+p2 = create_scale_degree(2, 1, 5)
+=&gt; [1.0, -0.8090169943749473, 0.30901699437494723, 
+    0.30901699437494773, -0.8090169943749477] 
+p1.is_orthogonal?(p2)
+=&gt; true 
+p1.is_orthogonal?([2,3,4,21,])
+=&gt; false
+</code></p>
+
+<p>Above I am genrating 1 cycle of a <code>1hz</code> and a <code>2hz</code> cosine wave at a sample rate of 5 samples per second.  These results
+can sometimes be hard to see due to floating point error, but we can unwind the dot product method and show it working
+manually.</p>
+
+<p><code>ruby Manual Calculation showing orthogonality
+1.0 * 1.0
+=&gt; 1.0
+0.30901699437494745 * -0.8090169943749473
+=&gt; -0.25
+-0.8090169943749473 * 0.30901699437494723
+=&gt; -0.2499999999999998 
+-0.8090169943749475 * 0.30901699437494773 + 
+=&gt; -0.2500000000000003
+0.30901699437494723 * -0.8090169943749477
+=&gt; -0.24999999999999992
+1.0 - 0.25 - 0.2499999999999998 - 0.2500000000000003 - 0.24999999999999992
+=&gt; 2.7755575615628914e-17
+#  Without floating point error: 1.0 - 0.25 - 0.25 - 0.25 - 0.25 == 0.0
+</code></p>
+
+<p>The above floating point error is the reasoning behind <code>self.dot_product(other).abs &lt; Epsilon</code> in the method <code>is_orthogonal?</code>
+Epsilon is just set to some very small number to deal with floting point comparisons.</p>
+
+<h2 id="are-the-other-intervals-orthogonal-too">Are the other intervals orthogonal too?</h2>
+
+<p>Using all this, we should be able to answer the original question, are the other intervals in the chromatic scale 
+all orthogonal to each other?  The answer I found was no, not after only one cycle of the cosine waves.  But, if you
+keep them running together for longer periods of time and more cycles, there is eventually a time when the waveform’s intervals
+will match up in period and the full waveform up until that point will be completely orthogonal to each other.</p>
+
+<p><code>ruby Checking Each Interval for Orthogonality
+MaxCycles = 200
+Ratios.each_with_index do |ratio, i|
+    next if i == 0   #  Not orthogonal to itself!
+    1.upto(MaxCycles) do |num_cycles|
+        tonic = create_scale_degree(Ratios.first[:ratio], num_cycles)
+        note = create_scale_degree(ratio[:ratio], num_cycles)
+        if tonic.is_orthogonal?(note)
+            puts "#{ratio[:name]} #{ratio[:ratio].inspect} is orthogonal to Unison after #{num_cycles} cycles"
+            break;
+        end
+    end
+end
+</code></p>
+
+<h2 id="results">Results</h2>
+
+<p>Below is a chart of the results sorted by how many cycles it takes for each interval to sync up and become
+orthogonal, which they all do after few relatively few cycles.</p>
+
+<p><code>ruby Results
+| Cycles   | Ratio    |  Decimal  | Interval Name    |
+| -------- | -------- | --------- | ---------------- |
+|  1       |  2:1     | 2.0       | Octave           |
+|  2       |  3:2     | 1.5       | Perfect Fifth    |
+|  3       |  4:3     | 1.3333333 | Perfect Fourth   |
+|  3       |  5:3     | 1.6666667 | Major Sixth      |
+|  4       |  5:4     | 1.25      | Major Third      |
+|  5       |  6:5     | 1.2       | Minor Third      |
+|  5       |  8:5     | 1.6       | Minor Sixth      |
+|  5       |  9:5     | 1.8       | Minor Seventh    |
+|  8       |  9:8     | 1.125     | Major Second     |
+|  8       | 15:8     | 1.875     | Major Seventh    |
+| 24       | 25:24    | 1.0417    | Minor Second     |
+| 32       | 45:32    | 1.40625   | Diminished Fifth |
+</code></p>
+
+<p>The first things I notice about the results are:</p>
+
+<ul>
+  <li>The number of cycles required is equal to the denominator</li>
+  <li>The decimal value of the interval’s ratio doesn’t follow the number of cycles</li>
+  <li>The Perfect Fifth is the quickest to sync up (Circle of fifths?)</li>
+  <li>The Perfect Fourth is next</li>
+  <li>When DJing you generally mix songs in keys which are perfect fourths and fifths</li>
+  <li>My two favourite intervals take the longest to sync</li>
+</ul>
+
+<p>What I can take away from this experiment, is that the human brain is basing its perception
+of consonance and dissonance on how long two frequencies or notes played together take 
+until they match up in period and become orthogonal.  This probably gives those intervals
+a feeling both of balance, but also temporary dissonance which resolves after a short period
+of time.  Two sounds played at once which never resolve to orthogonality are considered 
+noisey or out of tune.</p>
+
+]]></content>
+  </entry>
+  
+</feed>

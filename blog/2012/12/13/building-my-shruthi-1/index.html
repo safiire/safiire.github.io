@@ -1,0 +1,395 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Building My Shruthi-1 - Irken Kitties</title>
+  <meta name="author" content="Safiire">
+
+  
+  <meta name="description" content="Last year I built a small MIDI controlled polyphonic synthesizer called KittySynth using a 72MHz LeafLabs Maple microcontroller board, an Audio Codec &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://irkenkitties.com/blog/2012/12/13/building-my-shruthi-1">
+  <!-- <link href="/favicon.png" rel="icon"> &#8211;>
+
+  <!-- A million more different sizes and types of favicon -->
+  <link rel="apple-touch-icon" sizes="57x57" href="/favicons/apple-touch-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/favicons/apple-touch-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/favicons/apple-touch-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/favicons/apple-touch-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/favicons/apple-touch-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/favicons/apple-touch-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/favicons/apple-touch-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/favicons/apple-touch-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon-180x180.png">
+  <link rel="icon" type="image/png" href="/favicons/favicon-192x192.png" sizes="192x192">
+  <link rel="icon" type="image/png" href="/favicons/favicon-160x160.png" sizes="160x160">
+  <link rel="icon" type="image/png" href="/favicons/favicon-96x96.png" sizes="96x96">
+  <link rel="icon" type="image/png" href="/favicons/favicon-16x16.png" sizes="16x16">
+  <link rel="icon" type="image/png" href="/favicons/favicon-32x32.png" sizes="32x32">
+  <meta name="msapplication-TileColor" content="#9f00a7">
+  <meta name="msapplication-TileImage" content="/favicons/mstile-144x144.png">
+
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Irken Kitties" type="application/atom+xml">
+
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script src="/javascripts/three.min.js" type="text/javascript"></script>
+  <script src="/javascripts/glsl_header.js" type="text/javascript"></script>
+
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Francois+One' rel='stylesheet' type='text/css'>
+
+<!-- MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript"
+   src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Irken Kitties</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:irkenkitties.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a target="_blank" href="https://github.com/safiire">Github</a></li>
+  <li><a href="/blog/categories/haskell/">Haskell</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Building My Shruthi-1</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-13T17:54:00-08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Last year I built a small MIDI controlled polyphonic synthesizer called KittySynth using a <a href="http://leaflabs.com/devices/maple/">72MHz LeafLabs Maple</a> 
+microcontroller board, an <a href="http://www.openmusiclabs.com/projects/codec-shield/">Audio Codec Shield</a> from Open Music Labs,
+and some C++.  I had originally had some ideas to try to build something like this by abusing the timers and PWM duty cycles
+on a 16MHz Arduino Mega I have, but quickly realized there was no way on earth I could build what I wanted to with the small
+amount of resources on an Arduino.  The ARM based STM32 chip on the Maple had just enough resources available to create 
+an 8-voice polyphonic wavetable synth, which I should write about sooner or later.</p>
+
+<p>Anyway, while researching for that project I found out that someone actually has created a perfectly viable synthesizer
+based around a 20MHz ATMega chip (as in the Arduino) called the <a href="http://mutable-instruments.net/">Shruthi-1</a>.  I thought this was a perfect
+opportunity to go through the steps of actually building a proper synth of the sort I would someday like to design,
+so I ordered the Shruth-1 4-Pole Mission Kit, and decided to put it together from scratch.</p>
+
+<p><img src="/images/shruthi/shruthi_01.jpg" alt="The Parts Arrived" title="The Parts Arrive" /></p>
+
+<!-- more -->
+
+<p>Shruthies are only really offered as kits you put together, they’re about $180 Canadian, and come from France.  If you
+want a real, working, and fun synth for not a lot of money and can use a soldering iron, it’s probably the way to go.</p>
+
+<p>Olivier Gillet, the designer of the Shruthi, is pretty inspirational to me, but how did he design an awesome synth around
+a little 20MHz ATMega chip?  First thing, is that the Shruth-1 4-Pole Mission is a hybrid digital-analog monosynth.  The synth
+is divided into two PCBs, the top PCB is the digital control board, which contains the ATMega chip, LCD, knobs, and buttons.  It is 
+running software responsible for handling MIDI, generating the digital wavetable oscillators, envelopes, LFOs, reading the
+knobs.  There are 20 pins connecting it to the bottom PCB that primarily contains the analog filter, but also has the
+power regulator, MIDI and audio inputs and outputs.</p>
+
+<p><img src="/images/shruthi/shruthi_03.jpg" alt="Starting the Filter Board" title="Starting the Filter Board" /></p>
+
+<p>Having an analog filter is a common cause for a synth to be monophonic, ie. only one voice or 
+note at a time.  This is because in order to be polyphonic an analog synth would need separate circuitry
+for oscillator, envelope, and filter for each possible voice that could sound at once, making it much
+more expensive for each voice.  There are <a href="http://electronicmusic.wikia.com/wiki/Paraphonic">paraphonic</a> 
+synthesizers which can assign a note to more than one oscillator and sound them simultaneously, but
+uses only one envelope and one filter.  The Shruthi-1 does something similar with its duophony mode.
+Since it has two oscillators it allows you to play two notes at once, the first is assigned to Osc1,
+and the second to Osc2, however they are both enveloped and filtered together.</p>
+
+<h1 id="digital-board">Digital Board</h1>
+
+<p>Shruthi-1 has two 8-bit digital oscillators, and either a square or triangle sub oscillator, or a click generator to 
+create nice transients during a note’s attack.  The main and sub oscillators have a vibrato setting, the main
+oscs are also able to be detuned separately, and have a PWM control.</p>
+
+<p><img src="/images/shruthi/shruthi_04.jpg" alt="Filter Board" title="Filter Board" /></p>
+
+<p>Looking at the code, the Shruthi-1 generates its 8-bit oscillators in a few different ways, I can see code for rendering
+pure wavetables with interpolation, some code where it is waveshaping a static wavetable, some for interpolating two wavetables
+together, and some which outright generates a signal in real-time.</p>
+
+<p>The sub osc or click/noise generator is sent straight to a digital mixer for summation, while the two main oscs 
+enter a modulator first.  The modulator is where a significant amount of character is introduced in the synth.<br />
+The default algorithm in the modulator is a simple balance control between the two oscillators, but there are 
+many other algorithms such as:</p>
+
+<ul>
+  <li>Mixing with balance</li>
+  <li>Syncing - Osc2’s phase resets when Osc1’s does</li>
+  <li>Ring Modulation - Multiply and scales</li>
+  <li>XOR - Combines the two Oscs with bitwise xor</li>
+  <li>Fuzz - Osc1 &amp; 2 are shaped by tanh(), like a soft clipper</li>
+  <li>4 or 8 bit sample rate reduction</li>
+  <li>Bit Crusher</li>
+  <li>Duo - Let’s Osc1 &amp; 2 play two different notes at once</li>
+  <li>More I haven’t figured out :)</li>
+</ul>
+
+<p><img src="/images/shruthi/shruthi_06.jpg" alt="Filter Board" title="Filter Board" /></p>
+
+<h1 id="analog-board">Analog Board</h1>
+
+<p>Next in the signal chain, the output received in the digital mixer is converted to 10MHz/1-bit audio.  This means
+the audio can be represented by a pulse width modulated square wave.  A PWM waveform is literally only ever on
+or off, hence the 1-bit depth, but it can be used to represent any fractional voltage between 0GND and whatever
+is your high voltage.  For example if you attach an LED to a PWM output and the square wave is at 100% duty cycle
+it will shine the brightest it can, but if you alternate between turning it on and off for exactly half the time,
+50% duty cycle, it will shine half as bright.  It is really turning on and off really fast, but that is imperceptable
+to us most of the time.  Duty cycles from 0% to 100% can be created to represent the internal 8-bit digital 
+values from 0-255, and in PWM form, the audio can be sent electrically to the filter board for processing.</p>
+
+<p><img src="/images/shruthi/shruthi_07.jpg" alt="Digital Board" title="Digital Board" /></p>
+
+<p>The filter board on my Shruthi-1 is a 4-pole ladder filter, which is essentially four 1-pole filters connected in
+series.  The current is delayed in phase by 90° by each 1-pole component, usually caused by the reactance of a
+capacitor in a simple RC filter, and I assume something similar must be going on here.  After going through
+all four stages, the phase has gone around to 360°, and so is back where it started.  Variably mixing its output
+back into the first pole’s input causes the sick resonance ladder filters are known for because the phase lines 
+up again and reinforces frequencies in a loop at the filter’s cutoff frequency.</p>
+
+<p><img src="/images/shruthi/shruthi_08.jpg" alt="Digital Board" title="Digital Board" /></p>
+
+<p>Other synths using laddder filters are Moogs and the TB-303, though they are constructed differently.  The Shruthi
+also let’s you use the output at 1,2, or 3 poles which affects the slope of the stop-band.  You can also use the
+audio input in the back of the synth to apply the filter to whatever external sounds you want, provided you hold
+the envelope open.</p>
+
+<h2 id="building-it">Building it</h2>
+
+<p>The kit was actually pretty easy to assemble, and I spent a few hours per day on it and had it done over a weekend.
+Since I don’t have one of those fancy stands with clips to hold the boards for me, it was important to solder all
+the components in order of height, which meant doing all the resistors first, etc.  That way when you flip it over
+to solder the joint it will be held in place by resting on your work surface.</p>
+
+<p><img src="/images/shruthi/shruthi_09.jpg" alt="Boards Connected" title="Boards Connected" /></p>
+
+<p>I chose to do the filter board first, as it seemed like the hardest to do, but it was quite easy.  The digital board
+was a little tricky with its LCD screen probably being the hardest part out of the whole project.  A found the case
+kind of sucky, mine looked like it was cut out of the end of a huge piece of plastic, which had ugly green print on
+some of it, luckily it was on the bottom, and it was missing a screw hole on the top face.</p>
+
+<p>The 20 pins which connect the top and bottom boards are sort of haphhazardly connected, because they don’t reach
+so well, but they are firmly together, even if not perfect, and I haven’t had a problem with it.</p>
+
+<p><img src="/images/shruthi/shruthi_10.jpg" alt="Glowing In the Dark" title="Glowing in the Dark" /></p>
+
+<h2 id="sound">Sound</h2>
+
+<p>So far, I’ve found that the Shruthi-1 makes one crazy analog sounding bassline, so here is an example of the track
+I wrote after I finished the build. :)  I used the Shruthi-1 for bass, and a few other parts here and there.</p>
+
+<iframe width="100%" height="450" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/69901992&amp;auto_play=false&amp;hide_related=false&amp;show_comments=true&amp;show_user=true&amp;show_reposts=false&amp;visual=true"></iframe>
+
+<h2 id="finished-pic">Finished Pic!</h2>
+
+<p><img src="/images/shruthi/shruthi_11.jpg" alt="Finished and Working" title="Finished and Working" /></p>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Safiire</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-13T17:54:00-08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/diy/'>diy</a>, <a class='category' href='/blog/categories/dsp/'>dsp</a>, <a class='category' href='/blog/categories/electronics/'>electronics</a>, <a class='category' href='/blog/categories/music/'>music</a>, <a class='category' href='/blog/categories/synthesizers/'>synthesizers</a>
+  
+</span>
+
+
+    </p>
+    
+      
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/12/03/recreating-the-haskell-list-part-6-the-io-monad/" title="Previous Post: Recreating the Haskell List Part 6: The IO Monad">&laquo; Recreating the Haskell List Part 6: The IO Monad</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/10/17/matrices-as-linear-operations/" title="Next Post: Matrices as Linear Operators">Matrices as Linear Operators &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/04/12/reversing-crackme-challenges/">Reversing Crackme Challenges</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/02/10/glsl-shaders-with-webgl/">GLSL Shaders With WebGL</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/29/creating-sound-on-the-nes/">Creating Sound on the NES</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/17/matrices-as-linear-operations/">Matrices as Linear Operators</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/12/13/building-my-shruthi-1/">Building My Shruthi-1</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/safiire">@safiire</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'safiire',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2017 - Safiire
+</p>
+
+</footer>
+  
+
+
+</body>
+</html>

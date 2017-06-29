@@ -1,0 +1,1072 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Creating Sound on the NES - Irken Kitties</title>
+  <meta name="author" content="Safiire">
+
+  
+  <meta name="description" content="I am into all types of synthesizers, old and new, and recently I’ve taken to the sound of
+older video game sound chips. I recently desoldered the NES &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://irkenkitties.com/blog/2015/03/29/creating-sound-on-the-nes">
+  <!-- <link href="/favicon.png" rel="icon"> &#8211;>
+
+  <!-- A million more different sizes and types of favicon -->
+  <link rel="apple-touch-icon" sizes="57x57" href="/favicons/apple-touch-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/favicons/apple-touch-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/favicons/apple-touch-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/favicons/apple-touch-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/favicons/apple-touch-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/favicons/apple-touch-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/favicons/apple-touch-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/favicons/apple-touch-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon-180x180.png">
+  <link rel="icon" type="image/png" href="/favicons/favicon-192x192.png" sizes="192x192">
+  <link rel="icon" type="image/png" href="/favicons/favicon-160x160.png" sizes="160x160">
+  <link rel="icon" type="image/png" href="/favicons/favicon-96x96.png" sizes="96x96">
+  <link rel="icon" type="image/png" href="/favicons/favicon-16x16.png" sizes="16x16">
+  <link rel="icon" type="image/png" href="/favicons/favicon-32x32.png" sizes="32x32">
+  <meta name="msapplication-TileColor" content="#9f00a7">
+  <meta name="msapplication-TileImage" content="/favicons/mstile-144x144.png">
+
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Irken Kitties" type="application/atom+xml">
+
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script src="/javascripts/three.min.js" type="text/javascript"></script>
+  <script src="/javascripts/glsl_header.js" type="text/javascript"></script>
+
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Francois+One' rel='stylesheet' type='text/css'>
+
+<!-- MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript"
+   src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Irken Kitties</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:irkenkitties.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a target="_blank" href="https://github.com/safiire">Github</a></li>
+  <li><a href="/blog/categories/haskell/">Haskell</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Creating Sound on the NES</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-03-29T10:51:44-07:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>I am into all types of synthesizers, old and new, and recently I’ve taken to the sound of
+older video game sound chips.  I recently desoldered the NES’s 2A03 processor off its mainboard
+and have it in partial communication with an Arudino, but rewind, do I really know enough
+about composing music on that chip?  Not yet.  So there’s only one thing to do about that.</p>
+
+<h2 id="assembler">6502 Assembler</h2>
+
+<p>The NES was programmed in 6502 assembly language, and lucky for me, it actually has a really
+straight forward instruction set, but still, last month I was still not familiar with it 
+enough to make anything.  Now, usually when I don’t understand something, I write a program
+that somehow involves whatever topic I’m learning.  You can’t write a program like an assembler 
+without understanding how the processor for that assembler works, so I wrote my own assembler 
+for the NES called <a href="https://github.com/safiire/n65">n65</a>.</p>
+
+<p>This is the assembler I will be using in this article, and to help me compose music on the NES.</p>
+
+<p>You can easily install n65 through RubyGems.org:</p>
+
+<pre><code>gem install n65
+</code></pre>
+
+<!-- more -->
+
+<h2 id="programming-basics">Programming Basics</h2>
+
+<p>Before we can get the NES to make any sounds, there are a few things to know about writing
+programs for it.  The 6502 is an 8-bit processor, because most of its internal work registers
+are 8 bits wide.  The general purpose registers you have direct control over are named 
+<code>A</code>, <code>X</code>, and <code>Y</code>.   There are a few other 8 bit registers, such as the status register
+and the stack pointer.  The <code>PC</code>, or program counter though, is 16 bits wide, which means
+the processor can address memory from <code>$0000</code> to <code>$ffff</code>, a total of 65536 addressable bytes.</p>
+
+<p>A NES does not have 64KB of actual RAM, the mainboard comes with 2KB of work RAM attached to
+the CPU, and 2KB of video RAM attached to the Picture Processing Unit, or PPU, which is 
+actually a separate processor entirely, both of these processors run independantly of one 
+another, but they can communicate through memory mapped registers.</p>
+
+<p>The Audio Processing Unit, or APU, is also very much like a separate processor, although it
+is on the 2A03 chip, and is one of the things that makes a 2A03 different than other 6502s.
+You also communicate with the APU by writing values to memory mapped registers.</p>
+
+<p><img src="/images/NES-memory.png" alt="NES Memory Map" /></p>
+
+<p><small>Image from <a href="http://www.jfbillingsley.com">www.jfbillingsley.com</a></small></p>
+
+<p>Tiny, tiny amount of work RAM <code>$800</code> bytes or 2KB.  If you’ve never worked on anything
+with such a small amount of RAM, well that’s actually the challenge here, that and having
+no operating system is what makes it fun in my opinion :)</p>
+
+<p>You don’t have to do everything yourself however, the PPU <em>is</em> a hardware tile and sprite
+engine, and the APU <em>is</em> a synthesizer.  When the machine starts up, it is ready to 
+display graphics and play sounds all by itself, all you need to do, and the majority
+of what your code is about, is moving the right data into the right places, and the 
+hardware does the rest.  This is typical of older generation consoles, and even newer
+ones up to at least the Nintendo DS.</p>
+
+<h2 id="program-skeleton">Program Skeleton</h2>
+
+<p>Before we make our first beep, let’s set up a project skeleton that does the initialization
+that all NES games need to do.  This involves setting the hardware into a known state,
+setting up the stack pointer, and clearing the work RAM.</p>
+
+<p>When we produce a binary from our assembly code listing, we are writing code located
+in the cartridge ROM area, shown above starting at <code>$8000</code>.  The ROM binary we produce
+would be written onto an actual ROM chip inside a NES cartridge, or more likely we’re
+going to run this on an emulator, in which case <code>n65</code> is setup to produce iNES formatted
+“roms”.</p>
+
+<p>The iNES file format is simply a 32 byte header, followed by at least one 16KB PROG ROM, and
+zero or more 8KB CHAR ROM sections.  For now we can forget about CHAR ROM, let’s just create
+one PROG ROM section.  These sections are either PROG for code or CHAR for graphics data, 
+and are numbered in banks.</p>
+
+<p>One last thing, the cartridge program ROM section is shown to be mapped from <code>$8000 - $ffff</code>,
+this is 32KB total, not 16KB.  If we specify 1 PROG ROM section in the header, that section
+will be mirrored twice to cover that area of memory.  This is important because we must
+remember to write an interrupt vector table to <code>$fffa</code>.  This is why we will assemble our
+prog section bank 0 at <code>$C000</code>, because we are only using one bank of 16KB, it tends to
+make more sense as far as addressing is concerned.</p>
+
+<p>The interrupt vector is 3 16-bit addresses, that point to code for handling VBlank, Reset,
+and IRQ respectively.  Every ROM must specify these, because the Reset vector points to
+the beginning of our code, think of it like specifying your main() function in a C program.</p>
+
+<p>Ok here is an NES project skeleton that just initializes the hardware:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+<span class="line-number">36</span>
+<span class="line-number">37</span>
+<span class="line-number">38</span>
+<span class="line-number">39</span>
+<span class="line-number">40</span>
+<span class="line-number">41</span>
+<span class="line-number">42</span>
+<span class="line-number">43</span>
+<span class="line-number">44</span>
+<span class="line-number">45</span>
+<span class="line-number">46</span>
+<span class="line-number">47</span>
+<span class="line-number">48</span>
+<span class="line-number">49</span>
+<span class="line-number">50</span>
+<span class="line-number">51</span>
+<span class="line-number">52</span>
+<span class="line-number">53</span>
+<span class="line-number">54</span>
+<span class="line-number">55</span>
+<span class="line-number">56</span>
+<span class="line-number">57</span>
+<span class="line-number">58</span>
+<span class="line-number">59</span>
+<span class="line-number">60</span>
+<span class="line-number">61</span>
+<span class="line-number">62</span>
+<span class="line-number">63</span>
+<span class="line-number">64</span>
+<span class="line-number">65</span>
+<span class="line-number">66</span>
+<span class="line-number">67</span>
+<span class="line-number">68</span>
+<span class="line-number">69</span>
+<span class="line-number">70</span>
+<span class="line-number">71</span>
+<span class="line-number">72</span>
+<span class="line-number">73</span>
+<span class="line-number">74</span>
+<span class="line-number">75</span>
+<span class="line-number">76</span>
+<span class="line-number">77</span>
+<span class="line-number">78</span>
+<span class="line-number">79</span>
+<span class="line-number">80</span>
+<span class="line-number">81</span>
+<span class="line-number">82</span>
+<span class="line-number">83</span>
+<span class="line-number">84</span>
+<span class="line-number">85</span>
+<span class="line-number">86</span>
+<span class="line-number">87</span>
+<span class="line-number">88</span>
+<span class="line-number">89</span>
+<span class="line-number">90</span>
+<span class="line-number">91</span>
+<span class="line-number">92</span>
+<span class="line-number">93</span>
+<span class="line-number">94</span>
+<span class="line-number">95</span>
+<span class="line-number">96</span>
+<span class="line-number">97</span>
+<span class="line-number">98</span>
+<span class="line-number">99</span>
+<span class="line-number">100</span>
+<span class="line-number">101</span>
+<span class="line-number">102</span>
+<span class="line-number">103</span>
+</pre></td><td class="code"><pre><code class="ca65"><span class="line"><span class="c1">;;;;</span>
+</span><span class="line"><span class="c1">;  Create an iNES header</span>
+</span><span class="line"><span class="kp">.ines</span> <span class="err">{</span><span class="s">&quot;prog&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s">&quot;char&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s">&quot;mapper&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s">&quot;mirror&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="err">}</span>
+</span><span class="line">
+</span><span class="line">
+</span><span class="line"><span class="c1">;;;;</span>
+</span><span class="line"><span class="c1">;  Include all the symbols in the nes library</span>
+</span><span class="line"><span class="kp">.inc</span> <span class="o">&lt;</span><span class="n">nes.sym</span><span class="o">&gt;</span>
+</span><span class="line">
+</span><span class="line">
+</span><span class="line"><span class="c1">;;;;</span>
+</span><span class="line"><span class="c1">;  Open the prog section bank 0</span>
+</span><span class="line"><span class="kp">.segment</span> <span class="n">prog</span> <span class="mi">0</span>
+</span><span class="line">
+</span><span class="line">
+</span><span class="line"><span class="c1">;;;;</span>
+</span><span class="line"><span class="c1">;  Setup the interrupt vectors</span>
+</span><span class="line"><span class="kp">.org</span> <span class="mh">$FFFA</span>
+</span><span class="line"><span class="kp">.dw</span> <span class="n">vblank</span>
+</span><span class="line"><span class="kp">.dw</span> <span class="n">reset</span>
+</span><span class="line"><span class="kp">.dw</span> <span class="n">irq</span>
+</span><span class="line">
+</span><span class="line">
+</span><span class="line"><span class="c1">;;;;</span>
+</span><span class="line"><span class="c1">;  Here is our code entry point</span>
+</span><span class="line"><span class="kp">.org</span> <span class="mh">$C000</span>
+</span><span class="line"><span class="kp">.scope</span> <span class="n">reset</span>
+</span><span class="line">  <span class="k">sei</span>                   <span class="c1">; SEt Interrupt (disables them)</span>
+</span><span class="line">  <span class="k">cld</span>                   <span class="c1">; CLear Decimal Mode</span>
+</span><span class="line">
+</span><span class="line">  <span class="k">ldx</span> <span class="p">#</span><span class="mh">$ff</span>
+</span><span class="line">  <span class="k">txs</span>                   <span class="c1">; Set the stack pointer</span>
+</span><span class="line">
+</span><span class="line">  <span class="k">ldx</span> <span class="p">#</span><span class="mh">$00</span>
+</span><span class="line">  <span class="k">stx</span> <span class="n">nes.ppu.control</span>
+</span><span class="line">  <span class="k">stx</span> <span class="n">nes.ppu.mask</span>      <span class="c1">; Disable Vblank &amp; Rendering</span>
+</span><span class="line">
+</span><span class="line">  <span class="k">jsr</span> <span class="n">zero_apu</span>          <span class="c1">; Zero all APU registers</span>
+</span><span class="line">
+</span><span class="line">  <span class="c1">;  We need to wait for at least 2 Vblanks to happen</span>
+</span><span class="line">  <span class="c1">;  before we know the PPU has stabilized at startup</span>
+</span><span class="line">  <span class="c1">;  Here we wait for the first one.</span>
+</span><span class="line">  <span class="k">bit</span> <span class="n">nes.ppu.status</span>
+</span><span class="line">  <span class="nl">wait_vblank1:</span>
+</span><span class="line">    <span class="k">bit</span> <span class="n">nes.ppu.status</span>
+</span><span class="line">    <span class="k">bpl</span> <span class="n">wait_vblank1</span>
+</span><span class="line">
+</span><span class="line">  <span class="c1">;  Before we wait for the second vblank, lets</span>
+</span><span class="line">  <span class="c1">;  zero all of the working RAM $0 to $800</span>
+</span><span class="line">  <span class="c1">;  The $200s are shadow sprite OAM, and should be set to $fe</span>
+</span><span class="line">  <span class="nl">clear_ram:</span>
+</span><span class="line">    <span class="k">lda</span> <span class="p">#</span><span class="mh">$00</span>
+</span><span class="line">    <span class="k">sta</span> <span class="mh">$00</span><span class="p">,</span> <span class="n">x</span>
+</span><span class="line">    <span class="k">sta</span> <span class="mh">$100</span><span class="p">,</span> <span class="n">x</span>
+</span><span class="line">    <span class="k">sta</span> <span class="mh">$300</span><span class="p">,</span> <span class="n">x</span>
+</span><span class="line">    <span class="k">sta</span> <span class="mh">$400</span><span class="p">,</span> <span class="n">x</span>
+</span><span class="line">    <span class="k">sta</span> <span class="mh">$500</span><span class="p">,</span> <span class="n">x</span>
+</span><span class="line">    <span class="k">sta</span> <span class="mh">$600</span><span class="p">,</span> <span class="n">x</span>
+</span><span class="line">    <span class="k">sta</span> <span class="mh">$700</span><span class="p">,</span> <span class="n">x</span>
+</span><span class="line">    <span class="k">lda</span> <span class="p">#</span><span class="mh">$fe</span>
+</span><span class="line">    <span class="k">sta</span> <span class="mh">$200</span><span class="p">,</span> <span class="n">x</span>
+</span><span class="line">    <span class="k">inx</span>
+</span><span class="line">    <span class="k">bne</span> <span class="n">clear_ram</span>
+</span><span class="line">
+</span><span class="line">  <span class="c1">;  Now wait for the second vblank</span>
+</span><span class="line">  <span class="nl">wait_vblank2:</span>
+</span><span class="line">    <span class="k">bit</span> <span class="n">nes.ppu.status</span>
+</span><span class="line">    <span class="k">bpl</span> <span class="n">wait_vblank2</span>
+</span><span class="line">
+</span><span class="line">  <span class="c1">;  Loop here forever</span>
+</span><span class="line">  <span class="nl">forever:</span>
+</span><span class="line">    <span class="k">jmp</span> <span class="n">forever</span>
+</span><span class="line">
+</span><span class="line">  <span class="k">rti</span>
+</span><span class="line"><span class="p">.</span>
+</span><span class="line">
+</span><span class="line">
+</span><span class="line"><span class="c1">;;;;</span>
+</span><span class="line"><span class="c1">;  VBlank is called 60 times per second</span>
+</span><span class="line"><span class="kp">.scope</span> <span class="n">vblank</span>
+</span><span class="line">  <span class="k">rti</span>
+</span><span class="line"><span class="p">.</span>
+</span><span class="line">
+</span><span class="line">
+</span><span class="line"><span class="c1">;;;;</span>
+</span><span class="line"><span class="c1">;  IRQ, we are not using</span>
+</span><span class="line"><span class="kp">.scope</span> <span class="n">irq</span>
+</span><span class="line">  <span class="k">rti</span>
+</span><span class="line"><span class="p">.</span>
+</span><span class="line">
+</span><span class="line">
+</span><span class="line"><span class="c1">;;;;</span>
+</span><span class="line"><span class="c1">;  Zero all the APU registers</span>
+</span><span class="line"><span class="kp">.scope</span> <span class="n">zero_apu</span>
+</span><span class="line">  <span class="k">lda</span> <span class="p">#</span><span class="mh">$00</span>
+</span><span class="line">  <span class="k">ldx</span> <span class="p">#</span><span class="mh">$00</span>
+</span><span class="line">  <span class="nl">loop:</span>
+</span><span class="line">    <span class="k">sta</span> <span class="mh">$4000</span><span class="p">,</span> <span class="n">x</span>
+</span><span class="line">    <span class="k">inx</span>
+</span><span class="line">    <span class="k">cpx</span> <span class="mh">$18</span>
+</span><span class="line">    <span class="k">bne</span> <span class="n">loop</span>
+</span><span class="line">  <span class="k">rts</span>
+</span><span class="line"><span class="p">.</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>So, let’s assemble this file using n65, and load it into an emulator.  This means running n65
+in your terminal.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line"><span class="nv">$ </span>n65 program_skeleton.asm
+</span><span class="line">
+</span><span class="line">Building program_skeleton.asm
+</span><span class="line">..................................................................................................
+</span><span class="line">Second pass, resolving symbols... Done.
+</span><span class="line">iNES Header
+</span><span class="line">+ <span class="m">1</span> PROG ROM bank
+</span><span class="line">+ <span class="m">0</span> CHAR ROM <span class="nv">banks</span>
+</span><span class="line"><span class="o">=</span> Output ROM will be <span class="m">16400</span> bytes
+</span><span class="line">All Done :<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>I develop on OSX, though n65 works under Linux, and probably Windows if you have Ruby installed.</p>
+
+<p>If you named your assembly file <code>program_skeleton.asm</code>,  by default you’re going to get a NES rom 
+file with the name <code>program_skeleton.nes</code>.  The output filename can be changed to whatever you like
+with the <code>-o</code> flag.</p>
+
+<p>For an emulator, I am a fan of FCEUX because of its debugging and memory viewing
+capabilities, but the native version of FCEUX for OSX does not seem to include those features.</p>
+
+<p>So, for debugging on OSX, I’ve taken to running FCEUX under Wine, which works well enough for that
+purpose.  With FCEUX under Wine I can use the debugger, and if you run this ROM and open the memory
+hex editor you should see the first bit of RAM initialized like this:</p>
+
+<p><img src="/images/initialized_ram.png" alt="Initialized RAM" /></p>
+
+<p>So, why did we initialize <code>$200 - $2ff</code> to <code>$fe</code>?</p>
+
+<p>That 256 byte page of memory is typically used as “shadow OAM”.  OAM is Object Attribute Memory,
+and resides in the PPU’s video RAM, but rather than update it directly, most people keep 
+a copy of it here in CPU RAM, and transfer this copy to the PPU once per frame.</p>
+
+<p>Remember how I said the NES has a hardware tile and sprite engine built into the PPU that
+just starts running on its own provided you put data in the right spots?</p>
+
+<p>OAM has the <code>x</code> and <code>y</code> coordinates (among other attributes) of the 64 possible 
+hardware sprites on the NES, each sprite OAM is 4 bytes, and <code>64 * 4 = 256</code>.  Shoving <code>$fe</code> into
+that area, will have moved all the sprites offscreen, because it is possible we’d see a bunch of
+garbage sprites if we turned on the PPU and started coppying it over, so shadow OAM is typically 
+initialized with this value.</p>
+
+<p>That’s enough about sprites and graphics though, since for now we are just interested in 
+getting a simple sound out of the APU.  In fact this program skeleton has turned off the PPU, 
+and VBlank for now, and so rendering is totally disabled.  We will turn it on again later
+when we want a stable timer for our music.</p>
+
+<h2 id="next-step">Next Step</h2>
+
+<p>The next easiest step to keep us moving forward, we can get the NES to 
+make a beep using its APU.  I’ve found a ton of good info on <a href="http://wiki.nesdev.com/w/index.php/APU_basics">NESDev</a>.</p>
+
+<p>So here is a rundown of the parts of the APU:</p>
+
+<ul>
+  <li><code>$4000 - $4003</code> Pulse 1</li>
+  <li><code>$4004 - $4007</code> Pulse 2</li>
+  <li><code>$4008 - $400B</code> Triangle</li>
+  <li><code>$400C - $400F</code> Noise</li>
+  <li><code>$4010 - $4013</code> DCM</li>
+  <li><code>$4015</code> Channel Enable</li>
+</ul>
+
+<p>We’re going to want to use one of the Pulse oscillators to make a beep, so let’s use Pulse1.</p>
+
+<p>We want to use the channel enable to enable that oscillator, then write the correct values into
+the area <code>$4000 - $4003</code>, to make a concert <code>A 440hz</code> note come out with the right duty cycle.</p>
+
+<p>Here is what the four bytes that control Pulse 1 do, notice that many things are packed into 
+one 8-bit byte.  Here is what each bit does:</p>
+
+<pre><code>nes.apu.pulse1.control
+$4000 DDLC VVVV
+D : Duty cycle of the pulse wave 00 = 12.5% 01 = 25% 10 = 50% 11 = 75%
+L : Length Counter Halt
+C : Constant Volume
+V : 4-bit volume
+
+nes.apu.pulse1.ramp_control
+$4001 EPPP NSSS
+E : Enabled flag
+P : Sweep Divider Period
+N : Negate flag, inverts the sweep envelope
+S : Shift count
+
+nes.apu.pulse1.ft
+$4002 TTTT TTTT
+T : Low 8 bits of the timer that controls the frequency
+
+nes.apu.pulse1.ct
+$4003 LLLL LTTT
+L : Length counter, if Length Counter Halt is 0, timer for note length
+T : High 3 bits of timer that controls frequency
+</code></pre>
+
+<p>APU register <code>$4001</code> does pitch sweeps, so let’s ignore that for now, and set up enough registers
+to get a beep at our desired frequency of <code>440hz</code>.  I’ve listed symbolic names for each of the
+registers as well, you get these symbolic names by the assembler directive <code>.inc &lt;nes.sym&gt;</code> in 
+the above code listing.</p>
+
+<p>A pulse wave is a type of function generator that is either on or off, and the duty cycle parameter
+tells the APU what percentage of the time the wave is on or high.</p>
+
+<p><img src="/images/duty_cycle.jpg" alt="Duty Cycle" /></p>
+
+<h2 id="setting-nesapupulse1control">Setting nes.apu.pulse1.control</h2>
+
+<p>Setting this effects the timbre of the sound, let’s just set it to 50% for now, this is a 2-bit 
+parameter and that corresponds to <code>%10</code> in binary.  The percentage sign prefix on a number means
+binary, whereas the dollar sign means hexcidecimal, if you were wondering.</p>
+
+<p>For volume, parameter V, we are allowed 4-bits of resolution, let’s play it as loud as possible,
+<code>%1111</code>.  We should also set bit C to <code>%1</code>, to allow constant volume throughout the whole time the note is 
+played, and set L to <code>%0</code>, because, we want to use the Length Counter, not halt it.</p>
+
+<p>In the end, when we put all these parameters together into <code>nes.apu.pulse1.control</code> register, we
+get the final value of <code>%10011111</code>, or <code>$9f</code> in hex.  I find it a lot clearer to write out registers
+with composite values in binary rather than hexcidecimal though.</p>
+
+<h2 id="setting-nesapupulse1ft">Setting nes.apu.pulse1.ft</h2>
+
+<p>This register is for setting the frequency of the generated sound.  An oscillator generates a waveform
+that resets itself periodically, and repeats a certain number of times per second.  We want the pulse
+wave to reset at 440 times per second so we will get the note concert A, below middle C.</p>
+
+<p>Internal to the APU is a counter which counts at a specific rate, related to the speed of the 2A03
+processor, when it reaches the value we set to <code>T</code>, it will reset the period of the waveform, giving
+us the right frequency.  But it turns out the size of a register, being 8-bit cannot count high enough
+to give us the low notes we expect to be able to produce in music.</p>
+
+<p>Frequency in hertz has an inverse relationship to time in seconds:</p>
+
+<script type="math/tex; mode=display">t = 1/f \\
+  f = 1/t</script>
+
+<p>That means the lower the note in hertz, the longer the timer will have to count, and means the counter
+has to be at least 11-bits, so the value T spans all of the 8 bits in <code>nes.apu.pulse1.ft</code> and the 
+three extra high bits end up in <code>nes.apu.pulse1.ct</code></p>
+
+<p>There is a formula for determining this 11-bit counter number <code>T</code> from frequency in hertz:</p>
+
+<script type="math/tex; mode=display">T = (CPU / (16 \cdot f)) - 1</script>
+
+<p>Where <code>CPU = 1789773.0</code>, which is the speed of an NTSC Nintendo’s processor in hertz.  This value
+is different on a PAL NES, in that case <code>CPU = 1662607.0</code>.</p>
+
+<p>Here is a Ruby function for determining the value of <code>T</code>:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line">  <span class="no">CPU</span> <span class="o">=</span> <span class="mi">1789773</span><span class="o">.</span><span class="mi">0</span>
+</span><span class="line">
+</span><span class="line">  <span class="c1">####</span>
+</span><span class="line">  <span class="c1">##  Midi note to NES timer</span>
+</span><span class="line">  <span class="k">def</span> <span class="nf">midi_note_to_nes_timer</span><span class="p">(</span><span class="n">frequency</span><span class="p">)</span>
+</span><span class="line">    <span class="n">timer</span> <span class="o">=</span> <span class="p">(</span><span class="no">CPU</span> <span class="o">/</span> <span class="p">(</span><span class="mi">16</span> <span class="o">*</span> <span class="n">frequency</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
+</span><span class="line">    <span class="n">timer</span><span class="o">.</span><span class="n">round</span>
+</span><span class="line">  <span class="k">end</span>
+</span><span class="line">
+</span><span class="line">  <span class="n">midi_note_to_nes_timer</span><span class="p">(</span><span class="mi">440</span><span class="o">.</span><span class="mi">0</span><span class="p">)</span>
+</span><span class="line">   <span class="o">=&gt;</span> <span class="mi">253</span>
+</span><span class="line">
+</span><span class="line">  <span class="n">midi_note_to_nes_timer</span><span class="p">(</span><span class="mi">220</span><span class="o">.</span><span class="mi">0</span><span class="p">)</span>
+</span><span class="line">   <span class="o">=&gt;</span> <span class="mi">507</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Hey, lucky us, the value <code>253</code> actually does fit within 8-bits.  But that’s cutting it pretty close,
+very much lower in frequency that number would have been higher than <code>255</code>, and we would have needed
+to put extra bits into <code>nes.apu.pulse1.ct</code>.</p>
+
+<p>This gives me an idea, let’s allow both frequencies to be played.  Let’s create a NES ROM that plays 
+a <code>220hz</code> note if the B button is pushed, and a <code>440hz</code> note if the A button is pushed.</p>
+
+<p>So the 11-bit value of <code>T</code> for each frequency is then:</p>
+
+<ul>
+  <li><code>440hz = %000 11111101</code></li>
+  <li><code>220hz = %001 11111011</code></li>
+</ul>
+
+<h2 id="setting-nesapupulse1ct">Setting nes.apu.pulse1.ct</h2>
+
+<p>Like we just mentioned, <code>nes.apu.pulse1.ct</code> contains 5 bits of length counter, to control the duration
+of our note, and the 3 high bits from <code>T</code> the frequency counter.</p>
+
+<p>For now let’s set the note length counter to its highest value, <code>%11111</code></p>
+
+<h2 id="reading-from-the-controller">Reading from the Controller</h2>
+
+<p>Since we just decided to allow button B to make one note, and button A to make another, we need to 
+learn how to read the NES’s controller buttons.  The best way to do this, is to create a subroutine
+which reads each of the buttons we care about, and stores their states into the work RAM area.  This
+way, we can detect when the button is first pressed, and not just held down.</p>
+
+<p>Controller 1, like everything else, is a memory mapped device, and it is mapped to address <code>$4016</code>,
+or, if we’re using my symbolic names, simply <code>nes.controller1</code>.</p>
+
+<p>To tell the controller we want to read its button states, we have to “strobe” the controller, which
+just means to write a <code>$01</code> and then a <code>$00</code> to it in succession.  Then bit 0 of the next eight bytes
+that we read out of that location reveal the state of each button in the following order:</p>
+
+<ul>
+  <li>A</li>
+  <li>B</li>
+  <li>Select</li>
+  <li>Start</li>
+  <li>Up</li>
+  <li>Down</li>
+  <li>Left</li>
+  <li>Right</li>
+</ul>
+
+<h2 id="putting-it-all-together">Putting it all together</h2>
+
+<p>Here are some modifications and additions.  First we add an initialize subroutine to our reset 
+which enables both pulse1 and pulse2, and turns the PPU back on so that we get VBlank interrupts again.</p>
+
+<p>The VBlank is the portion of time when the screen is in-between drawing, and is a handy place you
+can put code you would like run every frame, at 60 frames per second.  We use this to call our
+<code>read_input</code> subroutine repeatedly.</p>
+
+<p>The <code>read_input</code> subroutine strobes controller1 and reads the state of the <code>A</code> and <code>B</code> buttons,
+and stores their state into <code>controller_state</code> as defined in RAM at address <code>$0000</code> in the zero
+page.  The zero page is the first 256 bytes of RAM, which can be quickly accessed using only
+an 8-bit address, when you see a <code>zp</code> suffix on an instruction, you are telling the assembler
+it can use the quick zero page addressing mode.</p>
+
+<p>We store the state of the <code>A</code> and <code>B</code> buttons in RAM so that we can tell when they are first
+changing state, so that we only play our notes once per button press.</p>
+
+<p>Then we’ve added two subroutines which load the values discussed above into the APU to get
+our notes to play.  <code>nes.apu.pulse1</code> and <code>nes.apu.pulse2</code> both operate in the exact same way,
+which is why we turned them both on, each button triggers one of the two pulse generators,
+which means we can hear both sounds at once, overlapping if needed.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+<span class="line-number">36</span>
+<span class="line-number">37</span>
+<span class="line-number">38</span>
+<span class="line-number">39</span>
+<span class="line-number">40</span>
+<span class="line-number">41</span>
+<span class="line-number">42</span>
+<span class="line-number">43</span>
+<span class="line-number">44</span>
+<span class="line-number">45</span>
+<span class="line-number">46</span>
+<span class="line-number">47</span>
+<span class="line-number">48</span>
+<span class="line-number">49</span>
+<span class="line-number">50</span>
+<span class="line-number">51</span>
+<span class="line-number">52</span>
+<span class="line-number">53</span>
+<span class="line-number">54</span>
+<span class="line-number">55</span>
+<span class="line-number">56</span>
+<span class="line-number">57</span>
+<span class="line-number">58</span>
+<span class="line-number">59</span>
+<span class="line-number">60</span>
+<span class="line-number">61</span>
+<span class="line-number">62</span>
+<span class="line-number">63</span>
+<span class="line-number">64</span>
+<span class="line-number">65</span>
+<span class="line-number">66</span>
+<span class="line-number">67</span>
+<span class="line-number">68</span>
+<span class="line-number">69</span>
+<span class="line-number">70</span>
+<span class="line-number">71</span>
+<span class="line-number">72</span>
+<span class="line-number">73</span>
+<span class="line-number">74</span>
+<span class="line-number">75</span>
+<span class="line-number">76</span>
+<span class="line-number">77</span>
+<span class="line-number">78</span>
+<span class="line-number">79</span>
+<span class="line-number">80</span>
+<span class="line-number">81</span>
+<span class="line-number">82</span>
+<span class="line-number">83</span>
+<span class="line-number">84</span>
+<span class="line-number">85</span>
+<span class="line-number">86</span>
+<span class="line-number">87</span>
+<span class="line-number">88</span>
+<span class="line-number">89</span>
+<span class="line-number">90</span>
+<span class="line-number">91</span>
+<span class="line-number">92</span>
+<span class="line-number">93</span>
+<span class="line-number">94</span>
+<span class="line-number">95</span>
+<span class="line-number">96</span>
+<span class="line-number">97</span>
+<span class="line-number">98</span>
+<span class="line-number">99</span>
+<span class="line-number">100</span>
+<span class="line-number">101</span>
+<span class="line-number">102</span>
+<span class="line-number">103</span>
+<span class="line-number">104</span>
+<span class="line-number">105</span>
+<span class="line-number">106</span>
+<span class="line-number">107</span>
+<span class="line-number">108</span>
+<span class="line-number">109</span>
+<span class="line-number">110</span>
+<span class="line-number">111</span>
+<span class="line-number">112</span>
+<span class="line-number">113</span>
+<span class="line-number">114</span>
+<span class="line-number">115</span>
+<span class="line-number">116</span>
+<span class="line-number">117</span>
+</pre></td><td class="code"><pre><code class="ca65"><span class="line"><span class="c1">;;;;</span>
+</span><span class="line"><span class="c1">;  Structure to keep track of input</span>
+</span><span class="line"><span class="c1">;  Add this before your reset subroutine</span>
+</span><span class="line"><span class="kp">.org</span> <span class="mh">$0000</span>
+</span><span class="line"><span class="kp">.scope</span> <span class="n">controller_state</span>
+</span><span class="line">  <span class="kp">.space</span> <span class="n">b</span> <span class="mi">1</span>
+</span><span class="line">  <span class="kp">.space</span> <span class="n">a</span> <span class="mi">1</span>
+</span><span class="line"><span class="p">.</span>
+</span><span class="line">
+</span><span class="line">
+</span><span class="line"><span class="c1">;;;;</span>
+</span><span class="line"><span class="c1">;  Initialize everything</span>
+</span><span class="line"><span class="c1">;  Call this subroutine before your infinite loop in reset</span>
+</span><span class="line"><span class="kp">.scope</span> <span class="n">initialize</span>
+</span><span class="line">  <span class="c1">;  Enable pulse1 and pulse2 in the APU</span>
+</span><span class="line">  <span class="k">lda</span> <span class="p">#</span><span class="mb">%00000011</span>
+</span><span class="line">  <span class="k">sta</span> <span class="n">nes.apu.channel_enable</span>
+</span><span class="line">
+</span><span class="line">  <span class="c1">;  Initialize the controller states</span>
+</span><span class="line">  <span class="k">lda</span> <span class="p">#</span><span class="mh">$00</span>
+</span><span class="line">  <span class="k">sta</span> <span class="n">controller_state.a</span> <span class="n">zp</span>
+</span><span class="line">  <span class="k">sta</span> <span class="n">controller_state.b</span> <span class="n">zp</span>
+</span><span class="line">
+</span><span class="line">  <span class="c1">;  Reenable interrupts, Turn Vblank back on</span>
+</span><span class="line">  <span class="k">lda</span> <span class="p">#</span><span class="mb">%10000000</span>
+</span><span class="line">  <span class="k">sta</span> <span class="n">nes.ppu.control</span>
+</span><span class="line">  <span class="k">cli</span>
+</span><span class="line">  <span class="k">rts</span>
+</span><span class="line"><span class="p">.</span>
+</span><span class="line">
+</span><span class="line">
+</span><span class="line"><span class="c1">;;;;</span>
+</span><span class="line"><span class="c1">;  VBlank is called 60 times per second</span>
+</span><span class="line"><span class="kp">.scope</span> <span class="n">vblank</span>
+</span><span class="line">  <span class="k">jsr</span> <span class="n">read_input</span>
+</span><span class="line">  <span class="k">rti</span>
+</span><span class="line"><span class="p">.</span>
+</span><span class="line">
+</span><span class="line">
+</span><span class="line"><span class="c1">;;;;</span>
+</span><span class="line"><span class="c1">;  Read input from controller 1</span>
+</span><span class="line"><span class="kp">.scope</span> <span class="n">read_input</span>
+</span><span class="line">  <span class="k">lda</span> <span class="p">#</span><span class="mh">$01</span>                <span class="c1">; strobe joypad</span>
+</span><span class="line">  <span class="k">sta</span> <span class="n">nes.controller1</span>
+</span><span class="line">  <span class="k">lda</span> <span class="p">#</span><span class="mh">$00</span>
+</span><span class="line">  <span class="k">sta</span> <span class="n">nes.controller1</span>
+</span><span class="line">
+</span><span class="line">  <span class="c1">;  Handle Button A</span>
+</span><span class="line">  <span class="k">lda</span> <span class="n">nes.controller1</span>
+</span><span class="line">  <span class="k">and</span> <span class="p">#</span><span class="mh">$01</span>
+</span><span class="line">  <span class="k">beq</span> <span class="n">update_a_state</span>
+</span><span class="line">
+</span><span class="line">  <span class="c1">;  A is pressed, but did it just change to being pressed now?</span>
+</span><span class="line">  <span class="k">ldx</span> <span class="n">controller_state.a</span> <span class="n">zp</span>
+</span><span class="line">  <span class="k">bne</span> <span class="n">update_a_state</span>
+</span><span class="line">
+</span><span class="line">  <span class="c1">;  do the thing A does</span>
+</span><span class="line">  <span class="k">jsr</span> <span class="n">play_a440</span>
+</span><span class="line">
+</span><span class="line">  <span class="nl">update_a_state:</span>
+</span><span class="line">    <span class="k">sta</span> <span class="n">controller_state.a</span> <span class="n">zp</span>
+</span><span class="line">
+</span><span class="line">  <span class="c1">;  Handle Button B</span>
+</span><span class="line">  <span class="k">lda</span> <span class="n">nes.controller1</span>
+</span><span class="line">  <span class="k">and</span> <span class="p">#</span><span class="mh">$01</span>
+</span><span class="line">  <span class="k">beq</span> <span class="n">update_b_state</span>
+</span><span class="line">
+</span><span class="line">  <span class="c1">;  B is pressed, but did it just change to being pressed now?</span>
+</span><span class="line">  <span class="k">ldx</span> <span class="n">controller_state.b</span> <span class="n">zp</span>
+</span><span class="line">  <span class="k">bne</span> <span class="n">update_b_state</span>
+</span><span class="line">
+</span><span class="line">  <span class="c1">;  Do the thing B does</span>
+</span><span class="line">  <span class="k">jsr</span> <span class="n">play_a220</span>
+</span><span class="line">
+</span><span class="line">  <span class="nl">update_b_state:</span>
+</span><span class="line">    <span class="k">sta</span> <span class="n">controller_state.b</span> <span class="n">zp</span>
+</span><span class="line">
+</span><span class="line">  <span class="k">rts</span>
+</span><span class="line"><span class="p">.</span>
+</span><span class="line">
+</span><span class="line">
+</span><span class="line"><span class="c1">;;;;</span>
+</span><span class="line"><span class="c1">;;  This will play an A 220hz note</span>
+</span><span class="line"><span class="c1">;;  On the pulse1 generator</span>
+</span><span class="line"><span class="kp">.scope</span> <span class="n">play_a220</span>
+</span><span class="line">  <span class="k">pha</span>
+</span><span class="line">  <span class="k">lda</span> <span class="p">#</span><span class="mb">%10011111</span>
+</span><span class="line">  <span class="k">sta</span> <span class="n">nes.apu.pulse1.control</span>
+</span><span class="line">
+</span><span class="line">  <span class="k">lda</span> <span class="p">#</span><span class="mb">%11111011</span>
+</span><span class="line">  <span class="k">sta</span> <span class="n">nes.apu.pulse1.ft</span>
+</span><span class="line">
+</span><span class="line">  <span class="k">lda</span> <span class="p">#</span><span class="mb">%11111001</span>
+</span><span class="line">  <span class="k">sta</span> <span class="n">nes.apu.pulse1.ct</span>
+</span><span class="line">
+</span><span class="line">  <span class="k">pla</span>
+</span><span class="line">  <span class="k">rts</span>
+</span><span class="line"><span class="p">.</span>
+</span><span class="line">
+</span><span class="line">
+</span><span class="line"><span class="c1">;;;;</span>
+</span><span class="line"><span class="c1">;;  This will play an A 440hz note</span>
+</span><span class="line"><span class="c1">;;  On the pulse2 generator</span>
+</span><span class="line"><span class="kp">.scope</span> <span class="n">play_a440</span>
+</span><span class="line">  <span class="k">pha</span>
+</span><span class="line">  <span class="k">lda</span> <span class="p">#</span><span class="mb">%10011111</span>
+</span><span class="line">  <span class="k">sta</span> <span class="n">nes.apu.pulse2.control</span>
+</span><span class="line">
+</span><span class="line">  <span class="k">lda</span> <span class="p">#</span><span class="mb">%11111101</span>
+</span><span class="line">  <span class="k">sta</span> <span class="n">nes.apu.pulse2.ft</span>
+</span><span class="line">
+</span><span class="line">  <span class="k">lda</span> <span class="p">#</span><span class="mb">%11111000</span>
+</span><span class="line">  <span class="k">sta</span> <span class="n">nes.apu.pulse2.ct</span>
+</span><span class="line">
+</span><span class="line">  <span class="k">pla</span>
+</span><span class="line">  <span class="k">rts</span>
+</span><span class="line"><span class="p">.</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>So that’s it for our first attempts to get the NES to make sounds.  I have actually been working
+on MIDI to NES converter, which converts a MIDI file into a byte stream that can be quickly written
+to the APU registers at the correct tempo, which is almost complete.  That will be the topic of my
+next post.</p>
+
+<p>You can find n65, <a href="https://github.com/safiire/n65">my NES assembler here</a>.</p>
+
+<p>And the source code for this <a href="https://gist.github.com/safiire/66746adc460abad3a429">NES sound example here</a></p>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Safiire</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-03-29T10:51:44-07:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/6502/'>6502</a>, <a class='category' href='/blog/categories/assembly/'>assembly</a>, <a class='category' href='/blog/categories/music/'>music</a>, <a class='category' href='/blog/categories/nes/'>nes</a>, <a class='category' href='/blog/categories/ruby/'>ruby</a>
+  
+</span>
+
+
+    </p>
+    
+      
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/10/17/matrices-as-linear-operations/" title="Previous Post: Matrices as Linear Operators">&laquo; Matrices as Linear Operators</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2016/02/10/glsl-shaders-with-webgl/" title="Next Post: GLSL Shaders with WebGL">GLSL Shaders with WebGL &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/04/12/reversing-crackme-challenges/">Reversing Crackme Challenges</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/02/10/glsl-shaders-with-webgl/">GLSL Shaders With WebGL</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/29/creating-sound-on-the-nes/">Creating Sound on the NES</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/17/matrices-as-linear-operations/">Matrices as Linear Operators</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/12/13/building-my-shruthi-1/">Building My Shruthi-1</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/safiire">@safiire</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'safiire',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2017 - Safiire
+</p>
+
+</footer>
+  
+
+
+</body>
+</html>

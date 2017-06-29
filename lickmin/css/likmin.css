@@ -1,0 +1,71 @@
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-size: 100%;
+    vertical-align: baseline;
+    background: transparent;
+}
+
+body {
+    font-family: verdana;
+    margin-top: 0.5em;
+    background-color: #0000dd;
+}
+
+div{
+    overflow: hidden;
+}
+
+.clear-div {
+    clear: both;
+    min-width: 0.1em;
+    max-width: 0.1em;
+}
+
+/*  This is Likmin's initial style */
+#likmin {
+    top: 100px;
+    left: 100px;
+    position: absolute;
+    width: 208px;
+    height: 155px;
+    -webkit-transition:left 1.0s ease-out, top 1.0s ease-out;
+    overflow: visible;
+    display: none;
+}
+
+@-webkit-keyframes idle-left {
+    from { -webkit-transform: scale(1.0)  translate3d(0,  0.3em, 0) rotateY(-180deg); }
+    50%  { -webkit-transform: scale(1.05) translate3d(0, -0.9em, 0) rotateY(-180deg); }
+    to   { -webkit-transform: scale(1.0)  translate3d(0,  0.3em, 0) rotateY(-180deg); }
+}
+
+
+.idle-left {
+    -webkit-animation-name: idle-left; 
+    -webkit-animation-duration: 1.5s; 
+    -webkit-animation-iteration-count: infinite; 
+}
+
+@-webkit-keyframes idle-right {
+    from { -webkit-transform: scale(1.0)  translate3d(0,  0.3em, 0) rotateY(0deg); }
+    50%  { -webkit-transform: scale(1.05) translate3d(0, -0.9em, 0) rotateY(0deg); }
+    to   { -webkit-transform: scale(1.0)  translate3d(0,  0.3em, 0) rotateY(0deg); }
+}
+
+
+.idle-right {
+    -webkit-animation-name: idle-right; 
+    -webkit-animation-duration: 1.5s; 
+    -webkit-animation-iteration-count: infinite; 
+}
+

@@ -1,0 +1,606 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Consonant Intervals and Orthogonality - Irken Kitties</title>
+  <meta name="author" content="Safiire">
+
+  
+  <meta name="description" content="In this article I am going to explore some factors which are involved in the perception of
+consonance and dissonance of notes in the chromatic and &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://irkenkitties.com/blog/2012/11/28/consonant-intervals-and-orthogonality">
+  <!-- <link href="/favicon.png" rel="icon"> &#8211;>
+
+  <!-- A million more different sizes and types of favicon -->
+  <link rel="apple-touch-icon" sizes="57x57" href="/favicons/apple-touch-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/favicons/apple-touch-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/favicons/apple-touch-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/favicons/apple-touch-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/favicons/apple-touch-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/favicons/apple-touch-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/favicons/apple-touch-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/favicons/apple-touch-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon-180x180.png">
+  <link rel="icon" type="image/png" href="/favicons/favicon-192x192.png" sizes="192x192">
+  <link rel="icon" type="image/png" href="/favicons/favicon-160x160.png" sizes="160x160">
+  <link rel="icon" type="image/png" href="/favicons/favicon-96x96.png" sizes="96x96">
+  <link rel="icon" type="image/png" href="/favicons/favicon-16x16.png" sizes="16x16">
+  <link rel="icon" type="image/png" href="/favicons/favicon-32x32.png" sizes="32x32">
+  <meta name="msapplication-TileColor" content="#9f00a7">
+  <meta name="msapplication-TileImage" content="/favicons/mstile-144x144.png">
+
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Irken Kitties" type="application/atom+xml">
+
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script src="/javascripts/three.min.js" type="text/javascript"></script>
+  <script src="/javascripts/glsl_header.js" type="text/javascript"></script>
+
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Francois+One' rel='stylesheet' type='text/css'>
+
+<!-- MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript"
+   src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Irken Kitties</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:irkenkitties.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a target="_blank" href="https://github.com/safiire">Github</a></li>
+  <li><a href="/blog/categories/haskell/">Haskell</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Consonant Intervals and Orthogonality</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-11-28T01:46:00-08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>In this article I am going to explore some factors which are involved in the perception of
+consonance and dissonance of notes in the chromatic and major musical scales.  The distance 
+between two notes is called an interval, and there are 12 notes in the western chromatic scale.
+There are two common methods of calculating the frequencies of these notes.</p>
+
+<h2 id="equal-temperment">Equal Temperment</h2>
+
+<p>The most common method used in modern times is called Equal Temperment.  In this tuning, each
+adjacent note is related by the ratio of a 12th root of 2 or:</p>
+
+<script type="math/tex; mode=display">2^{1/12} = 1.0594630943592953...</script>
+
+<p>Starting from <code>A 440hz</code> and calculating each of the 12 notes of the chromatic scale up to the
+next A, looks like this:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>Equal Tempered Note Frequencies</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line"><span class="n">r</span> <span class="o">=</span> <span class="mi">2</span><span class="o">.</span><span class="n">*</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">12</span><span class="o">.</span><span class="mi">0</span><span class="p">)</span>
+</span><span class="line"><span class="n">start_note</span> <span class="o">=</span> <span class="mi">440</span><span class="o">.</span><span class="mi">0</span>
+</span><span class="line"><span class="mi">1</span><span class="o">.</span><span class="n">upto</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span><span class="o">|</span><span class="n">interval</span><span class="o">|</span> <span class="n">start_note</span> <span class="o">*=</span> <span class="n">r</span> <span class="p">}</span>
+</span><span class="line"><span class="o">=&gt;</span> <span class="o">[</span><span class="mi">466</span><span class="o">.</span><span class="mi">1637615180899</span><span class="p">,</span> <span class="mi">493</span><span class="o">.</span><span class="mi">8833012561241</span><span class="p">,</span> <span class="mi">523</span><span class="o">.</span><span class="mi">2511306011974</span><span class="p">,</span>
+</span><span class="line">    <span class="mi">554</span><span class="o">.</span><span class="mi">3652619537443</span><span class="p">,</span> <span class="mi">587</span><span class="o">.</span><span class="mi">3295358348153</span><span class="p">,</span> <span class="mi">622</span><span class="o">.</span><span class="mi">253967444162</span><span class="p">,</span>
+</span><span class="line">    <span class="mi">659</span><span class="o">.</span><span class="mi">2551138257401</span><span class="p">,</span> <span class="mi">698</span><span class="o">.</span><span class="mi">456462866008</span><span class="p">,</span> <span class="mi">739</span><span class="o">.</span><span class="mi">988845423269</span><span class="p">,</span>
+</span><span class="line">    <span class="mi">783</span><span class="o">.</span><span class="mi">9908719634989</span><span class="p">,</span> <span class="mi">830</span><span class="o">.</span><span class="mi">6093951598906</span><span class="p">,</span> <span class="mi">880</span><span class="o">.</span><span class="mo">000000000000</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<!-- more -->
+
+<p>This tuning has the benefit of being able to switch musical keys without retuning your instrument, 
+and allowing different types of instruments to play together.  This is the way a guitar, MIDI synthesizer,
+or piano is usually tuned.  The problems with it are that essentially every note frequency besides the Octave 
+is slightly wrong, and when calculated this way even that is a bit wrong due to floating point error and 
+cumulative error of multiplying irrational numbers.</p>
+
+<p>The benefits usually outweigh its problems, but for the purposes of this article I will be using…</p>
+
+<h2 id="just-intonation">Just Intonation</h2>
+
+<p>The ratios in Just Intonation are not all equal, but are based on the harmonic series.  You find each
+ratio by mutiplying the root note or tonic by increasing whole numbers, and then dividing by a denominator
+that will bring the frequency back into the octave’s range.  Here is a data structure we can use to look
+up the ratios and names for each degree in the chromatic scale.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>Chromatic Scale Lookup Table</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line"><span class="n">start_note</span> <span class="o">=</span> <span class="mi">440</span><span class="o">.</span><span class="mi">0</span>
+</span><span class="line"><span class="no">Ratios</span><span class="o">=</span> <span class="o">[</span>
+</span><span class="line">        <span class="p">{</span><span class="ss">:ratio</span> <span class="o">=&gt;</span> <span class="mi">1</span><span class="p">,</span>                   <span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">&#39;Unison&#39;</span><span class="p">},</span>
+</span><span class="line">        <span class="p">{</span><span class="ss">:ratio</span> <span class="o">=&gt;</span> <span class="no">Rational</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span><span class="mi">24</span><span class="p">),</span>     <span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">&#39;Minor Second&#39;</span><span class="p">},</span>
+</span><span class="line">        <span class="p">{</span><span class="ss">:ratio</span> <span class="o">=&gt;</span> <span class="no">Rational</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span><span class="mi">8</span><span class="p">),</span>       <span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">&#39;Major Second&#39;</span><span class="p">},</span>
+</span><span class="line">        <span class="p">{</span><span class="ss">:ratio</span> <span class="o">=&gt;</span> <span class="no">Rational</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span>       <span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">&#39;Minor Third&#39;</span><span class="p">},</span>
+</span><span class="line">        <span class="p">{</span><span class="ss">:ratio</span> <span class="o">=&gt;</span> <span class="no">Rational</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span>       <span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">&#39;Major Third&#39;</span><span class="p">},</span>
+</span><span class="line">        <span class="p">{</span><span class="ss">:ratio</span> <span class="o">=&gt;</span> <span class="no">Rational</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span>       <span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">&#39;Perfect Fourth&#39;</span><span class="p">},</span>
+</span><span class="line">        <span class="p">{</span><span class="ss">:ratio</span> <span class="o">=&gt;</span> <span class="no">Rational</span><span class="p">(</span><span class="mi">45</span><span class="p">,</span><span class="mi">32</span><span class="p">),</span>     <span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">&#39;Diminished Fifth&#39;</span><span class="p">},</span>
+</span><span class="line">        <span class="p">{</span><span class="ss">:ratio</span> <span class="o">=&gt;</span> <span class="no">Rational</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span>       <span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">&#39;Perfect Fifth&#39;</span><span class="p">},</span>
+</span><span class="line">        <span class="p">{</span><span class="ss">:ratio</span> <span class="o">=&gt;</span> <span class="no">Rational</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span>       <span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">&#39;Minor Sixth&#39;</span><span class="p">},</span>
+</span><span class="line">        <span class="p">{</span><span class="ss">:ratio</span> <span class="o">=&gt;</span> <span class="no">Rational</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span>       <span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">&#39;Major Sixth&#39;</span><span class="p">},</span>
+</span><span class="line">        <span class="p">{</span><span class="ss">:ratio</span> <span class="o">=&gt;</span> <span class="no">Rational</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span>       <span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">&#39;Minor Seventh&#39;</span><span class="p">},</span>
+</span><span class="line">        <span class="p">{</span><span class="ss">:ratio</span> <span class="o">=&gt;</span> <span class="no">Rational</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span><span class="mi">8</span><span class="p">),</span>      <span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">&#39;Major Seventh&#39;</span><span class="p">},</span>
+</span><span class="line">        <span class="p">{</span><span class="ss">:ratio</span> <span class="o">=&gt;</span> <span class="mi">2</span><span class="p">,</span>                   <span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">&#39;Octave&#39;</span><span class="p">}</span> <span class="o">]</span>
+</span><span class="line"><span class="no">Ratios</span><span class="o">.</span><span class="n">map</span><span class="p">{</span><span class="o">|</span><span class="n">ratio</span><span class="o">|</span> <span class="n">start_note</span> <span class="o">*</span> <span class="n">ratio</span><span class="o">[</span><span class="ss">:ratio</span><span class="o">].</span><span class="n">to_f</span> <span class="p">}</span>
+</span><span class="line"><span class="o">=&gt;</span> <span class="o">[</span><span class="mi">440</span><span class="o">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">458</span><span class="o">.</span><span class="mi">33333333333337</span><span class="p">,</span> <span class="mi">495</span><span class="o">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">528</span><span class="o">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">550</span><span class="o">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">586</span><span class="o">.</span><span class="mi">6666666666666</span><span class="p">,</span>
+</span><span class="line">    <span class="mi">618</span><span class="o">.</span><span class="mi">75</span><span class="p">,</span> <span class="mi">660</span><span class="o">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">704</span><span class="o">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">733</span><span class="o">.</span><span class="mi">3333333333334</span><span class="p">,</span> <span class="mi">792</span><span class="o">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">825</span><span class="o">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">880</span><span class="o">.</span><span class="mi">0</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>This is already producing rational frequencies, and they are numbers I can work with mathematically
+in this example.  So, what is going on when an A Major chord <code>A C♯ E</code> sounds consonant and pleasing to
+people, and what causes a disonanant sound?</p>
+
+<p>A broad answer, is that the smaller the whole numbers are which are involved in the ratio, the more pleasing 
+(or even boring) two notes will sound in relation to one another. You can see for yourself that the ratio 
+of a relatively dissonant interval like the Diminished Fifth, also called The Tritone or Devil’s note, 
+has much higher whole numbers in the numerator and denominator with <code>45:32</code>.</p>
+
+<p>This interval is so interesting sounding, hanging out on the verge of consonance and dissonance that it is also called 
+the Blue Note, and plays a large part in the sound of Blues, Jazz, Rock, and Metal.</p>
+
+<p>While I was playing with the math described on the excellent DSP website
+<a href="http://www.katjaas.nl/complane/complexplane.html">A Trip on the Complex Plane</a>, I started playing with dot products 
+and it was mentioned that a pure sine wave at frequency $f$ is orthogonal to a sine wave one octave higher at
+$2f$.  I began to wonder what a dot product reveals about the orthogonality of other inervals besides the octave.</p>
+
+<h2 id="orthogonality">Orthogonality</h2>
+
+<p>One specific example of orthogonality that is easy to understand is on a 2D plane.  Visually you can see 
+it as two points that are rotated $90^{\circ}$or equivilenly $\pi/2$ radians from one another. Like these points 
+at  $(0, 0.5)$ and $(0.5, 0)$.</p>
+
+<p>Here you can see points</p>
+
+<p><img src="/images/polar_orthogonal.jpg" alt="Orthogonal points" title="Orthogonal Points" /></p>
+
+<p>It’s easy to see in this image, but you can figure out if any two points are orthogonal using a dot product. This is
+because the dot product of two vectors is equal to the cosine of the angle between them.  The cosine of $90^{\circ}$, or from now
+on using radians, $\pi/2$, is $0$, therefore if the dot product of two vectors is $0$ they are orthogonal.</p>
+
+<p>We can extend Ruby’s Array class to add some methods for working with orthogonality and dot products.  There is already a 
+Vector class in Ruby which does this, but it will be easier to show what’s happening by adding methods to Array and using
+it as a vector.</p>
+
+<p>The formula for dot product is to multiply each element in the vector element-wise producing a third
+vector, then all elements of this resulting vector are summed.</p>
+
+<script type="math/tex; mode=display">\vec{v} \cdot \vec{u} = \sum\limits_{i=1}^n \vec{v}_i \vec{u}_i</script>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>Dot Product</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line"><span class="k">class</span> <span class="nc">Array</span>
+</span><span class="line">    <span class="k">def</span> <span class="nf">dot_product</span><span class="p">(</span><span class="n">ary</span><span class="p">)</span>
+</span><span class="line">        <span class="nb">self</span><span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="n">ary</span><span class="p">)</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">sum</span><span class="p">,</span> <span class="n">pairs</span><span class="o">|</span>
+</span><span class="line">            <span class="n">sum</span> <span class="o">+=</span> <span class="n">pairs</span><span class="o">.</span><span class="n">first</span> <span class="o">*</span> <span class="n">pairs</span><span class="o">.</span><span class="n">last</span> <span class="k">rescue</span> <span class="mi">0</span>
+</span><span class="line">        <span class="k">end</span>
+</span><span class="line">    <span class="k">end</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">def</span> <span class="nf">is_orthogonal?</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+</span><span class="line">        <span class="nb">self</span><span class="o">.</span><span class="n">dot_product</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">abs</span> <span class="o">&lt;</span> <span class="no">Epsilon</span>
+</span><span class="line">    <span class="k">end</span>
+</span><span class="line"><span class="k">end</span>
+</span><span class="line"><span class="n">p1</span> <span class="o">=</span> <span class="o">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="o">]</span>
+</span><span class="line"><span class="n">p2</span> <span class="o">=</span> <span class="o">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="o">]</span>
+</span><span class="line"><span class="n">p1</span><span class="o">.</span><span class="n">is_orthogonal?</span><span class="p">(</span><span class="n">p2</span><span class="p">)</span>
+</span><span class="line"><span class="o">=&gt;</span> <span class="kp">true</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="audio-as-n-dimentional-vectors">Audio as N-Dimentional Vectors</h2>
+
+<p>So it’s great to be able to calculate if 2D points are orthogonal and all, but what about audio and musical 
+notes?  How can we prove that an <code>A 440hz</code> note is orthogonal to <code>A 880hz</code>, and what about the other notes in
+the chromatic scale?</p>
+
+<p>A pure note with no overtones being played is just air pressure oscillating back and forth at a specific number
+of times per second, or frequency.  That can be modeled using a sinusoidal function like sine or cosine.  Generating
+a cosine wave to represent <code>A 440hz</code> can be done with the equation $cos(2\pi \cdot 440 \cdot t)$ where $t$ is time in seconds.</p>
+
+<p>In the computer we can represent this digitally by sampling the values that come out of the above equation at regular
+time intervals, we can specify a ratio, number of cycles to generate, and a rate at which to sample the cosine function
+with the following code.  This effectively makes our digital sampling the same as an N-dimentional vector, similar to
+the 2 dimentional vectors shown above.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line"><span class="k">def</span> <span class="nf">create_scale_degree</span><span class="p">(</span><span class="n">ratio</span><span class="p">,</span> <span class="n">num_cycles</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">sample_rate</span> <span class="o">=</span> <span class="mi">32</span><span class="p">)</span>
+</span><span class="line">    <span class="n">degree</span> <span class="o">=</span> <span class="mi">0</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">num_cycles</span><span class="p">,</span> <span class="no">Rational</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">sample_rate</span><span class="p">))</span><span class="o">.</span><span class="n">map</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span>
+</span><span class="line">        <span class="no">Math</span><span class="o">::</span><span class="n">cos</span><span class="p">(</span><span class="n">ratio</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="no">Math</span><span class="o">::</span><span class="no">PI</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
+</span><span class="line">    <span class="k">end</span>
+</span><span class="line">    <span class="n">degree</span><span class="o">.</span><span class="n">pop</span> <span class="c1"># One sample too many</span>
+</span><span class="line">    <span class="n">degree</span>
+</span><span class="line"><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Instead of using <code>440hz</code> as the tonic, this code is just using <code>1hz</code> to simplify things.  It is also dropping
+the last sample because that sample actually belongs to the beginning of the next period of the cosine. 
+Now we should be able to prove what we already knew, two cosine waves that are in phase but an octave higher (double
+the frequency) are orthogonal to each other.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>Octaves are Orthogonal</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line"><span class="n">p1</span> <span class="o">=</span> <span class="n">create_scale_degree</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</span><span class="line"><span class="o">=&gt;</span> <span class="o">[</span><span class="mi">1</span><span class="o">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="o">.</span><span class="mi">30901699437494745</span><span class="p">,</span> <span class="o">-</span><span class="mi">0</span><span class="o">.</span><span class="mi">8090169943749473</span><span class="p">,</span>
+</span><span class="line">    <span class="o">-</span><span class="mi">0</span><span class="o">.</span><span class="mi">8090169943749475</span><span class="p">,</span> <span class="mi">0</span><span class="o">.</span><span class="mi">30901699437494723</span><span class="o">]</span>
+</span><span class="line"><span class="n">p2</span> <span class="o">=</span> <span class="n">create_scale_degree</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</span><span class="line"><span class="o">=&gt;</span> <span class="o">[</span><span class="mi">1</span><span class="o">.</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">0</span><span class="o">.</span><span class="mi">8090169943749473</span><span class="p">,</span> <span class="mi">0</span><span class="o">.</span><span class="mi">30901699437494723</span><span class="p">,</span>
+</span><span class="line">    <span class="mi">0</span><span class="o">.</span><span class="mi">30901699437494773</span><span class="p">,</span> <span class="o">-</span><span class="mi">0</span><span class="o">.</span><span class="mi">8090169943749477</span><span class="o">]</span>
+</span><span class="line"><span class="n">p1</span><span class="o">.</span><span class="n">is_orthogonal?</span><span class="p">(</span><span class="n">p2</span><span class="p">)</span>
+</span><span class="line"><span class="o">=&gt;</span> <span class="kp">true</span>
+</span><span class="line"><span class="n">p1</span><span class="o">.</span><span class="n">is_orthogonal?</span><span class="p">(</span><span class="o">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">21</span><span class="p">,</span><span class="o">]</span><span class="p">)</span>
+</span><span class="line"><span class="o">=&gt;</span> <span class="kp">false</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Above I am genrating 1 cycle of a <code>1hz</code> and a <code>2hz</code> cosine wave at a sample rate of 5 samples per second.  These results
+can sometimes be hard to see due to floating point error, but we can unwind the dot product method and show it working
+manually.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>Manual Calculation showing orthogonality</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line"><span class="mi">1</span><span class="o">.</span><span class="mi">0</span> <span class="o">*</span> <span class="mi">1</span><span class="o">.</span><span class="mi">0</span>
+</span><span class="line"><span class="o">=&gt;</span> <span class="mi">1</span><span class="o">.</span><span class="mi">0</span>
+</span><span class="line"><span class="mi">0</span><span class="o">.</span><span class="mi">30901699437494745</span> <span class="o">*</span> <span class="o">-</span><span class="mi">0</span><span class="o">.</span><span class="mi">8090169943749473</span>
+</span><span class="line"><span class="o">=&gt;</span> <span class="o">-</span><span class="mi">0</span><span class="o">.</span><span class="mi">25</span>
+</span><span class="line"><span class="o">-</span><span class="mi">0</span><span class="o">.</span><span class="mi">8090169943749473</span> <span class="o">*</span> <span class="mi">0</span><span class="o">.</span><span class="mi">30901699437494723</span>
+</span><span class="line"><span class="o">=&gt;</span> <span class="o">-</span><span class="mi">0</span><span class="o">.</span><span class="mi">2499999999999998</span>
+</span><span class="line"><span class="o">-</span><span class="mi">0</span><span class="o">.</span><span class="mi">8090169943749475</span> <span class="o">*</span> <span class="mi">0</span><span class="o">.</span><span class="mi">30901699437494773</span> <span class="o">+</span>
+</span><span class="line"><span class="o">=&gt;</span> <span class="o">-</span><span class="mi">0</span><span class="o">.</span><span class="mi">2500000000000003</span>
+</span><span class="line"><span class="mi">0</span><span class="o">.</span><span class="mi">30901699437494723</span> <span class="o">*</span> <span class="o">-</span><span class="mi">0</span><span class="o">.</span><span class="mi">8090169943749477</span>
+</span><span class="line"><span class="o">=&gt;</span> <span class="o">-</span><span class="mi">0</span><span class="o">.</span><span class="mi">24999999999999992</span>
+</span><span class="line"><span class="mi">1</span><span class="o">.</span><span class="mi">0</span> <span class="o">-</span> <span class="mi">0</span><span class="o">.</span><span class="mi">25</span> <span class="o">-</span> <span class="mi">0</span><span class="o">.</span><span class="mi">2499999999999998</span> <span class="o">-</span> <span class="mi">0</span><span class="o">.</span><span class="mi">2500000000000003</span> <span class="o">-</span> <span class="mi">0</span><span class="o">.</span><span class="mi">24999999999999992</span>
+</span><span class="line"><span class="o">=&gt;</span> <span class="mi">2</span><span class="o">.</span><span class="mi">7755575615628914</span><span class="n">e</span><span class="o">-</span><span class="mi">17</span>
+</span><span class="line"><span class="c1">#  Without floating point error: 1.0 - 0.25 - 0.25 - 0.25 - 0.25 == 0.0</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>The above floating point error is the reasoning behind <code>self.dot_product(other).abs &lt; Epsilon</code> in the method <code>is_orthogonal?</code>
+Epsilon is just set to some very small number to deal with floting point comparisons.</p>
+
+<h2 id="are-the-other-intervals-orthogonal-too">Are the other intervals orthogonal too?</h2>
+
+<p>Using all this, we should be able to answer the original question, are the other intervals in the chromatic scale 
+all orthogonal to each other?  The answer I found was no, not after only one cycle of the cosine waves.  But, if you
+keep them running together for longer periods of time and more cycles, there is eventually a time when the waveform’s intervals
+will match up in period and the full waveform up until that point will be completely orthogonal to each other.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>Checking Each Interval for Orthogonality</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line"><span class="no">MaxCycles</span> <span class="o">=</span> <span class="mi">200</span>
+</span><span class="line"><span class="no">Ratios</span><span class="o">.</span><span class="n">each_with_index</span> <span class="k">do</span> <span class="o">|</span><span class="n">ratio</span><span class="p">,</span> <span class="n">i</span><span class="o">|</span>
+</span><span class="line">    <span class="k">next</span> <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span>   <span class="c1">#  Not orthogonal to itself!</span>
+</span><span class="line">    <span class="mi">1</span><span class="o">.</span><span class="n">upto</span><span class="p">(</span><span class="no">MaxCycles</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">num_cycles</span><span class="o">|</span>
+</span><span class="line">        <span class="n">tonic</span> <span class="o">=</span> <span class="n">create_scale_degree</span><span class="p">(</span><span class="no">Ratios</span><span class="o">.</span><span class="n">first</span><span class="o">[</span><span class="ss">:ratio</span><span class="o">]</span><span class="p">,</span> <span class="n">num_cycles</span><span class="p">)</span>
+</span><span class="line">        <span class="n">note</span> <span class="o">=</span> <span class="n">create_scale_degree</span><span class="p">(</span><span class="n">ratio</span><span class="o">[</span><span class="ss">:ratio</span><span class="o">]</span><span class="p">,</span> <span class="n">num_cycles</span><span class="p">)</span>
+</span><span class="line">        <span class="k">if</span> <span class="n">tonic</span><span class="o">.</span><span class="n">is_orthogonal?</span><span class="p">(</span><span class="n">note</span><span class="p">)</span>
+</span><span class="line">            <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">ratio</span><span class="o">[</span><span class="ss">:name</span><span class="o">]</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">ratio</span><span class="o">[</span><span class="ss">:ratio</span><span class="o">].</span><span class="n">inspect</span><span class="si">}</span><span class="s2"> is orthogonal to Unison after </span><span class="si">#{</span><span class="n">num_cycles</span><span class="si">}</span><span class="s2"> cycles&quot;</span>
+</span><span class="line">            <span class="k">break</span><span class="p">;</span>
+</span><span class="line">        <span class="k">end</span>
+</span><span class="line">    <span class="k">end</span>
+</span><span class="line"><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="results">Results</h2>
+
+<p>Below is a chart of the results sorted by how many cycles it takes for each interval to sync up and become
+orthogonal, which they all do after few relatively few cycles.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>Results</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line"><span class="o">|</span> <span class="no">Cycles</span>   <span class="o">|</span> <span class="no">Ratio</span>    <span class="o">|</span>  <span class="no">Decimal</span>  <span class="o">|</span> <span class="no">Interval</span> <span class="no">Name</span>    <span class="o">|</span>
+</span><span class="line"><span class="o">|</span> <span class="o">--------</span> <span class="o">|</span> <span class="o">--------</span> <span class="o">|</span> <span class="o">---------</span> <span class="o">|</span> <span class="o">----------------</span> <span class="o">|</span>
+</span><span class="line"><span class="o">|</span>  <span class="mi">1</span>       <span class="o">|</span>  <span class="mi">2</span><span class="p">:</span><span class="mi">1</span>     <span class="o">|</span> <span class="mi">2</span><span class="o">.</span><span class="mi">0</span>       <span class="o">|</span> <span class="no">Octave</span>           <span class="o">|</span>
+</span><span class="line"><span class="o">|</span>  <span class="mi">2</span>       <span class="o">|</span>  <span class="mi">3</span><span class="p">:</span><span class="mi">2</span>     <span class="o">|</span> <span class="mi">1</span><span class="o">.</span><span class="mi">5</span>       <span class="o">|</span> <span class="no">Perfect</span> <span class="no">Fifth</span>    <span class="o">|</span>
+</span><span class="line"><span class="o">|</span>  <span class="mi">3</span>       <span class="o">|</span>  <span class="mi">4</span><span class="p">:</span><span class="mi">3</span>     <span class="o">|</span> <span class="mi">1</span><span class="o">.</span><span class="mi">3333333</span> <span class="o">|</span> <span class="no">Perfect</span> <span class="no">Fourth</span>   <span class="o">|</span>
+</span><span class="line"><span class="o">|</span>  <span class="mi">3</span>       <span class="o">|</span>  <span class="mi">5</span><span class="p">:</span><span class="mi">3</span>     <span class="o">|</span> <span class="mi">1</span><span class="o">.</span><span class="mi">6666667</span> <span class="o">|</span> <span class="no">Major</span> <span class="no">Sixth</span>      <span class="o">|</span>
+</span><span class="line"><span class="o">|</span>  <span class="mi">4</span>       <span class="o">|</span>  <span class="mi">5</span><span class="p">:</span><span class="mi">4</span>     <span class="o">|</span> <span class="mi">1</span><span class="o">.</span><span class="mi">25</span>      <span class="o">|</span> <span class="no">Major</span> <span class="no">Third</span>      <span class="o">|</span>
+</span><span class="line"><span class="o">|</span>  <span class="mi">5</span>       <span class="o">|</span>  <span class="mi">6</span><span class="p">:</span><span class="mi">5</span>     <span class="o">|</span> <span class="mi">1</span><span class="o">.</span><span class="mi">2</span>       <span class="o">|</span> <span class="no">Minor</span> <span class="no">Third</span>      <span class="o">|</span>
+</span><span class="line"><span class="o">|</span>  <span class="mi">5</span>       <span class="o">|</span>  <span class="mi">8</span><span class="p">:</span><span class="mi">5</span>     <span class="o">|</span> <span class="mi">1</span><span class="o">.</span><span class="mi">6</span>       <span class="o">|</span> <span class="no">Minor</span> <span class="no">Sixth</span>      <span class="o">|</span>
+</span><span class="line"><span class="o">|</span>  <span class="mi">5</span>       <span class="o">|</span>  <span class="mi">9</span><span class="p">:</span><span class="mi">5</span>     <span class="o">|</span> <span class="mi">1</span><span class="o">.</span><span class="mi">8</span>       <span class="o">|</span> <span class="no">Minor</span> <span class="no">Seventh</span>    <span class="o">|</span>
+</span><span class="line"><span class="o">|</span>  <span class="mi">8</span>       <span class="o">|</span>  <span class="mi">9</span><span class="p">:</span><span class="mi">8</span>     <span class="o">|</span> <span class="mi">1</span><span class="o">.</span><span class="mi">125</span>     <span class="o">|</span> <span class="no">Major</span> <span class="no">Second</span>     <span class="o">|</span>
+</span><span class="line"><span class="o">|</span>  <span class="mi">8</span>       <span class="o">|</span> <span class="mi">15</span><span class="p">:</span><span class="mi">8</span>     <span class="o">|</span> <span class="mi">1</span><span class="o">.</span><span class="mi">875</span>     <span class="o">|</span> <span class="no">Major</span> <span class="no">Seventh</span>    <span class="o">|</span>
+</span><span class="line"><span class="o">|</span> <span class="mi">24</span>       <span class="o">|</span> <span class="mi">25</span><span class="p">:</span><span class="mi">24</span>    <span class="o">|</span> <span class="mi">1</span><span class="o">.</span><span class="mo">0417</span>    <span class="o">|</span> <span class="no">Minor</span> <span class="no">Second</span>     <span class="o">|</span>
+</span><span class="line"><span class="o">|</span> <span class="mi">32</span>       <span class="o">|</span> <span class="mi">45</span><span class="p">:</span><span class="mi">32</span>    <span class="o">|</span> <span class="mi">1</span><span class="o">.</span><span class="mi">40625</span>   <span class="o">|</span> <span class="no">Diminished</span> <span class="no">Fifth</span> <span class="o">|</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>The first things I notice about the results are:</p>
+
+<ul>
+  <li>The number of cycles required is equal to the denominator</li>
+  <li>The decimal value of the interval’s ratio doesn’t follow the number of cycles</li>
+  <li>The Perfect Fifth is the quickest to sync up (Circle of fifths?)</li>
+  <li>The Perfect Fourth is next</li>
+  <li>When DJing you generally mix songs in keys which are perfect fourths and fifths</li>
+  <li>My two favourite intervals take the longest to sync</li>
+</ul>
+
+<p>What I can take away from this experiment, is that the human brain is basing its perception
+of consonance and dissonance on how long two frequencies or notes played together take 
+until they match up in period and become orthogonal.  This probably gives those intervals
+a feeling both of balance, but also temporary dissonance which resolves after a short period
+of time.  Two sounds played at once which never resolve to orthogonality are considered 
+noisey or out of tune.</p>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Safiire</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-11-28T01:46:00-08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/dsp/'>dsp</a>, <a class='category' href='/blog/categories/math/'>math</a>, <a class='category' href='/blog/categories/music/'>music</a>, <a class='category' href='/blog/categories/ruby/'>ruby</a>
+  
+</span>
+
+
+    </p>
+    
+      
+    
+    <p class="meta">
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/12/03/recreating-the-haskell-list-part-1/" title="Next Post: Recreating the Haskell List Part 1">Recreating the Haskell List Part 1 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/04/12/reversing-crackme-challenges/">Reversing Crackme Challenges</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/02/10/glsl-shaders-with-webgl/">GLSL Shaders With WebGL</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/29/creating-sound-on-the-nes/">Creating Sound on the NES</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/17/matrices-as-linear-operations/">Matrices as Linear Operators</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/12/13/building-my-shruthi-1/">Building My Shruthi-1</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/safiire">@safiire</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'safiire',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2017 - Safiire
+</p>
+
+</footer>
+  
+
+
+</body>
+</html>

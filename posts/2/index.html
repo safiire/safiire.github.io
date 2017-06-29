@@ -1,0 +1,369 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Irken Kitties</title>
+  <meta name="author" content="Safiire">
+
+  
+  <meta name="description" content="This is part 1 of a 6 part tutorial Data Structures as Containers In a language like C, you can think of data structures as containers which hold one &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://irkenkitties.com/posts/2">
+  <!-- <link href="/favicon.png" rel="icon"> &#8211;>
+
+  <!-- A million more different sizes and types of favicon -->
+  <link rel="apple-touch-icon" sizes="57x57" href="/favicons/apple-touch-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/favicons/apple-touch-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/favicons/apple-touch-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/favicons/apple-touch-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/favicons/apple-touch-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/favicons/apple-touch-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/favicons/apple-touch-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/favicons/apple-touch-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon-180x180.png">
+  <link rel="icon" type="image/png" href="/favicons/favicon-192x192.png" sizes="192x192">
+  <link rel="icon" type="image/png" href="/favicons/favicon-160x160.png" sizes="160x160">
+  <link rel="icon" type="image/png" href="/favicons/favicon-96x96.png" sizes="96x96">
+  <link rel="icon" type="image/png" href="/favicons/favicon-16x16.png" sizes="16x16">
+  <link rel="icon" type="image/png" href="/favicons/favicon-32x32.png" sizes="32x32">
+  <meta name="msapplication-TileColor" content="#9f00a7">
+  <meta name="msapplication-TileImage" content="/favicons/mstile-144x144.png">
+
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Irken Kitties" type="application/atom+xml">
+
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script src="/javascripts/three.min.js" type="text/javascript"></script>
+  <script src="/javascripts/glsl_header.js" type="text/javascript"></script>
+
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Francois+One' rel='stylesheet' type='text/css'>
+
+<!-- MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript"
+   src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Irken Kitties</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:irkenkitties.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a target="_blank" href="https://github.com/safiire">Github</a></li>
+  <li><a href="/blog/categories/haskell/">Haskell</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/12/03/recreating-the-haskell-list-part-1/">Recreating the Haskell List Part 1</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-03T23:54:00-08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>This is part 1 of a 6 part tutorial</p>
+
+<h2 id="data-structures-as-containers">Data Structures as Containers</h2>
+
+<p>In a language like C, you can think of data structures as containers which hold one or more objects.</p>
+
+<h3 id="a-container">A Container</h3>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="c"><span class="line"><span class="k">typedef</span> <span class="k">struct</span> <span class="kt">int_container_t</span> <span class="p">{</span>
+</span><span class="line">    <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+</span><span class="line"><span class="p">}</span> <span class="kt">int_container_t</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>The <code>int_container_t</code> type is now something which holds one int.  To make the same sort of data structure in Haskell you would
+write:</p>
+
+<h3 id="int-container-in-haskell">Int container in Haskell</h3>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="haskell"><span class="line"><span class="kr">data</span> <span class="kt">IntContainer</span> <span class="ow">=</span> <span class="kt">IntContainer</span> <span class="kt">Int</span> <span class="kr">deriving</span> <span class="kt">Show</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Ignoring for a moment the suffix <code>deriving Show</code>, this looks a lot like a function declaration, because that is essentially 
+what it is.  The identifier <code>IntContainer</code> appears on both sides, but the two are actually in two different namespaces.  It is
+not necessary for these two identifiers to have the same name, but people will often do this by convention.</p>
+
+<p>The left hand side of this declaration names a new type <code>IntContainer</code>, and the right hand side is defining a data constructor
+for this type, essentially a function named <code>IntContainer</code> which takes one <code>Int</code> as argument which it uses to create an instance of this type.</p>
+
+<h3 id="using-the-data-constructor-in-ghci">Using the data constructor in ghci</h3>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+</pre></td><td class="code"><pre><code class="haskell"><span class="line"><span class="c1">--  create an instance of IntContainer passing the value 4</span>
+</span><span class="line"><span class="kt">IntContainer</span> <span class="mi">4</span>
+</span><span class="line"><span class="ow">=&gt;</span> <span class="kt">IntContainer</span> <span class="mi">4</span>
+</span><span class="line"><span class="c1">--  Checking the type signature of the IntContainer data constructor function</span>
+</span><span class="line"><span class="kt">:</span><span class="n">t</span> <span class="kt">IntContainer</span>
+</span><span class="line"><span class="ow">=&gt;</span> <span class="kt">IntContainer</span> <span class="ow">::</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">IntContainer</span>
+</span><span class="line"><span class="c1">--  checking the type of an instantiated IntContainer</span>
+</span><span class="line"><span class="kr">let</span> <span class="n">i</span> <span class="ow">=</span> <span class="kt">IntContainer</span> <span class="mi">4</span>
+</span><span class="line"><span class="kt">:</span><span class="n">t</span> <span class="n">i</span>
+</span><span class="line"><span class="ow">=&gt;</span> <span class="n">i</span> <span class="ow">::</span> <span class="kt">IntContainer</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>If I pass the data constructor a <code>4</code>, it returns something which is of type IntContainer.  The ghci command <code>:t</code> can be used
+to get type information about just about anything in Haskell.  <code>IntContainer :: Int -&gt; IntContainer</code> is read “IntContainer is
+a function which accepts an Int and returns an IntContainer”.  <code>i :: IntContainer</code> is read “i is of type IntContainer”.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2012/12/03/recreating-the-haskell-list-part-1/">Read it &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/11/28/consonant-intervals-and-orthogonality/">Consonant Intervals and Orthogonality</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-11-28T01:46:00-08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In this article I am going to explore some factors which are involved in the perception of
+consonance and dissonance of notes in the chromatic and major musical scales.  The distance 
+between two notes is called an interval, and there are 12 notes in the western chromatic scale.
+There are two common methods of calculating the frequencies of these notes.</p>
+
+<h2 id="equal-temperment">Equal Temperment</h2>
+
+<p>The most common method used in modern times is called Equal Temperment.  In this tuning, each
+adjacent note is related by the ratio of a 12th root of 2 or:</p>
+
+<script type="math/tex; mode=display">2^{1/12} = 1.0594630943592953...</script>
+
+<p>Starting from <code>A 440hz</code> and calculating each of the 12 notes of the chromatic scale up to the
+next A, looks like this:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>Equal Tempered Note Frequencies</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line"><span class="n">r</span> <span class="o">=</span> <span class="mi">2</span><span class="o">.</span><span class="n">*</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">12</span><span class="o">.</span><span class="mi">0</span><span class="p">)</span>
+</span><span class="line"><span class="n">start_note</span> <span class="o">=</span> <span class="mi">440</span><span class="o">.</span><span class="mi">0</span>
+</span><span class="line"><span class="mi">1</span><span class="o">.</span><span class="n">upto</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span><span class="o">|</span><span class="n">interval</span><span class="o">|</span> <span class="n">start_note</span> <span class="o">*=</span> <span class="n">r</span> <span class="p">}</span>
+</span><span class="line"><span class="o">=&gt;</span> <span class="o">[</span><span class="mi">466</span><span class="o">.</span><span class="mi">1637615180899</span><span class="p">,</span> <span class="mi">493</span><span class="o">.</span><span class="mi">8833012561241</span><span class="p">,</span> <span class="mi">523</span><span class="o">.</span><span class="mi">2511306011974</span><span class="p">,</span>
+</span><span class="line">    <span class="mi">554</span><span class="o">.</span><span class="mi">3652619537443</span><span class="p">,</span> <span class="mi">587</span><span class="o">.</span><span class="mi">3295358348153</span><span class="p">,</span> <span class="mi">622</span><span class="o">.</span><span class="mi">253967444162</span><span class="p">,</span>
+</span><span class="line">    <span class="mi">659</span><span class="o">.</span><span class="mi">2551138257401</span><span class="p">,</span> <span class="mi">698</span><span class="o">.</span><span class="mi">456462866008</span><span class="p">,</span> <span class="mi">739</span><span class="o">.</span><span class="mi">988845423269</span><span class="p">,</span>
+</span><span class="line">    <span class="mi">783</span><span class="o">.</span><span class="mi">9908719634989</span><span class="p">,</span> <span class="mi">830</span><span class="o">.</span><span class="mi">6093951598906</span><span class="p">,</span> <span class="mi">880</span><span class="o">.</span><span class="mo">000000000000</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2012/11/28/consonant-intervals-and-orthogonality/">Read it &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="1">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/04/12/reversing-crackme-challenges/">Reversing Crackme Challenges</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/02/10/glsl-shaders-with-webgl/">GLSL Shaders With WebGL</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/29/creating-sound-on-the-nes/">Creating Sound on the NES</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/17/matrices-as-linear-operations/">Matrices as Linear Operators</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/12/13/building-my-shruthi-1/">Building My Shruthi-1</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/safiire">@safiire</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'safiire',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2017 - Safiire
+</p>
+
+</footer>
+  
+
+
+</body>
+</html>

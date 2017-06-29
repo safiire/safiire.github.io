@@ -1,0 +1,535 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Reverse Engineering | Irken Kitties]]></title>
+  <link href="http://irkenkitties.com/blog/categories/reverse-engineering/atom.xml" rel="self"/>
+  <link href="http://irkenkitties.com/"/>
+  <updated>2017-06-29T16:17:35-07:00</updated>
+  <id>http://irkenkitties.com/</id>
+  <author>
+    <name><![CDATA[Safiire]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Reversing Crackme Challenges]]></title>
+    <link href="http://irkenkitties.com/blog/2016/04/12/reversing-crackme-challenges/"/>
+    <updated>2016-04-12T16:27:26-07:00</updated>
+    <id>http://irkenkitties.com/blog/2016/04/12/reversing-crackme-challenges</id>
+    <content type="html"><![CDATA[<p>You may have noticed that I like to program many things in Ruby.  I really do like
+many aspects of this language, and it’s usually the main language that I use at work
+as well.  Lately I’ve been getting the feeling that a programmer can get judged
+and immediately pigeon holed based on using a language a lot at work.  For example
+if you use Ruby you must be “only” a web programmer, if you use a garbage collected
+language, you mustn’t be able to manage memory, or handle programming in languages
+like C or C++, let alone assembly.</p>
+
+<p>So I like to take some of my free time and play hacker wargames like smashthestack.org,
+or reverse engineer crackmes, so I decided to describe my process for solving those
+types of challanges here.</p>
+
+<!-- more -->
+
+<h2 id="crackmes">Crackmes</h2>
+
+<p>“Crackmes” are essentially a compiled binary without source code, which asks you
+for a password or key,  you enter the wrong password you lose, you enter the right
+one and you win and move onto the next.  You need to reverse engineer the binary
+in order to discover the password, and these range from simple to tedious and
+difficult as the creator of the crackme piles on layers of obfuscation, misdirection,
+encryption, and anti-debugging techniques to stop you, not to mention you need
+a good handle on assembly and keeping track of what is in various memory locations
+during runtime.</p>
+
+<h2 id="crackme0x00a">Crackme0x00a</h2>
+
+<p>We start out simple, and so I start with my simplest techniques.  <code>crackme0x00a</code>
+wants a password:</p>
+
+<p><code>bash
+  ./crackme0x00a
+  IOLI Crackme Level 0x09
+  Password: blah
+  Password Incorrect!
+</code></p>
+
+<p>So first we think that perhaps the password is simply in the binary, and we can
+find it by running the program <code>strings</code> on it to list every string in the program.
+I think it’s safe to say that will work on this one, but I have a more direct
+approach that I usually take, and that is run the program through <code>ltrace</code>.  <code>ltrace</code>
+outputs all calls to library functions that the program makes, so here we’re looking
+for something like a call to <code>strcmp</code></p>
+
+<p><code>
+  ltrace ./crackme0x00a
+  __libc_start_main(0x80484e4, 1, 0xffa24724, 0x8048570, 0x80485e0 &lt;unfinished ...&gt;
+  printf("Enter password: ") = 16
+  __isoc99_scanf(0x8048651, 0xffa24663, 0x8049ff4, 0x8048591, -1Enter password: blah
+  ) = 1
+  strcmp("g00dJ0B!", "blah") = 1
+  puts("Wrong!"Wrong!) = 7
+</code></p>
+
+<p>Simple, we found the call to <code>strcmp</code> the password is <code>g00dJ0B!</code>.  You see how we can
+see each call, with parameters and return value.  This was all that was needed to
+beat this challenge.</p>
+
+<h2 id="crackme0x00b">Crackme0x00b</h2>
+
+<p>Let’s move onto the next one, with the same approach</p>
+
+<p><code>
+ltrace ./crackme0x00b
+__libc_start_main(0x8048494, 1, 0xff82ec54, 0x8048500, 0x8048570 &lt;unfinished ...&gt;
+printf("Enter password: ") = 16
+__isoc99_scanf(0x80485e1, 0xff82eb4c, 0, 0xf77f249c, 0xff82ebf4Enter password: blah
+) = 1
+wcscmp(0x804a040, 0xff82eb4c) = 1
+puts("Wrong!"Wrong!) = 7
+</code></p>
+
+<p>So the difference here is the password is being compared with wcscmp, which has
+the prototype <code>int wcscmp (const wchar_t* wcs1, const wchar_t* wcs2);</code>  It compares
+wide strings where each char is 16-bit.</p>
+
+<p>On Linux most of the time the code and data sections get loaded around the address
+<code>0x08040000</code>, and local variables are stored in the stack, which begins at the
+top of memory and grows upwards from <code>0xffffffff</code>.</p>
+
+<p>The arguments to <code>wcscmp</code> are <code>0x804a040</code>, which I’m guessing is in the initialized
+data section, and is the secret password, and <code>0xff82eb4c</code> which <code>ltrace</code> shows is
+the location on the stack that it wrote our input to.</p>
+
+<p>The trick to this challenge, is that if we were simply to run the <code>strings</code> program
+on the binary, it would have worked in the previous challenge, but not this one
+because each character in a <code>wchar_t</code> string is 32-bits long with the most significant
+bits zeroed out, and terminated by a a 32-bit 0x0000 value.</p>
+
+<p>The quickest way I know to find out the bytes at <code>0x804a040</code> is to load the
+binary into my debugger <code>radare2</code> and just print it out.</p>
+
+<p><code>asm
+[0x080483e0]&gt; px 64 @0x804a040
+- offset -   0 1  2 3  4 5  6 7  8 9  A B  C D  E F  0123456789ABCDEF
+0x0804a040  7700 0000 3000 0000 7700 0000 6700 0000  w...0...w...g...
+0x0804a050  7200 0000 6500 0000 6100 0000 7400 0000  r...e...a...t...
+0x0804a060  0000 0000 4743 433a 2028 5562 756e 7475  ....GCC: (Ubuntu
+0x0804a070  2f4c 696e 6172 6f20 342e 362e 312d 3975  /Linaro 4.6.1-9u
+</code></p>
+
+<p>The password is <code>w0wgreat</code>.</p>
+
+<h2 id="crackme0x01">Crackme0x01</h2>
+
+<p>Ok, let’s see what’s new in the next one, and hopefully get to use <code>radare2</code>
+some more.  First let’s see what happens with <code>ltrace</code>.</p>
+
+<p>&#8220;`
+ltrace ./crackme0x01
+__libc_start_main(0x80483e4, 1, 0xffdd85c4, 0x8048460, 0x80484d0 &lt;unfinished …&gt;
+printf(“IOLI Crackme Level 0x01\n”IOLI Crackme Level 0x01) = 24
+printf(“Password: “) = 10
+scanf(0x804854c, 0xffdd8524, 0xf77a6ff4, 0xf7636dd5, 0xf77c8660</p>
+
+<p>Password: blah
+) = 0
+printf(“Invalid Password!\n”Invalid Password!) = 18
+&#8220;`</p>
+
+<p>So usually I just write in <code>blah</code> for a password, but we can see here that <code>scanf</code>
+has returned <code>0</code> in response to my string.  <code>scanf</code> returns the number of things
+it has parsed according to its format string.  So I’m guessing its format string
+was not <code>"%s"</code> this time as it was before.  Maybe it was looking for a number.
+Let’s load it into r2, dissassemble the main function and find out.</p>
+
+<p><code>asm
+╒ (fcn) sym.main 113
+│           ; arg int arg_149ah    @ ebp+0x149a
+│           ; var int local_4h     @ ebp-0x4
+│           0x080483e4      55             push ebp
+│           0x080483e5      89e5           mov ebp, esp
+│           0x080483e7      83ec18         sub esp, 0x18
+│           0x080483ea      83e4f0         and esp, 0xfffffff0
+│           0x080483ed      b800000000     mov eax, 0
+│           0x080483f2      83c00f         add eax, 0xf
+│           0x080483f5      83c00f         add eax, 0xf
+│           0x080483f8      c1e804         shr eax, 4
+│           0x080483fb      c1e004         shl eax, 4
+│           0x080483fe      29c4           sub esp, eax
+│           0x08048400      c70424288504.  mov dword [esp], str.IOLI_Crackme_Level_0x01_n
+│           0x08048407      e810ffffff     call sym.imp.printf
+│           0x0804840c      c70424418504.  mov dword [esp], str.Password:
+│           0x08048413      e804ffffff     call sym.imp.printf
+│           0x08048418      8d45fc         lea eax, [ebp - local_4h]
+│           0x0804841b      89442404       mov dword [esp + 4], eax
+│           0x0804841f      c704244c8504.  mov dword [esp], 0x804854c  ; "%d"
+│           0x08048426      e8e1feffff     call sym.imp.scanf
+│           0x0804842b      817dfc9a1400.  cmp dword [ebp - local_4h], 0x149a
+│       ┌─&lt; 0x08048432      740e           je 0x8048442
+│       │   0x08048434      c704244f8504.  mov dword [esp], str.Invalid_Password__n
+│       │   0x0804843b      e8dcfeffff     call sym.imp.printf
+│      ┌──&lt; 0x08048440      eb0c           jmp 0x804844e
+│      │└─&gt; 0x08048442      c70424628504.  mov dword [esp], str.Password_OK_:__n
+│      │    0x08048449      e8cefeffff     call sym.imp.printf
+│      └──&gt; 0x0804844e      b800000000     mov eax, 0
+│           0x08048453      c9             leave
+╘           0x08048454      c3             ret
+</code></p>
+
+<p>So, woo, radare is the best.  It has added helpful identifiers for us rather
+then make us look up a bunch of addresses.  For example <code>str.Invalid_Password__n</code> is an
+identifier standing in for the address of the string `“Invalid Password\n”.</p>
+
+<p>The assembly listing is easy to follow thanks to the analysis <code>radare2</code> has done,
+and the symbols it has added for us, it even graphically shows branches and loops.</p>
+
+<p>The first thing to know when you look at the assembly listing of a function created
+by a compiler, is that there is going to be 3 main sections: the function prologue,
+the body, and the function epilogue.  If you already know this, you will probably
+want to skip down a little ways.</p>
+
+<h2 id="the-function-prologue">The Function Prologue</h2>
+
+<p>Like I mentioned before, the stack is an area of memory which in Linux begins at
+<code>0xffffffff</code>, and grows upwards in memory, and the CPU register <code>esp</code> points
+to the top of the stack.  To get this analogy you have to think of memory as
+a something like a container that holds plates.  The bottom of the container is
+<code>0xffffff</code>, the top of it is <code>0x000000</code>.  When you place plates onto the stack
+over and over, the pile grows upwards.  That is pushing things onto the stack.</p>
+
+<p>To remove things from the stack, you “pop” them off of it.  You can’t pop a
+plate out of the middle or the bottom, you can only pop a plate off the top.
+It is a LIFO stack, last in is first out.</p>
+
+<p>An x86 CPU has <code>push</code> and <code>pop</code> instructions for this, and guess what, compilers
+don’t use them very much, prefering to instead just do arithmetic
+on <code>esp</code> or <code>ebp</code> in order to get values from the stack or manipulate its
+size.</p>
+
+<p>In a running program, we use the stack as a “function call stack”, which
+is a sequence of “stack frames”, one per function called.</p>
+
+<p>So let’s explain how that’s laid out so we can get back to the crackme. Take this
+example nested function calls:</p>
+
+<p><code>c
+int h(c){
+  int d = 10;
+  return c + d;
+}
+int g(b){
+  return h(b + 1);
+}
+int f(a){
+  return g(a + 1);
+}
+f(0);
+</code></p>
+
+<p><code>asm
+|      10          | Local variable d  (esp) (ebp - 4)
+|   0xffffffef     | Saved ebp frame pointer
+| h Return Address |
+|       2          | Argument to h
+|   0xfffffff7     | Saved ebp frame pointer
+| g Return Address |
+|       1          | Argument to g
+|   0xffffffff     | Saved ebp frame pointer
+| f Return Address |
+|       0          | Argument to f
+</code></p>
+
+<p>The calling convention used here is called <code>cdecl</code>, to call a function we
+put its arguments on the stack in reverse order, and use the <code>call</code> instruction.
+<code>call</code> automatically pushes the address of the next instruction after it
+onto the stack, so we will know where to return to after the function call ends.</p>
+
+<p>Once inside the function, space is made to hold the local variables, usually
+by subtracting the local variables size in bytes from esp, raising the stack
+up higher, sometimes this size is aligned on a 16 byte boundry by using the
+<code>and</code> instruction.  This is why there is junk data in uninitialized local variables,
+they just hold whatever garbage happened to be on the stack.</p>
+
+<p><code>main()</code> like any other function has a prologue.</p>
+
+<p><code>asm
+push ebp                 ; Push the previous base pointer to the stack
+mov ebp, esp             ; Make our new base pointer the top of the stack.
+sub esp, 0x18            ; Increase the stack space by 0x18 bytes
+and esp, 0xfffffff0      ; Align the stack to 16 byte boundry.
+mov eax, 0               ; eax = 0
+add eax, 0xf             ; eax = 0xf
+add eax, 0xf             ; eax = 0x1e
+shr eax, 4               ; eax = 0x1
+shl eax, 4               ; eax = 0x10 A shift right then left also aligns
+sub esp, eax             ; Increase stack space by another 0x10 bytes.
+</code></p>
+
+<p>So we save the old base pointer (base pointer, frame pointer, same thing) then
+start subtracting from esp to increase the space for local variables.</p>
+
+<p>It makes space twice, using two different methods for aligning it to a
+16-byte boundry.  You could ask, why doesn’t it just do this all in
+one subraction.  I have no idea why it does it this way, but I do know that
+when you compile with optimizations off, the compiler often does redundant
+things.  You might also ask why it reserves so much stack space for
+the one 32-bit local variable that actually exists in this main function.</p>
+
+<p>Your guess is as good as mine.  In the assembly listing we can see that
+the only local variable used is called <code>local_4h</code>, which is the value at
+<code>ebp - 0x4</code>, the <code>int</code> sized local variable that scanf parses our input
+into.</p>
+
+<h2 id="the-function-epilogue">The Function Epilogue</h2>
+
+<p><code>asm
+mov eax, 0
+leave
+ret
+</code></p>
+
+<p>The <code>leave</code> instruction is the same as <code>mov esp, ebp</code> <code>pop ebp</code>.  This
+effectively undoes all the stack resizing the prologue did, and then
+restores the base pointer to what it was before <code>main</code> was called.  Yep,
+there is another hidden function that calls <code>main()</code></p>
+
+<p>There is a register called <code>eip</code> that holds the address of the current
+instruction, but you can’t directly assign a value to it except to use
+a branching instruction or <code>ret</code>.  After <code>leave</code> is executed the next
+thing on the stack is the return address of the caller, <code>ret</code> pops that
+address into the <code>eip</code> register and execution continues from there.</p>
+
+<p>A function’s return value is always stored in the <code>eax</code> register, so
+<code>mov eax, 0</code> is the same as <code>return 0</code> at the end of <code>main()</code>.</p>
+
+<h2 id="back-to-scanf">Back to scanf</h2>
+
+<p><code>asm
+lea eax, [ebp - local_4h]
+mov dword [esp + 4], eax
+mov dword [esp], 0x804854c  ; "%d"
+call sym.imp.scanf
+cmp dword [ebp - local_4h], 0x149a
+je 0x8048442
+</code></p>
+
+<p>The first instruction, <code>lea</code> stands for load effective address, and is
+good at doing pointer arithmetic, calculating the address of elements
+inside arrays, and things like that.  <code>[ebp - 4]</code> is the address of the
+local <code>int</code> sized value on the stack we want <code>scanf</code> to write to.</p>
+
+<p><code>local_4h</code> is just a symbol radare uses to remind us what is in a memory
+location, and it allows us to rename it if we want, it just equals <code>4</code> in
+this case.</p>
+
+<p><code>0x804854c</code> is the address of the constant string “%d” located in the
+data section.  So this code is just moving the value <code>0x804854c</code> to
+the top of the stack, and the address of our local variable 4 bytes after that
+in reverse order that <code>scanf</code> takes them, then we <code>call</code> to <code>scanf</code>.</p>
+
+<p>At this point whatever we wrote, if it was a number, will be located at
+<code>[ebp - 4]</code>, and this value is compared with <code>0x149a</code>, if they are equal
+we jump to the “you win” screen.</p>
+
+<p>So that solves this crackme, all we need to type for a password is, in
+decimal <code>5274</code>.</p>
+
+<p><code>bash
+./crackme0x01
+IOLI Crackme Level 0x01
+Password: 5274
+Password OK :)
+</code></p>
+
+<h2 id="crackme0x02">Crackme0x02</h2>
+
+<p>Ok, let’s hope they get a bit harder from here on, and this should go
+a lot faster without needing to explain the stack, etc.</p>
+
+<p>A quick run shows that <code>ltrace</code> is not going to help us this time, so
+back into radare we go.  I’ve renamed some of the local variable so it will
+be clearer what is happening after the <code>scanf</code>.</p>
+
+<p><code>asm
+call sym.imp.scanf
+mov dword [ebp - a], 0x5a
+mov dword [ebp - b], 0x1ec
+mov edx, dword [ebp - b]
+lea eax, [ebp - a]
+add dword [eax], edx
+mov eax, dword [ebp - a]
+imul eax, dword [ebp - a]
+mov dword [ebp - b], eax
+mov eax, dword [ebp - number_entered]
+cmp eax, dword [ebp - b]
+jne 0x8048461
+</code></p>
+
+<p>So we have 3 local variables, <code>number_entered</code>, <code>a</code>, and <code>b</code>.  Let’s translate
+this to C psuedocode and check what the condition for winning is.</p>
+
+<p><code>C
+scanf("%d", &amp;number_entered);
+a = 0x5a;
+b = 0x1ec;
+edx = b;
+eax = &amp;a;
+*a = *eax + edx
+eax = a;
+eax *= a;
+b = eax;
+eax = number_entered;
+if(eax == b) goto win
+</code></p>
+
+<p>After doing that arithmetic and register shuffling, it turns out <code>b = 338724</code>, which
+is the password.</p>
+
+<h2 id="crackme0x03">Crackme0x03</h2>
+
+<p>In <code>crackme0x03</code> we have all the same stuff as in the previous, but now we’re calling
+a function <code>test(number_entered, b)</code> which will test the password.</p>
+
+<p><code>asm
+mov eax, dword [ebp - b]
+mov dword [esp + 4], eax   ; pass b
+mov eax, dword [ebp - number_entered]
+mov dword [esp], eax       ; pass number_entered
+call sym.test
+</code></p>
+
+<p>So let’s have a look at this <code>test</code> function.</p>
+
+<p><code>asm
+╒ (fcn) sym.test 42
+│           ; arg int number_entered @ ebp+0x8
+│           ; arg int b            @ ebp+0xc
+│           0x0804846e      55             push ebp
+│           0x0804846f      89e5           mov ebp, esp
+│           0x08048471      83ec08         sub esp, 8
+│           0x08048474      8b4508         mov eax, dword [ebp+number_entered]
+│           0x08048477      3b450c         cmp eax, dword [ebp+b]
+│       ┌─&lt; 0x0804847a      740e           je 0x804848a
+│       │   0x0804847c      c70424ec8504.  mov dword [esp], str.Lqydolg_Sdvvzrug_
+│       │   0x08048483      e88cffffff     call sym.shift
+│      ┌──&lt; 0x08048488      eb0c           jmp 0x8048496
+│      │└─&gt; 0x0804848a      c70424fe8504.  mov dword [esp], str.Sdvvzrug_RN______
+│      │    0x08048491      e87effffff     call sym.shift
+│      └──&gt; 0x08048496      c9             leave
+╘           0x08048497      c3             ret
+</code></p>
+
+<p>Ok so what’s going on in here.  First thing I see is 8 bytes allocated on the stack and
+then never used (for some reason), and I see our two arguments coming in at <code>epb + 0x8</code>
+and <code>ebp + 0xc</code> which I’ve renamed to match the calling code.</p>
+
+<p>We then compare <code>number_entered</code> and <code>b</code> for equality, which chooses one or another
+string containing giberish to be passed to the function <code>shift()</code>.  In either case
+the return value of <code>test()</code> is not checked, and we return from the <code>test()</code> function.</p>
+
+<p>Let’s check the actual contents of these gibberish strings out in radare with the <code>ps</code>
+command to print strings.</p>
+
+<p><code>bash
+ps @ str.Lqydolg_Sdvvzrug_
+Lqydolg#Sdvvzrug$
+ps @ str.Sdvvzrug_RN______
+Sdvvzrug#RN$$$#=,
+</code></p>
+
+<p>Let’s remember that, and have a look at the <code>shift()</code> function which I’m going to
+guess is going to decrypt these strings somehow.</p>
+
+<p><code>asm
+│           ; arg int string       @ ebp+0x8
+│           ; arg int arg_13h      @ ebp+0x13
+│           ; var int decrypted    @ ebp-0x78
+│           ; var int counter      @ ebp-0x7c
+│           ; CALL XREF from 0x08048491 (sym.shift)
+│           ; CALL XREF from 0x08048483 (sym.shift)
+│           0x08048414      55             push ebp
+│           0x08048415      89e5           mov ebp, esp
+│           0x08048417      81ec98000000   sub esp, 0x98
+│           0x0804841d      c74584000000.  mov dword [ebp - counter], 0
+│       ┌─&gt; 0x08048424      8b4508         mov eax, dword [ebp+string]
+│       │   0x08048427      890424         mov dword [esp], eax
+│       │   0x0804842a      e811ffffff     call sym.imp.strlen
+│       │   0x0804842f      394584         cmp dword [ebp - counter], eax
+│      ┌──&lt; 0x08048432      731c           jae 0x8048450
+│      ││   0x08048434      8d4588         lea eax, [ebp - decrypted]
+│      ││   0x08048437      89c2           mov edx, eax
+│      ││   0x08048439      035584         add edx, dword [ebp - counter]
+│      ││   0x0804843c      8b4584         mov eax, dword [ebp - counter]
+│      ││   0x0804843f      034508         add eax, dword [ebp+string]
+│      ││   0x08048442      0fb600         movzx eax, byte [eax]
+│      ││   0x08048445      2c03           sub al, 3
+│      ││   0x08048447      8802           mov byte [edx], al
+│      ││   0x08048449      8d4584         lea eax, [ebp - counter]
+│      ││   0x0804844c      ff00           inc dword [eax]
+│      │└─&lt; 0x0804844e      ebd4           jmp 0x8048424
+│      └──&gt; 0x08048450      8d4588         lea eax, [ebp - decrypted]
+│           0x08048453      034584         add eax, dword [ebp - counter]
+│           0x08048456      c60000         mov byte [eax], 0
+│           0x08048459      8d4588         lea eax, [ebp - decrypted]
+│           0x0804845c      89442404       mov dword [esp + 4], eax
+│           0x08048460      c70424e88504.  mov dword [esp], 0x80485e8  ; "%s."
+│           0x08048467      e8e4feffff     call sym.imp.printf
+│           0x0804846c      c9             leave
+╘           0x0804846d      c3             ret
+</code></p>
+
+<p>I’ve renamed the local stack variables to be what I believe their purpose is.
+This is a bigger function than we’ve seen so far, this loop pattern we see
+here is what a <code>for</code> loop looks like in assembly.  You can see how <code>counter</code>
+is initialized to <code>0</code>, then a condition is checked which either processes
+the body and increments <code>counter</code>, or it jumps out of the loop.</p>
+
+<p>I guess is going to iterate over the string that was passed in, and probably
+“decrypt” it.  Maybe it will help if we translate this back into C.</p>
+
+<p><code>c
+void shift(char *string){
+  char decrypted[120];
+  int counter;
+  for(i = 0; i &lt; strlen(string); ++i){
+    decrypted[i] = string[i] - 3;
+  }
+  decrypted[counter] = '\0';
+  printf("%s.", decrypted);
+}
+</code></p>
+
+<p>All it did was subtract <code>3</code> from the ascii code of the gibberish string, which
+is why we say it is “decrypting” in quotes :)  Remember we still have not run
+this binary yet, so let’s just write up a quick Ruby script to see what the
+giberish decodes to.</p>
+
+<p><code>ruby
+"Lqydolg#Sdvvzrug$".split('').map do |c|
+  (c.ord - 3).chr
+end.join
+ =&gt; "Invalid Password!"
+"Sdvvzrug#RN$$$#=,".split('').map do |c|
+  (c.ord - 3).chr}.join
+end
+=&gt; "Password OK!!! :)"
+</code></p>
+
+<p>Ok so we’ve learned that if the password you enter is equal to the variable
+calculated to <code>b</code>, we will select and decode the “Password Ok” string, and win,
+that was pretty obvious from before even looking at this function, but we got
+to make sure we got to the bottom of each function.  So if I remember right,
+<code>b</code> was <code>338724</code>, the same password as last time, real sneaky guys.</p>
+
+<p><code>bash
+./crackme0x03
+IOLI Crackme Level 0x02
+Password: 338724
+Password OK :)
+</code></p>
+]]></content>
+  </entry>
+  
+</feed>

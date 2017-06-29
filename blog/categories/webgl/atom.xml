@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Webgl | Irken Kitties]]></title>
+  <link href="http://irkenkitties.com/blog/categories/webgl/atom.xml" rel="self"/>
+  <link href="http://irkenkitties.com/"/>
+  <updated>2017-06-29T16:17:35-07:00</updated>
+  <id>http://irkenkitties.com/</id>
+  <author>
+    <name><![CDATA[Safiire]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[GLSL Shaders With WebGL]]></title>
+    <link href="http://irkenkitties.com/blog/2016/02/10/glsl-shaders-with-webgl/"/>
+    <updated>2016-02-10T10:51:44-07:00</updated>
+    <id>http://irkenkitties.com/blog/2016/02/10/glsl-shaders-with-webgl</id>
+    <content type="html"><![CDATA[<div style="text-align: center;">
+  <div id="moon_orb"></div>
+</div>
+
+<p>Here is a neat example of using shaders in WebGL, read on to see the GLSL shader code</p>
+
+<!-- more -->
+
+<h2 id="fragment-shader">Fragment Shader</h2>
+
+<p>This is an example of Ray Marching using Distance Fields.  The <code>map</code> function given
+here is for a sphere, it accepts a point <code>p</code> and returns the distance <code>p</code> is from
+the surface of a sphere with radius <code>0.25</code> units.</p>
+
+<p>By first manipulating <code>p</code> by calling <code>fract(p)</code> on it (basically mod 1), we get 
+multiple equally spaced spheres.  <code>length()</code> performs the 3D pythagorean theorem
+in order to see how far away <code>p</code> is.</p>
+
+<p>The <code>trace()</code> function receives the origin <code>o</code> and the ray <code>r</code>, and casts the ray
+outwards towards the object in the <code>map()</code> function by multiplying it by <code>t</code>.</p>
+
+<p>This makes the <code>trace()</code> function search for the surface of an object iteratively,
+here over a maximum of 32 iterations.  Each iteration it projects the ray half the 
+distance remaining returned by the distance function, which zooms in safely until it finds
+the shape’s boundary.</p>
+
+<p>&#8220;` glsl
+uniform float time;
+uniform vec2 resolution;</p>
+
+<p>const float pi = 3.14159265359;
+const float tau = 2.0 * pi;</p>
+
+<p>float map(vec3 p){
+  vec3 q = fract(p) * 2.0 - 1.0;
+  return length(q) - 0.25;
+}</p>
+
+<p>float trace(vec3 o, vec3 r){
+  float t = 0.0;
+  for(int i = 0; i &lt; 32; i++){
+    vec3 p = o + r * t;
+    float d = map(p);
+    t += d * 0.5;
+  }
+  return t;
+}</p>
+
+<p>void main(){
+  vec2 uv = gl_FragCoord.xy / resolution;
+  uv = uv * 2.0 - 1.0;
+  uv.x *= resolution.x / resolution.y;</p>
+
+<p>float theta = time * 0.25;
+  vec3 r = normalize(vec3(uv, 1.0));
+  vec3 o = vec3(0.0, 0.0, -3.0) * time * -0.5;
+  r.xy *= mat2(cos(theta), -sin(theta), sin(theta), cos(theta));</p>
+
+<p>float t = trace(o, r);
+  float fog = 1.0 / (1.0 + t * t * 0.1);</p>
+
+<p>vec3 fc = vec3(fog) * vec3(0.4 * sin(time) * 0.5 + 1.0, 0.0, 0.4 * cos(time) * 0.5 + 1.0);</p>
+
+<p>gl_FragColor = vec4(fc, 1.0);
+}</p>
+
+<p>&#8220;`</p>
+
+<p>The screen here is really a quad the same size as the viewport, so each fragment has a uv coordinate 
+on that quad.</p>
+
+<p>Next we expand the 2D uv coordinate into 3D called <code>r</code> for ray, and normalize it to unit length, and establish an origin.
+together these make a ray that is cast through that point on the screen.  I adjust the z-coorindate 
+by multiplying it by <code>time</code> which makes us seem to zoom through the scene.</p>
+
+<p>The next thing I do is create a 2D rotation matrix, which I multiply by the ray’s <code>xy</code> vector, the 
+angle of rotation <code>theta</code> is also adjusted over time.</p>
+
+<p>Now I use <code>trace</code> to calculate the distance a ray travels into the scene before hitting something.  The 
+value <code>fog</code> is trying to use an inverse square equation to make more distant points seem darker than nearby points.</p>
+
+<p>Finally <code>fog</code> is used to compose an RGB color, mostly purple, but also modified by time to slowly change
+the color of the spheres.  Finally the fragment color is returned.</p>
+
+<h2 id="vertex-shader">Vertex Shader</h2>
+
+<p>&#8220;` glsl
+uniform float time;
+uniform vec2 resolution;</p>
+
+<p>void main(){
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+}
+&#8220;`</p>
+
+<p>Not much happening in the vertex shader, we apply the model and projection matrices, most importantly
+we pass the <code>time</code> and <code>resolution</code> uniforms we receive from javascript along to the fragment shader.</p>
+
+]]></content>
+  </entry>
+  
+</feed>
