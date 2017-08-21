@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Debugging | Irken Kitties]]></title>
   <link href="http://irkenkitties.com/blog/categories/debugging/atom.xml" rel="self"/>
   <link href="http://irkenkitties.com/"/>
-  <updated>2017-08-21T13:59:11-07:00</updated>
+  <updated>2017-08-21T15:56:35-07:00</updated>
   <id>http://irkenkitties.com/</id>
   <author>
     <name><![CDATA[Safiire]]></name>
@@ -390,7 +390,7 @@ r57,r40,+,
 <p>Ok, so now we’re all set to get a disassembly view of this binary, we’ll just load it up in Radare2, hit play
 to see how it goes.</p>
 
-<script type="text/javascript" src="https://asciinema.org/a/134202.js" id="asciicast-134202" async=""></script>
+<script type="text/javascript" src="https://asciinema.org/a/134202.js" id="asciicast-134202" data-preload="1" async=""></script>
 
 <p>“Wrong Endianness”.  Now, there are a few things going on here, so let’s look at the first instruction: <code>movi r00, 0x78200</code>.
 I don’t want to get to bogged down in the details, but I know from the future, that register <code>r00</code> is like the zero register
@@ -505,7 +505,7 @@ an instruction.  Then, if your <code>read</code> instruction works properly this
 sector from <code>.diskrom</code> back into memory, undoing the damage.  If your <code>read</code> instruction is not working, you will be greeted by
 the text “Disk read error!” and the program will halt.</p>
 
-<script type="text/javascript" src="https://asciinema.org/a/134327.js" id="asciicast-134327" async=""></script>
+<script type="text/javascript" src="https://asciinema.org/a/134327.js" id="asciicast-134327" data-preload="1" async=""></script>
 
 <p>Notice how the analysis plugin is working, showing beautiful ascii arrows that point to the destinations of our jumps.  When
 the zero is written to address <code>0xbe</code>, it modifies the instruction, and we see the control flow is taking us directly towards
@@ -592,7 +592,7 @@ are conditional on.</p>
 around.  This is loading a project file where I’ve already reversed the entire binary, but gives a good
 idea of how it’s working.</p>
 
-<script type="text/javascript" src="https://asciinema.org/a/134338.js" id="asciicast-134338" async=""></script>
+<script type="text/javascript" src="https://asciinema.org/a/134338.js" id="asciicast-134338" data-preload="1" async=""></script>
 
 <p>Here’s where we start getting some idea of what this binary is up to, and finally get to see some proper
 functions such as <code>print()</code>, <code>scan()</code>, <code>memcmp()</code> and things like that implemented.</p>
@@ -952,7 +952,7 @@ aecu 0x000004fc</p>
 
 <h2 id="the-result">The Result</h2>
 
-<script type="text/javascript" src="https://asciinema.org/a/134335.js" id="asciicast-134335" async=""></script>
+<script type="text/javascript" src="https://asciinema.org/a/134335.js" id="asciicast-134335" data-preload="1" async=""></script>
 
 <p>This takes a while to complete, so I just went off and did something else.  Another thing, not shown here is that
 the binary often calls functions that just do nothing but waste enormous amounts of time counting, which have no
