@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Dan32 | Irken Kitties]]></title>
   <link href="http://irkenkitties.com/blog/categories/dan32/atom.xml" rel="self"/>
   <link href="http://irkenkitties.com/"/>
-  <updated>2017-08-21T15:59:31-07:00</updated>
+  <updated>2017-08-21T16:03:57-07:00</updated>
   <id>http://irkenkitties.com/</id>
   <author>
     <name><![CDATA[Safiire]]></name>
@@ -952,7 +952,7 @@ aecu 0x000004fc</p>
 
 <h2 id="the-result">The Result</h2>
 
-<script type="text/javascript" src="https://asciinema.org/a/134335.js" id="asciicast-134335" data-speed="2" data-preload="1" async=""></script>
+<script type="text/javascript" src="https://asciinema.org/a/134335.js" id="asciicast-134335" data-speed="3" data-preload="1" async=""></script>
 
 <p>This takes a while to complete, so I just went off and did something else.  Another thing, not shown here is that
 the binary often calls functions that just do nothing but waste enormous amounts of time counting, which have no
