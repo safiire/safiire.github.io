@@ -9,8 +9,7 @@
   <meta name="author" content="Safiire">
 
   
-  <meta name="description" content="You may have noticed that I like to program many things in Ruby. I really do like
-many aspects of this language, and it’s usually the main language &hellip;">
+  <meta name="description" content="While I was browsing the Reverse Engineering sub on Reddit a few months ago, I came across a puzzle that the poster said came from a Danish newspaper &hellip;">
   
 
   <meta name="HandheldFriendly" content="True">
@@ -118,6 +117,66 @@ many aspects of this language, and it’s usually the main language &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/08/19/solving-danish-defense-intelligence-puzzle/">Solving a Danish Defense Intelligence Puzzle</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2017-08-19T15:53:11-07:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>While I was browsing the Reverse Engineering sub on Reddit a few months ago, I came across a puzzle that the poster said came from a Danish newspaper.
+It consisted of a single fairly large image, with a small amount of x86 assembly on one side, and a large block of text on the other, formatted to
+display a question mark.  So, having finally had the time to sit down and solve this recently, I thought I would do a writeup, explaining my
+thought processes along the way in the hopes someone can learn from it.  Another goal here is to expose people to the majesty of Radare2, which
+is a Vim-like commandline reverse engineering tool that follows the principles of the Unix philosophy.</p>
+
+<p><img src="/images/dan32.png" alt="The Challenge" title="The Challenge" /></p>
+
+<p>It looks like a CrackMe, or capture the flag exercise.  The x86 assembly is clearly a virtual machine, and I assumed the block of text on the
+right would be a binary that runs on that virtual machine.  I call the machine, for lack of a better name, <em>Dan32</em>, because as I later
+found out, it is a 32-bit virtual machine, and originates from Denmark.</p>
+
+<p>The block of text on the right is base64 encoded, which is easy enough to to convert back into a binary file, but since it is an image,
+we can’t directly get at that block in a text format without doing some kind of optical character recognition.  We can guess it is base64
+encoded by the characters used, and really after you’ve seen a lot of base64, you can usually spot it pretty easily.</p>
+
+<p>I tried a few online OCR services, which did not work, and since I had invested almost no time into this, I was ready to say the hell with it.
+I was not about to type all that base64 text into my text editor by hand.</p>
+
+<p>I did end up solving this puzzle and creating tools to reverse engineer it, what follows is a detailed writeup, read on for more.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2017/08/19/solving-danish-defense-intelligence-puzzle/">Read it &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -638,120 +697,6 @@ a list it just means to stick them together end to end.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/12/03/recreating-the-haskell-list-part-2-functors/">Recreating the Haskell List Part 2: Functors</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-12-03T23:54:00-08:00" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>This is part 2 of a 6 part tutorial</p>
-
-<h2 id="functors">Functors</h2>
-
-<p>How can we modify or transform a value or values that are contained in a data structure such as <code>Container</code>? Let’s
-say we have a <code>Container</code> holding the integer 4, and we want to add 1 to it.  The problem is that
-a <code>Container</code> doesn’t have addition defined for it, and really, it shouldn’t considering that any possible
-type could be stored inside it, any number of which have no meaningful way to respond to addition.</p>
-
-<p>Let’s look at a similar situation in C++:</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-<span class="line-number">10</span>
-<span class="line-number">11</span>
-<span class="line-number">12</span>
-<span class="line-number">13</span>
-<span class="line-number">14</span>
-<span class="line-number">15</span>
-<span class="line-number">16</span>
-<span class="line-number">17</span>
-<span class="line-number">18</span>
-<span class="line-number">19</span>
-</pre></td><td class="code"><pre><code class="c++"><span class="line"><span class="k">template</span> <span class="o">&lt;</span><span class="k">class</span> <span class="nc">T</span><span class="o">&gt;</span>
-</span><span class="line"><span class="k">class</span> <span class="nc">Container</span> <span class="p">{</span>
-</span><span class="line">   <span class="n">T</span> <span class="n">_value</span><span class="p">;</span>
-</span><span class="line">   <span class="k">public</span><span class="o">:</span>
-</span><span class="line">   <span class="n">Container</span><span class="p">(</span><span class="n">T</span> <span class="n">value</span><span class="p">)</span> <span class="o">:</span> <span class="n">_value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
-</span><span class="line">   <span class="n">T</span> <span class="n">get_value</span><span class="p">()</span> <span class="p">{</span>
-</span><span class="line">       <span class="k">return</span> <span class="n">_value</span><span class="p">;</span>
-</span><span class="line">   <span class="p">}</span>
-</span><span class="line">   <span class="kt">void</span> <span class="n">set_value</span><span class="p">(</span><span class="n">T</span> <span class="n">value</span><span class="p">){</span>
-</span><span class="line">       <span class="n">_value</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
-</span><span class="line">   <span class="p">}</span>
-</span><span class="line"><span class="p">};</span>
-</span><span class="line"><span class="n">Container</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">container</span> <span class="o">=</span> <span class="n">Container</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
-</span><span class="line"><span class="c1">//  Of course, you can&#39;t do this to transform the value inside</span>
-</span><span class="line"><span class="n">container</span> <span class="o">=</span> <span class="n">container</span> <span class="o">+</span> <span class="mi">1</span>
-</span><span class="line"><span class="c1">//  You must remove it, apply the transformation and put it back</span>
-</span><span class="line"><span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="n">container</span><span class="p">.</span><span class="n">get_value</span><span class="p">();</span>
-</span><span class="line"><span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
-</span><span class="line"><span class="n">container</span><span class="p">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p>The extreme generality of this C++ class means that it would be a mistake to define <code>operator+</code> on
-it, as any number of types <code>T</code> also cannot meaningfully respond to addition.  Now we find ourselves
-in a similar situation in Haskell:</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-</pre></td><td class="code"><pre><code class="haskell"><span class="line"><span class="kr">let</span> <span class="n">container</span> <span class="ow">=</span> <span class="kt">Container</span> <span class="mi">4</span>
-</span><span class="line"><span class="kr">let</span> <span class="n">container&#39;</span> <span class="ow">=</span> <span class="n">container</span> <span class="o">+</span> <span class="mi">1</span>
-</span><span class="line"><span class="o">&lt;</span><span class="n">interactive</span><span class="o">&gt;:</span><span class="mi">3</span><span class="kt">:</span><span class="mi">28</span><span class="kt">:</span>
-</span><span class="line">    <span class="kt">No</span> <span class="kr">instance</span> <span class="n">for</span> <span class="p">(</span><span class="kt">Num</span> <span class="p">(</span><span class="kt">Container</span> <span class="kt">Integer</span><span class="p">))</span>
-</span><span class="line">        <span class="n">arising</span> <span class="n">from</span> <span class="n">a</span> <span class="n">use</span> <span class="kr">of</span> <span class="p">`</span><span class="o">+</span><span class="n">&#39;</span>
-</span><span class="line">    <span class="kt">Possible</span> <span class="n">fix</span><span class="kt">:</span>
-</span><span class="line">        <span class="n">add</span> <span class="n">an</span> <span class="kr">instance</span> <span class="n">declaration</span> <span class="n">for</span> <span class="p">(</span><span class="kt">Num</span> <span class="p">(</span><span class="kt">Container</span> <span class="kt">Integer</span><span class="p">))</span>
-</span><span class="line">    <span class="kt">In</span> <span class="n">the</span> <span class="n">expression</span><span class="kt">:</span> <span class="n">container</span> <span class="o">+</span> <span class="mi">1</span>
-</span><span class="line">    <span class="kt">In</span> <span class="n">an</span> <span class="n">equation</span> <span class="n">for</span> <span class="n">container&#39;</span><span class="kt">:</span> <span class="n">container&#39;</span> <span class="ow">=</span> <span class="n">container</span> <span class="o">+</span> <span class="mi">1</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2012/12/03/recreating-the-haskell-list-part-2-functors/">Read it &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="2">&larr; Older</a>
@@ -767,6 +712,10 @@ in a similar situation in Haskell:</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2017/08/19/solving-danish-defense-intelligence-puzzle/">Solving a Danish Defense Intelligence Puzzle</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/04/12/reversing-crackme-challenges/">Reversing Crackme Challenges</a>
       </li>
     
@@ -780,10 +729,6 @@ in a similar situation in Haskell:</p>
     
       <li class="post">
         <a href="/blog/2014/10/17/matrices-as-linear-operations/">Matrices as Linear Operators</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/12/13/building-my-shruthi-1/">Building My Shruthi-1</a>
       </li>
     
   </ul>

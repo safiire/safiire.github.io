@@ -1,0 +1,1559 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Solving a Danish Defense Intelligence Puzzle - Irken Kitties</title>
+  <meta name="author" content="Safiire">
+
+  
+  <meta name="description" content="While I was browsing the Reverse Engineering sub on Reddit a few months ago, I came across a puzzle that the poster said came from a Danish newspaper &hellip;">
+  
+
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://irkenkitties.com/blog/2017/08/19/solving-danish-defense-intelligence-puzzle">
+  <!-- <link href="/favicon.png" rel="icon"> &#8211;>
+
+  <!-- A million more different sizes and types of favicon -->
+  <link rel="apple-touch-icon" sizes="57x57" href="/favicons/apple-touch-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/favicons/apple-touch-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/favicons/apple-touch-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/favicons/apple-touch-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/favicons/apple-touch-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/favicons/apple-touch-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/favicons/apple-touch-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/favicons/apple-touch-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon-180x180.png">
+  <link rel="icon" type="image/png" href="/favicons/favicon-192x192.png" sizes="192x192">
+  <link rel="icon" type="image/png" href="/favicons/favicon-160x160.png" sizes="160x160">
+  <link rel="icon" type="image/png" href="/favicons/favicon-96x96.png" sizes="96x96">
+  <link rel="icon" type="image/png" href="/favicons/favicon-16x16.png" sizes="16x16">
+  <link rel="icon" type="image/png" href="/favicons/favicon-32x32.png" sizes="32x32">
+  <meta name="msapplication-TileColor" content="#9f00a7">
+  <meta name="msapplication-TileImage" content="/favicons/mstile-144x144.png">
+
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Irken Kitties" type="application/atom+xml">
+
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script src="/javascripts/three.min.js" type="text/javascript"></script>
+  <script src="/javascripts/glsl_header.js" type="text/javascript"></script>
+
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at //google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='//fonts.googleapis.com/css?family=Francois+One' rel='stylesheet' type='text/css'>
+
+<!-- MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript"
+   src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Irken Kitties</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:irkenkitties.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a target="_blank" href="https://github.com/safiire">Github</a></li>
+  <li><a href="/blog/categories/haskell/">Haskell</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Solving a Danish Defense Intelligence Puzzle</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2017-08-19T15:53:11-07:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>While I was browsing the Reverse Engineering sub on Reddit a few months ago, I came across a puzzle that the poster said came from a Danish newspaper.
+It consisted of a single fairly large image, with a small amount of x86 assembly on one side, and a large block of text on the other, formatted to
+display a question mark.  So, having finally had the time to sit down and solve this recently, I thought I would do a writeup, explaining my
+thought processes along the way in the hopes someone can learn from it.  Another goal here is to expose people to the majesty of Radare2, which
+is a Vim-like commandline reverse engineering tool that follows the principles of the Unix philosophy.</p>
+
+<p><img src="/images/dan32.png" alt="The Challenge" title="The Challenge" /></p>
+
+<p>It looks like a CrackMe, or capture the flag exercise.  The x86 assembly is clearly a virtual machine, and I assumed the block of text on the
+right would be a binary that runs on that virtual machine.  I call the machine, for lack of a better name, <em>Dan32</em>, because as I later
+found out, it is a 32-bit virtual machine, and originates from Denmark.</p>
+
+<p>The block of text on the right is base64 encoded, which is easy enough to to convert back into a binary file, but since it is an image,
+we can’t directly get at that block in a text format without doing some kind of optical character recognition.  We can guess it is base64
+encoded by the characters used, and really after you’ve seen a lot of base64, you can usually spot it pretty easily.</p>
+
+<p>I tried a few online OCR services, which did not work, and since I had invested almost no time into this, I was ready to say the hell with it.
+I was not about to type all that base64 text into my text editor by hand.</p>
+
+<p>I did end up solving this puzzle and creating tools to reverse engineer it, what follows is a detailed writeup, read on for more.</p>
+
+<!-- more -->
+
+<h2 id="getting-the-base64-text">Getting the Base64 Text</h2>
+<p>Staring at it a bit longer, we notice certain characters in the base64 side are bolded, and if we go through and write down each bolded character,
+it spells out some nonsense <code>MzJoYWNrZXI1NTd6amt6aS5vbmlvbgo.</code>.</p>
+
+<p>I thought, since we are looking at a massive bunch of base64, that maybe this was also base64 encoded.  We can use a tool called <code>rax2</code> which
+is a part of Radare2 in order to decode it like this:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line"><span class="nv">$ </span>rax2 -D MzJoYWNrZXI1NTd6amt6aS5vbmlvbgo.
+</span><span class="line">32hacker557zjkzi.onion
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>It’s a vanity <code>.onion</code> address on the TOR network.  The site, which unfortunately is not online anymore, has downloads for both the assembly listing, and the base64,
+saving us from needing to worry about how to get those characters into our computer by hand.</p>
+
+<p>My approach to these sorts of files, that might be malicious or not, is usually to use <code>hexdump</code> or a hex editor program to look at them
+before going any further.  After doing this to the base64 file, I notice that it is full of ANSI terminal escape sequences, and that these
+ones are for positioning text at (x,y) coordinates, setting bolding etc.  This is because if you were to <code>cat</code> the file to your terminal,
+it would reproduce the formatting seen in the image, with the question mark and all, which is pretty cute, and are actually required to
+put the text in the right order to be decoded.</p>
+
+<p>Before I <code>cat</code> this to my terminal, I wrote a script to check each of the ANSI escape sequences to make sure they were only positional
+and style commands, and nothing weird or malicious.  They turned out alright, so I printed it to my terminal and copy pasted the
+text into a file.  Then I wrote another script to remove the end of line hyphens, join it all together, and base64 decode it, resulting
+in a binary file that I named <a href="https://github.com/safiire/radare2-dan32/blob/master/disk.img" title="disk.img">disk.img</a></p>
+
+<p>You can find the complete source code for all of the Radare2 plugins I wrote to solve this <a href="https://github.com/safiire/radare2-dan32/">on my github</a>.</p>
+
+<h2 id="the-virtual-machine">The Virtual Machine</h2>
+<p>The provided x86 assembly for the virtual machine is bare bones, but it tells us everything we need to know to run this binary.
+The label <code>OP_TABLE</code> points to an enumeration of each opcode the VM supports, and the order, so we know the numeric value of the that op.</p>
+
+<p><img src="/images/dan32_asm1.png" alt="Assembly Listing" title="Assembly Listing" /></p>
+
+<p>Some more information we learn from the given asm is</p>
+
+<ul>
+  <li>There are at least 64 registers in this machine</li>
+  <li>It must be a 32-bit machine</li>
+  <li><code>%define REG(r) [REGS + r * 4]</code> Registers are 32-bits wide</li>
+  <li><code>%define PTR(p) [MEM + p]</code> It requires some read/write memory space</li>
+  <li><code>lea esi [DISK + esi]</code> It requires some read/write space to act as a disk</li>
+  <li><code>mov eax, [OP_TABLE + eax * 4]</code> Every opcode is 4 bytes wide</li>
+  <li><code>cmov</code> is the only way to do conditionals</li>
+</ul>
+
+<p>Even after learning all that information, it’s incomplete, some of the opcodes are not given implementations, such as <code>write,
+in, div</code>, and the various sized <code>load.x, store.x</code>, and <code>nor</code>, to name a few.  So we’ll need to look at what’s given,
+and implement those ourselves.</p>
+
+<h2 id="my-philosophy-of-reversing">My Philosophy of Reversing</h2>
+<p>Here’s where a major part of my reverse engineering philosophy comes in, I don’t as a rule like to run random binaries given to me,
+especially in malware/crackme situations.  If I take the VM’s assembly listing, complete the missing implementations, and run the
+mystery binary <code>disk.img</code>, I have literally no idea what it is capable of at this point.  Worst case scenario is that binary knows
+about flaw in the given virtual machine, and exploits it for a VM escape onto my host system and starts doing shit.</p>
+
+<p>I’m heavy on the static analysis side, but at this point I don’t have any debugger, or analysis tools that even understand this
+made up computer architecture.  What I want to do, is use Radare2 to reverse engineer the binary, so I’m going to need to teach Radare2
+about this file format, computer architecture, invent a textural assembly language, and so on.  And that’s the real fun of this challenge for
+me, honestly, so that’s what I did.  Radare2 allows you to write plugins to extend it, so it can understand any CPU, real or
+imagined, and simulate its running through ESIL (Evaluable Strings Intermediate Language).</p>
+
+<h2 id="radare2-plugins">Radare2 Plugins</h2>
+<p>The first Radare2 plugin to write, is the asm plugin.  This plugin takes the 32-bit machine level opcodes and fills in a structure
+with information about that opcode, its arguments, and it provides a textual representation for viewing a disassembly listing.</p>
+
+<p>In order to do this, we’ll write a plugin in C.  The asm plugin’s main function has the following prototype</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="c"><span class="line"><span class="k">static</span> <span class="kt">int</span> <span class="nf">disassemble</span><span class="p">(</span><span class="n">RAsm</span> <span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="n">RAsmOp</span> <span class="o">*</span><span class="n">op</span><span class="p">,</span> <span class="n">ut8</span> <span class="o">*</span><span class="n">buf</span><span class="p">,</span> <span class="n">ut64</span> <span class="n">len</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>The parameters to <code>disassemble</code> are:</p>
+
+<ul>
+  <li><code>RAsm *a</code> is the current assembler context</li>
+  <li><code>RAsmOp *op</code> is the structure we need to fill in</li>
+  <li><code>ut8 *buf</code> are the opcode bytes we are disassembling</li>
+  <li><code>ut64 len</code> is the length of <code>buf</code></li>
+</ul>
+
+<p>The important fields of <code>RAsmOp</code> to fill in here, are <code>buf_asm</code> which holds the textual representation of the disassembled opcode,
+and <code>size</code>, the size of the opcode.</p>
+
+<p>Looking at the provided x86 assembly code, we can see how to dismantle a 32-bit opcode into its constituent parts, remember all
+opcodes are 4 bytes long or 32-bits.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+</pre></td><td class="code"><pre><code class="asm"><span class="line"><span class="nf">mov</span> <span class="no">ebp</span><span class="p">,</span> <span class="no">edx</span>
+</span><span class="line"><span class="nf">shr</span> <span class="no">ebp</span><span class="p">,</span> <span class="mi">21</span>
+</span><span class="line"><span class="nf">and</span> <span class="no">ebp</span><span class="p">,</span> <span class="mi">77</span><span class="no">o</span>
+</span><span class="line"><span class="nf">mov</span> <span class="no">esi</span><span class="p">,</span> <span class="no">edx</span>
+</span><span class="line"><span class="nf">shr</span> <span class="no">esi</span><span class="p">,</span> <span class="mi">15</span>
+</span><span class="line"><span class="nf">and</span> <span class="no">esi</span><span class="p">,</span> <span class="mi">77</span><span class="no">o</span>
+</span><span class="line"><span class="nf">mov</span> <span class="no">edi</span><span class="p">,</span> <span class="no">edx</span>
+</span><span class="line"><span class="nf">shr</span> <span class="no">edi</span><span class="p">,</span> <span class="mi">9</span>
+</span><span class="line"><span class="nf">and</span> <span class="no">edi</span><span class="p">,</span> <span class="mi">77</span><span class="no">o</span>
+</span><span class="line">
+</span><span class="line"><span class="nf">mov</span> <span class="no">eax</span><span class="p">,</span> <span class="no">edx</span>
+</span><span class="line"><span class="nf">shr</span> <span class="no">eax</span><span class="p">,</span> <span class="mi">27</span>
+</span><span class="line"><span class="nf">mov</span> <span class="no">eax</span><span class="p">,</span> <span class="err">[</span><span class="no">OP_TABLE</span> <span class="err">+</span> <span class="no">eax</span> <span class="p">*</span> <span class="mi">4</span><span class="err">]</span>
+</span><span class="line"><span class="nf">jmp</span> <span class="no">eax</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Becomes</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+</pre></td><td class="code"><pre><code class="c"><span class="line"><span class="cp">#define SIX_BIT 077</span>
+</span><span class="line">
+</span><span class="line"><span class="c1">//  Cast 4 bytes from buf to a unsigned 32 bit value</span>
+</span><span class="line"><span class="n">ut32</span> <span class="n">dword</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="n">ut32</span><span class="o">*</span><span class="p">)</span><span class="n">buf</span><span class="p">;</span>
+</span><span class="line">
+</span><span class="line"><span class="c1">//  32 - 27 leaves a 5-bit opcode</span>
+</span><span class="line"><span class="n">ut8</span> <span class="n">op_index</span> <span class="o">=</span> <span class="p">(</span><span class="n">dword</span> <span class="o">&gt;&gt;</span> <span class="mi">27</span><span class="p">);</span>
+</span><span class="line">
+</span><span class="line"><span class="c1">//  Extract 3 6-bit arguments using the SIX_BIT mask</span>
+</span><span class="line"><span class="n">ut8</span> <span class="n">edi</span> <span class="o">=</span> <span class="p">(</span><span class="n">dword</span> <span class="o">&gt;&gt;</span> <span class="mi">9</span> <span class="p">)</span> <span class="o">&amp;</span> <span class="n">SIX_BIT</span><span class="p">;</span>
+</span><span class="line"><span class="n">ut8</span> <span class="n">esi</span> <span class="o">=</span> <span class="p">(</span><span class="n">dword</span> <span class="o">&gt;&gt;</span> <span class="mi">15</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">SIX_BIT</span><span class="p">;</span>
+</span><span class="line"><span class="n">ut8</span> <span class="n">ebp</span> <span class="o">=</span> <span class="p">(</span><span class="n">dword</span> <span class="o">&gt;&gt;</span> <span class="mi">21</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">SIX_BIT</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Next, for convenience, we make a lookup table that maps 0 to 63 to the corresponding register name.  I happen to know from
+the future, that <code>r62</code> is the stack pointer, and <code>r63</code> is the instruction pointer, but I didn’t know this at the time.
+It makes reading the disassembly a lot easier though once we know this.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+</pre></td><td class="code"><pre><code class="c"><span class="line"><span class="k">static</span> <span class="k">const</span> <span class="k">struct</span> <span class="p">{</span>
+</span><span class="line">    <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>
+</span><span class="line"><span class="p">}</span> <span class="n">regs</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class="line">  <span class="p">{</span> <span class="s">&quot;r00&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r01&quot;</span>  <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r02&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r03&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r04&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r05&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r06&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r07&quot;</span> <span class="p">},</span>
+</span><span class="line">  <span class="p">{</span> <span class="s">&quot;r08&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r09&quot;</span>  <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r10&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r11&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r12&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r13&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r14&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r15&quot;</span> <span class="p">},</span>
+</span><span class="line">  <span class="p">{</span> <span class="s">&quot;r16&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r17&quot;</span>  <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r18&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r19&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r20&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r21&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r22&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r23&quot;</span> <span class="p">},</span>
+</span><span class="line">  <span class="p">{</span> <span class="s">&quot;r24&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r25&quot;</span>  <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r26&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r27&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r28&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r29&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r30&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r31&quot;</span> <span class="p">},</span>
+</span><span class="line">  <span class="p">{</span> <span class="s">&quot;r32&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r33&quot;</span>  <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r34&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r35&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r36&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r37&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r38&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r39&quot;</span> <span class="p">},</span>
+</span><span class="line">  <span class="p">{</span> <span class="s">&quot;r40&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r41&quot;</span>  <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r42&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r43&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r44&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r45&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r46&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r47&quot;</span> <span class="p">},</span>
+</span><span class="line">  <span class="p">{</span> <span class="s">&quot;r48&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r49&quot;</span>  <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r50&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r51&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r52&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r53&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r54&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r55&quot;</span> <span class="p">},</span>
+</span><span class="line">  <span class="p">{</span> <span class="s">&quot;r56&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r57&quot;</span>  <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r58&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r59&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r60&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;r61&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;esp&quot;</span> <span class="p">},</span> <span class="p">{</span> <span class="s">&quot;eip&quot;</span> <span class="p">}</span>
+</span><span class="line"><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Since in the disassembly output we’re going to be referencing things by register name a lot, I grab the textual names
+for each argument as well.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="c"><span class="line"><span class="kt">char</span> <span class="o">*</span><span class="n">edi_reg</span> <span class="o">=</span> <span class="n">regs</span><span class="p">[</span><span class="n">edi</span><span class="p">].</span><span class="n">name</span><span class="p">;</span>
+</span><span class="line"><span class="kt">char</span> <span class="o">*</span><span class="n">esi_reg</span> <span class="o">=</span> <span class="n">regs</span><span class="p">[</span><span class="n">esi</span><span class="p">].</span><span class="n">name</span><span class="p">;</span>
+</span><span class="line"><span class="kt">char</span> <span class="o">*</span><span class="n">ebp_reg</span> <span class="o">=</span> <span class="n">regs</span><span class="p">[</span><span class="n">ebp</span><span class="p">].</span><span class="n">name</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>What follows in the <code>disassemble</code> function is a switch statement on <code>op_index</code>, where we just need to fill in the
+op size and the textual representation of the opcode itself.  So I’ll show a few of those here, you can see the
+full source of these plugins <a href="https://github.com/safiire/radare2-dan32" title="on my github">here</a></p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="c"><span class="line">  <span class="k">case</span> <span class="mi">11</span><span class="o">:</span>
+</span><span class="line">    <span class="n">snprintf</span><span class="p">(</span><span class="n">op</span><span class="o">-&gt;</span><span class="n">buf_asm</span><span class="p">,</span> <span class="n">R_ASM_BUFSIZE</span><span class="p">,</span> <span class="s">&quot;nor %s, %s, %s&quot;</span><span class="p">,</span> <span class="n">ebp_reg</span><span class="p">,</span> <span class="n">esi_reg</span><span class="p">,</span> <span class="n">edi_reg</span><span class="p">);</span>
+</span><span class="line">    <span class="n">op</span><span class="o">-&gt;</span><span class="n">size</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+</span><span class="line">    <span class="k">break</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>So for example the <code>nor</code> instruction, which wasn’t provided in the image, just uses <code>snprintf</code> to write out our
+human readable disassembly, and sets the <code>op-&gt;size = 4</code>.  This ends up producing something like <code>nor r21, r57, r57</code>.</p>
+
+<p>Quickly taking a look at another example, <code>movi</code> is the move immediate value instruction, and looks like this:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+</pre></td><td class="code"><pre><code class="c"><span class="line"><span class="k">case</span> <span class="mi">16</span><span class="o">:</span>
+</span><span class="line">  <span class="n">eax</span> <span class="o">=</span> <span class="n">dword</span><span class="p">;</span>
+</span><span class="line">  <span class="n">ecx</span> <span class="o">=</span> <span class="n">dword</span><span class="p">;</span>
+</span><span class="line">  <span class="n">eax</span> <span class="o">&gt;&gt;=</span> <span class="mi">5</span><span class="p">;</span>
+</span><span class="line">  <span class="n">eax</span> <span class="o">&amp;=</span> <span class="mh">0xffff</span><span class="p">;</span>
+</span><span class="line">  <span class="n">ecx</span> <span class="o">&amp;=</span> <span class="mo">037</span><span class="p">;</span>
+</span><span class="line">  <span class="n">eax</span> <span class="o">&lt;&lt;=</span> <span class="p">(</span><span class="n">ecx</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="p">);</span>
+</span><span class="line">
+</span><span class="line">  <span class="n">snprintf</span><span class="p">(</span><span class="n">op</span><span class="o">-&gt;</span><span class="n">buf_asm</span><span class="p">,</span> <span class="n">R_ASM_BUFSIZE</span><span class="p">,</span> <span class="s">&quot;movi %s, 0x%0x&quot;</span><span class="p">,</span> <span class="n">ebp_reg</span><span class="p">,</span> <span class="n">eax</span><span class="p">);</span>
+</span><span class="line">  <span class="n">op</span><span class="o">-&gt;</span><span class="n">size</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+</span><span class="line">  <span class="k">break</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Notice <code>op-&gt;size = 4</code> for all instructions, and setting <code>op-&gt;size = -1</code> indicates an invalid operation.  The above <code>movi</code> instruction actually
+encodes an immediate value directly into the opcode itself.  This is the only instruction which does this, all other instructions
+must move values into a register to operate on them.  Again, this is a straight translation from from the given x86 asm.</p>
+
+<p>Other instructions had to be put together just following the pattern that was set out for us.  For example, <code>div, mul, nor</code>
+all work the same as the given <code>mul</code> opcode.  All said, it is not a lot of work to get a fully functioning disassembler going in Radare2.</p>
+
+<p>Here is the last part of the plugin, where we hook our code up by setting callbacks, and some information:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+</pre></td><td class="code"><pre><code class="c"><span class="line"><span class="n">RAsmPlugin</span> <span class="n">r_asm_plugin_dan32</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class="line">  <span class="p">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;dan32&quot;</span><span class="p">,</span>
+</span><span class="line">  <span class="p">.</span><span class="n">author</span> <span class="o">=</span> <span class="s">&quot;safiire@irkenkitties.com&quot;</span><span class="p">,</span>
+</span><span class="line">  <span class="p">.</span><span class="n">license</span> <span class="o">=</span> <span class="s">&quot;None&quot;</span><span class="p">,</span>
+</span><span class="line">  <span class="p">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s">&quot;Dan32 disassembler&quot;</span><span class="p">,</span>
+</span><span class="line">  <span class="p">.</span><span class="n">arch</span> <span class="o">=</span> <span class="s">&quot;dan32&quot;</span><span class="p">,</span>
+</span><span class="line">  <span class="p">.</span><span class="n">bits</span> <span class="o">=</span> <span class="mi">32</span><span class="p">,</span>
+</span><span class="line">  <span class="p">.</span><span class="n">init</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">,</span>
+</span><span class="line">  <span class="p">.</span><span class="n">fini</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">,</span>
+</span><span class="line">  <span class="p">.</span><span class="n">disassemble</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">disassemble</span><span class="p">,</span>
+</span><span class="line">  <span class="p">.</span><span class="n">modify</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">,</span>
+</span><span class="line">  <span class="p">.</span><span class="n">assemble</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">,</span>
+</span><span class="line"><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>And here’s the result, a nice looking assembly readout that we can use to start reversing the binary.</p>
+
+<p><img src="/images/r2_disassembly1.png" alt="Disassembly" title="Disassembly" /></p>
+
+<h2 id="radare-analysis-plugin">Radare Analysis Plugin</h2>
+<p>With the above plugin we can now see human readable disassembly of the binary, but Radare doesn’t have enough information
+about this architecture yet to allow us to step through the program and simulate it like you would in a debugger. And you can’t yet
+perform static analysis like you would get with IDA.  Radare supports about one zillion architectures already, but
+since this CPU was probably invented just for this challenge, we’ll have to add support ourselves.</p>
+
+<p>Radare’s answer to this is ESIL, (Evaluable Strings Intermediate Language), providing a register profile for the
+CPU, and using those to create an analysis plugin.  An analysis plugin expects us to implement a function like this, to set
+the register profile.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+</pre></td><td class="code"><pre><code class="c"><span class="line"><span class="k">static</span> <span class="kt">int</span> <span class="nf">set_reg_profile</span><span class="p">(</span><span class="n">RAnal</span> <span class="o">*</span><span class="n">anal</span><span class="p">)</span> <span class="p">{</span>
+</span><span class="line">  <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span>
+</span><span class="line">  <span class="s">&quot;=A0  r03</span><span class="se">\n</span><span class="s">&quot;</span>
+</span><span class="line">  <span class="s">&quot;=A1  r04</span><span class="se">\n</span><span class="s">&quot;</span>
+</span><span class="line">  <span class="s">&quot;=A2  r05</span><span class="se">\n</span><span class="s">&quot;</span>
+</span><span class="line">  <span class="s">&quot;=LR  r59</span><span class="se">\n</span><span class="s">&quot;</span>
+</span><span class="line">  <span class="s">&quot;=PC  r63</span><span class="se">\n</span><span class="s">&quot;</span>
+</span><span class="line">  <span class="s">&quot;=SP  r62</span><span class="se">\n</span><span class="s">&quot;</span>
+</span><span class="line">  <span class="s">&quot;gpr r00 .32   0 0</span><span class="se">\n</span><span class="s"> gpr r01 .32   4 0</span><span class="se">\n</span><span class="s"> gpr r02 .32 ... etc&quot;</span>
+</span><span class="line">  <span class="s">&quot;gpr r08 .32  32 0</span><span class="se">\n</span><span class="s"> gpr r09 .32  36 0</span><span class="se">\n</span><span class="s"> gpr r10 .32 ...&quot;</span>
+</span><span class="line">  <span class="s">&quot;gpr r16 .32  64 0</span><span class="se">\n</span><span class="s"> gpr r17 .32  68 0</span><span class="se">\n</span><span class="s"> gpr r18 .32 ...&quot;</span>
+</span><span class="line">  <span class="s">&quot;gpr r24 .32  96 0</span><span class="se">\n</span><span class="s"> gpr r25 .32 100 0</span><span class="se">\n</span><span class="s"> gpr r26 .32 ...&quot;</span>
+</span><span class="line">  <span class="s">&quot;gpr r32 .32 128 0</span><span class="se">\n</span><span class="s"> gpr r33 .32 132 0</span><span class="se">\n</span><span class="s"> gpr r34 .32 ...&quot;</span>
+</span><span class="line">  <span class="s">&quot;gpr r40 .32 160 0</span><span class="se">\n</span><span class="s"> gpr r41 .32 164 0</span><span class="se">\n</span><span class="s"> gpr r42 .32 ...&quot;</span>
+</span><span class="line">  <span class="s">&quot;gpr r48 .32 192 0</span><span class="se">\n</span><span class="s"> gpr r49 .32 196 0</span><span class="se">\n</span><span class="s"> gpr r50 .32 ...&quot;</span>
+</span><span class="line">  <span class="s">&quot;gpr r56 .32 224 0</span><span class="se">\n</span><span class="s"> gpr r57 .32 228 0</span><span class="se">\n</span><span class="s"> gpr r58 .32 ...&quot;</span>
+</span><span class="line">  <span class="k">return</span> <span class="n">r_reg_set_profile_string</span><span class="p">(</span><span class="n">anal</span><span class="o">-&gt;</span><span class="n">reg</span><span class="p">,</span> <span class="n">p</span><span class="p">);</span>
+</span><span class="line"><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Here we specify all 64 general purpose registers in the machine, and also give aliases to registers that have special meaning.
+The format is <code>gpr &lt;registername&gt; .&lt;size in bits&gt; &lt;offset&gt;</code>.</p>
+
+<p>With this we can create a register file containing registers of various sizes, which can overlap. For example in x86, we can specify
+register <code>gpr ax .16 0</code>, but also specify the high and low bytes as <code>gpr ah .8 8</code> and <code>gpr al .8 0</code>.</p>
+
+<p>Dan32 doesn’t have overlapping registers, or high and low register access by name, so we don’t need to do this.</p>
+
+<p>Some register aliases are A0, A1, A2, which are for arguments that are passed to functions via register, which is
+pretty common in this binary.  LR is the link register, which like on an ARM CPU holds the return address of a function, PC, is the
+instruction pointer, and SP is the stack pointer, so I’ve filled those in after having gotten some experience with the
+binary’s two calling conventions.</p>
+
+<p>The next task for the analysis plugin is to create ESIL for each and every instruction supported by the CPU. There are not many
+instructions so this didn’t take very long.</p>
+
+<p>The plugin must implement an analysis function with the following prototype, which looks extremely similar to the asm plugin function:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="c"><span class="line"><span class="k">static</span> <span class="kt">int</span> <span class="nf">dan32_anal_op</span><span class="p">(</span><span class="n">RAnal</span> <span class="o">*</span><span class="n">anal</span><span class="p">,</span> <span class="n">RAnalOp</span> <span class="o">*</span><span class="n">op</span><span class="p">,</span> <span class="n">ut64</span> <span class="n">addr</span><span class="p">,</span> <span class="k">const</span> <span class="n">ut8</span> <span class="o">*</span><span class="n">data</span><span class="p">,</span> <span class="kt">int</span> <span class="n">len</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Here, we’re asked to fill in more information about the opcode in the given <code>RAnalOp *op</code> parameter, it looks something like this:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+</pre></td><td class="code"><pre><code class="c"><span class="line"><span class="k">struct</span> <span class="n">RAnalOp</span> <span class="p">{</span>
+</span><span class="line">  <span class="n">id</span>       <span class="c1">// I use the opcode index</span>
+</span><span class="line">  <span class="n">esil</span>     <span class="c1">// A string containing ESIL</span>
+</span><span class="line">  <span class="n">size</span>     <span class="c1">// Size of opcode, this is always 4 in dan32</span>
+</span><span class="line">  <span class="n">nopcode</span>  <span class="c1">// No idea, other plugins set this to 1</span>
+</span><span class="line">  <span class="n">addr</span>     <span class="c1">// Address this opcode is at</span>
+</span><span class="line">  <span class="n">jump</span>     <span class="c1">// If this opcode jumps somewhere, the address</span>
+</span><span class="line">  <span class="n">fail</span>     <span class="c1">// Where to jump on failure condition</span>
+</span><span class="line">  <span class="n">ptr</span>      <span class="c1">// Pointer to the primary data we&#39;re working with</span>
+</span><span class="line">  <span class="n">val</span>      <span class="c1">// Value of the primary data we&#39;re working with</span>
+</span><span class="line">  <span class="n">type</span>     <span class="c1">// enum of types such as R_ANAL_OP_TYPE_CJMP for conditional jump</span>
+</span><span class="line">  <span class="n">family</span>   <span class="c1">// enum of type family such as R_ANAL_OP_FAMILY_IO for I/O</span>
+</span><span class="line"><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>All of these are pretty important for proper analysis, but the most important, so that we can simulate this binary inside
+radare2, without running it on the untrusted VM we were given, is the ESIL.  Here is an example of ESIL for <code>movi</code>, the
+move immediate value instruction:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class="asm"><span class="line"><span class="nf">movi</span> <span class="no">r57</span><span class="p">,</span> <span class="mi">0x41</span>
+</span><span class="line">
+</span><span class="line"><span class="err">;</span> <span class="nf">becomes</span>
+</span><span class="line">
+</span><span class="line"><span class="err">0</span><span class="nf">x41</span><span class="p">,</span><span class="no">r57</span><span class="p">,</span><span class="err">=</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>ESIL is a stack machine, turing complete, so it is able to represent the instructions for any CPU, it is like a ridiculous
+sort of microcode almost.  A more complicated instruction <code>cmov</code>, the conditional move instruction, looks like this:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class="asm"><span class="line"><span class="nf">cmov</span> <span class="no">eip</span><span class="p">,</span> <span class="no">r57</span> <span class="no">if</span> <span class="no">r23</span>
+</span><span class="line">
+</span><span class="line"><span class="err">;</span>  <span class="nf">becomes</span>
+</span><span class="line">
+</span><span class="line"><span class="nf">r23</span><span class="p">,</span><span class="err">?</span><span class="p">,</span><span class="err">{</span><span class="p">,</span><span class="no">r57</span><span class="p">,</span><span class="no">eip</span><span class="p">,</span><span class="err">=</span><span class="p">,</span><span class="err">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>So after each instruction is codified by type and given an ESIL representation, we’re done.  If you are
+interested in how ESIL works, <a href="https://radare.gitbooks.io/radare2book/content/disassembling/esil.html">here’s the docs</a>.
+I’ve written some pretty crazy ESIL for the disk sector read/write code, and stack machines are not my favourite, but
+they work :)   Here is some of the longest ESIL I wrote for one opcode.  It reads 512 bytes from a numbered disk sector, into a given memory address.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+</pre></td><td class="code"><pre><code class="asm"><span class="line"><span class="nf">read</span> <span class="err">[</span><span class="no">r57</span><span class="err">]</span><span class="p">,</span> <span class="no">sector</span><span class="p">(</span><span class="no">r21</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="err">;</span>  <span class="nf">becomes</span>
+</span><span class="line">
+</span><span class="line"><span class="err">0</span><span class="nf">x0</span><span class="p">,</span><span class="no">r40</span><span class="p">,</span><span class="err">=</span><span class="p">,</span>
+</span><span class="line"><span class="err">0</span><span class="nf">x200</span><span class="p">,</span><span class="no">r21</span><span class="p">,*,</span>
+</span><span class="line"><span class="err">0</span><span class="nf">x200000</span><span class="p">,</span><span class="err">+</span><span class="p">,</span>
+</span><span class="line"><span class="nf">r40</span><span class="p">,</span><span class="err">+</span><span class="p">,</span>
+</span><span class="line"><span class="err">[8],</span>
+</span><span class="line"><span class="nf">r57</span><span class="p">,</span><span class="no">r40</span><span class="p">,</span><span class="err">+</span><span class="p">,</span>
+</span><span class="line"><span class="err">=[8],</span>
+</span><span class="line"><span class="err">0</span><span class="nf">x8</span><span class="p">,</span><span class="no">r40</span><span class="p">,</span><span class="err">+=</span><span class="p">,</span>
+</span><span class="line"><span class="err">0</span><span class="nf">x200</span><span class="p">,</span><span class="no">r40</span><span class="p">,</span><span class="err">==</span><span class="p">,</span><span class="err">!</span><span class="p">,</span>
+</span><span class="line"><span class="err">?{,3,</span><span class="nf">GOTO</span><span class="p">,</span><span class="err">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="disassembling-the-binary-in-radare2">Disassembling the binary in Radare2</h2>
+
+<p>Ok, so now we’re all set to get a disassembly view of this binary, we’ll just load it up in Radare2, hit play
+to see how it goes.</p>
+
+<script type="text/javascript" src="https://asciinema.org/a/134202.js" id="asciicast-134202" async=""></script>
+
+<p>“Wrong Endianness”.  Now, there are a few things going on here, so let’s look at the first instruction: <code>movi r00, 0x78200</code>.
+I don’t want to get to bogged down in the details, but I know from the future, that register <code>r00</code> is like the zero register
+on a MIPS system, it always contains the value 0, and so here writing <code>0x78200</code> to that register, is effectively a no-op,
+and we’ll see why that’s done in the next part.</p>
+
+<p>Next up we have <code>movi eip, 0x14</code>.  There are no jump instructions in this opcode set, and unlike x86, you <em>can</em> write to the
+instruction pointer register to get a jump.  Interestingly, jumping to <code>0x14</code> is not a multiple of 4, and so we’re jumping out of alignment,
+which is why we’re seeing the disassembler isn’t able to interpret a few instructions after that at first.</p>
+
+<p>When we get to the address <code>0x14</code>, we end up at series of instructions that loads immediates, and then uses <code>out</code> to print them
+out to the display.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+</pre></td><td class="code"><pre><code class="asm"><span class="line"><span class="err">0</span><span class="nf">x00000014</span>  <span class="no">e00a2087</span>    <span class="no">movi</span> <span class="no">r57</span><span class="p">,</span> <span class="err">&#39;</span><span class="no">W</span><span class="err">&#39;</span>
+</span><span class="line"><span class="err">0</span><span class="nf">x00000018</span>  <span class="mi">000020</span><span class="no">cf</span>    <span class="no">out</span> <span class="no">r57</span>
+</span><span class="line"><span class="err">0</span><span class="nf">x0000001c</span>  <span class="mi">21072087</span>    <span class="no">movi</span> <span class="no">r57</span><span class="p">,</span> <span class="err">&#39;</span><span class="no">r</span><span class="err">&#39;</span>
+</span><span class="line"><span class="err">0</span><span class="nf">x00000020</span>  <span class="mi">000020</span><span class="no">cf</span>    <span class="no">out</span> <span class="no">r57</span>
+</span><span class="line"><span class="err">0</span><span class="nf">x00000024</span>  <span class="no">e00d2087</span>    <span class="no">movi</span> <span class="no">r57</span><span class="p">,</span> <span class="err">&#39;</span><span class="no">o</span><span class="err">&#39;</span>
+</span><span class="line"><span class="err">0</span><span class="nf">x00000028</span>  <span class="mi">000020</span><span class="no">cf</span>    <span class="no">out</span> <span class="no">r57</span>
+</span><span class="line"><span class="err">0</span><span class="nf">x0000002c</span>  <span class="no">e1062087</span>    <span class="no">movi</span> <span class="no">r57</span><span class="p">,</span> <span class="err">&#39;</span><span class="no">n</span><span class="err">&#39;</span>
+</span><span class="line"><span class="err">0</span><span class="nf">x00000030</span>  <span class="mi">000020</span><span class="no">cf</span>    <span class="no">out</span> <span class="no">r57</span>
+</span><span class="line"><span class="err">0</span><span class="nf">x00000034</span>  <span class="no">e00c2087</span>    <span class="no">movi</span> <span class="no">r57</span><span class="p">,</span> <span class="err">&#39;</span><span class="no">g</span><span class="err">&#39;</span>
+</span><span class="line"><span class="err">0</span><span class="nf">x00000038</span>  <span class="mi">000020</span><span class="no">cf</span>    <span class="no">out</span> <span class="no">r57</span>
+</span><span class="line"><span class="err">0</span><span class="nf">x0000003c</span>  <span class="mi">25002087</span>    <span class="no">movi</span> <span class="no">r57</span><span class="p">,</span> <span class="err">&#39;</span> <span class="err">&#39;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>A little bit of radare knowledge, the immediate values were displayed as hex to begin with, so I wrote a little radare expression
+to hint to it that those immediates are actually string or char values using the <code>ahi</code> command, which stands for “analyse hint immediate”.</p>
+
+<p>Radare2 is terse as hell, and you get very used to it, and probably, maybe, start loving it.  The expression below basically creates
+a range from the current address, denoted as <code>$$</code>, to <code>$$ + 17 * 8</code> with a step of 8 bytes.  The <code>@@=</code> functions as an iterator, which runs
+the command <code>ahi s</code> on each address in the range, telling radare the immediate values are character values.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="asm"><span class="line"><span class="nf">ahi</span> <span class="no">s</span> <span class="err">@@=`?</span><span class="no">s</span> <span class="no">$$</span> <span class="no">$$</span><span class="err">+</span><span class="mi">17</span><span class="p">*</span><span class="mi">8</span> <span class="mi">8</span><span class="err">`</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Anyway, the real problem is we’re interpreting the binary as little endian, when it’s actually big endian.  So we can just go back to our plugin
+and fix that pretty simply in the disassemble function by reversing the bytes, and setting the endian properly.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+</pre></td><td class="code"><pre><code class="c"><span class="line"><span class="c1">//  Decode the op</span>
+</span><span class="line"><span class="n">ut8</span> <span class="n">big_end</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
+</span><span class="line"><span class="n">big_end</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">buf</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+</span><span class="line"><span class="n">big_end</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">buf</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+</span><span class="line"><span class="n">big_end</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">buf</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+</span><span class="line"><span class="n">big_end</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">buf</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+</span><span class="line">
+</span><span class="line"><span class="n">ut32</span> <span class="n">dword</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="n">ut32</span><span class="o">*</span><span class="p">)</span><span class="n">big_end</span><span class="p">;</span>
+</span><span class="line"><span class="n">ut8</span> <span class="n">op_index</span> <span class="o">=</span> <span class="p">(</span><span class="n">dword</span> <span class="o">&gt;&gt;</span> <span class="mi">27</span><span class="p">);</span>       <span class="c1">// 5-bit opcode</span>
+</span><span class="line">
+</span><span class="line"><span class="c1">// ...</span>
+</span><span class="line">
+</span><span class="line"><span class="n">RAsmPlugin</span> <span class="n">r_asm_plugin_dan32</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class="line">  <span class="c1">// ...</span>
+</span><span class="line">
+</span><span class="line">  <span class="p">.</span><span class="n">endian</span> <span class="o">=</span> <span class="n">R_SYS_ENDIAN_BIG</span><span class="p">,</span>
+</span><span class="line">
+</span><span class="line">  <span class="c1">// ...</span>
+</span><span class="line"><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="correct-endian">Correct Endian</h2>
+<p>Back to the entrypoint of our binary, what was once a no-op, when read backwards, jumps us past all the “Wrong Endian” stuff, and
+begins displaying the binary properly so we can reverse it.</p>
+
+<p>The opcode <code>87e00180</code> when read in big endian jumps us with <code>movi eip, 0xc</code>, and another jump <code>movi eip, 0xa8</code>, bringing us
+finally to some actual code.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+</pre></td><td class="code"><pre><code class="asm"><span class="line"><span class="err">0</span><span class="nf">x000000a8</span>   <span class="no">movi</span> <span class="no">r20</span><span class="p">,</span> <span class="mi">0xc0</span>
+</span><span class="line"><span class="err">0</span><span class="nf">x000000ac</span>   <span class="no">movi</span> <span class="no">r21</span><span class="p">,</span> <span class="mi">0x14c</span>
+</span><span class="line"><span class="err">0</span><span class="nf">x000000b0</span>   <span class="no">movi</span> <span class="no">r22</span><span class="p">,</span> <span class="mi">0xbe</span>
+</span><span class="line"><span class="err">0</span><span class="nf">x000000b4</span>   <span class="no">store.b</span> <span class="err">[</span><span class="no">r22</span><span class="err">]</span><span class="p">,</span> <span class="no">r00</span>
+</span><span class="line"><span class="err">0</span><span class="nf">x000000b8</span>   <span class="no">read</span> <span class="err">[</span><span class="no">r00</span><span class="err">]</span><span class="p">,</span> <span class="no">sector</span><span class="p">(</span><span class="no">r00</span><span class="p">)</span>
+</span><span class="line"><span class="err">0</span><span class="nf">x000000bc</span>   <span class="no">goto</span> <span class="no">r21</span>
+</span><span class="line"><span class="err">;</span>  <span class="nf">print</span> <span class="err">&quot;</span><span class="no">Disk</span> <span class="no">read</span> <span class="no">error</span><span class="err">!&quot;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>This is the first in a series of tricks and tests that the binary performs on the virtual machine itself to make sure it is
+implemented properly.  With the use of a bin plugin for dan32, which I’m not going to bore you with here but is available on GitHub
+with the rest of the code, I’ve tried to setup a memory layout that would be familiar for someone like myself who works with ELF or PE files.
+Here is that layout.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+</pre></td><td class="code"><pre><code class="asm"><span class="line"><span class="err">00</span>  <span class="err">0</span><span class="nf">x00000000</span> <span class="err">|</span><span class="c">#-------------------------| 0x0000092b  2.3K mrwx .text</span>
+</span><span class="line"><span class="err">01</span>  <span class="err">0</span><span class="nf">x0000092c</span> <span class="err">|</span><span class="c">#-------------------------| 0x00000b79   589 mrw- .bss</span>
+</span><span class="line"><span class="err">02*</span> <span class="err">0</span><span class="nf">x00000c00</span> <span class="err">|</span><span class="c">#-------------------------| 0x00007503 26.3K mrw- .encrypted</span>
+</span><span class="line"><span class="err">03</span>  <span class="err">0</span><span class="nf">x000ffc00</span> <span class="err">|</span><span class="p">------------</span><span class="c">#-------------| 0x00100000    1K mrw- .stack</span>
+</span><span class="line"><span class="err">04</span>  <span class="err">0</span><span class="nf">x00200000</span> <span class="err">|</span><span class="p">-------------------------</span><span class="c">#| 0x00207503 29.3K mrw- .diskrom</span>
+</span><span class="line"><span class="err">05</span>  <span class="err">0</span><span class="nf">x00100000</span> <span class="err">|</span><span class="p">------------</span><span class="c">#############-| 0x001f0000  960K -rwx esil.ram</span>
+</span><span class="line"><span class="err">=&gt;</span>  <span class="err">0</span><span class="nf">x00001dc0</span> <span class="err">|</span><span class="p">--------------------------</span><span class="err">|</span> <span class="mi">0x00001ec0</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Remembering the <code>DISK</code> address that was mentioned in the x86 assembly VM, which is meant to represent a readable writeable
+disk area from which the program is loaded.  This area stores <code>disk.img</code> in the <code>.diskrom</code> section at address <code>0x200000</code>.  I probably
+shouldn’t have called it a diskrom, since you can write to it, but I didn’t know it was going to be written to at the time, so
+it’s too late now.  I actually believed it was going to be something like a game cartridge rom at first, but oh well.</p>
+
+<p>The code is executed from the <code>.text</code> section, with entrypoint <code>0x0</code>, and we have a <code>.bss</code> section which contains some initialized
+data that is used in the program.  The <code>read</code> and <code>write</code> instructions are used to copy data from the disk into memory by <code>0x200</code> byte
+sectors.</p>
+
+<p>So the trick here, is that at <code>0xb4</code> we are writing from <code>r00</code>, which always contains zero to address <code>0xbe</code>, which is altering
+an instruction.  Then, if your <code>read</code> instruction works properly this is immediately corrected by reloading the entire first
+sector from <code>.diskrom</code> back into memory, undoing the damage.  If your <code>read</code> instruction is not working, you will be greeted by
+the text “Disk read error!” and the program will halt.</p>
+
+<script type="text/javascript" src="https://asciinema.org/a/134327.js" id="asciicast-134327" async=""></script>
+
+<p>Notice how the analysis plugin is working, showing beautiful ascii arrows that point to the destinations of our jumps.  When
+the zero is written to address <code>0xbe</code>, it modifies the instruction, and we see the control flow is taking us directly towards
+“Disk read error” and a halt.  The <code>read</code> immediately fixes this and the control flow updates.</p>
+
+<h2 id="the-next-test">The Next Test</h2>
+<p>Next we move on to <code>0x14c</code>, which is an area of the binary that sets up the stack pointer, and reads the rest
+of the program from <code>.diskrom</code> one sector at a time.</p>
+
+<p>I guess here we can get our first look at how dan32 goes about things.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+</pre></td><td class="code"><pre><code class="asm"><span class="line"><span class="err">;--</span> <span class="nl">fcn_read_other_sectors:</span>
+</span><span class="line"><span class="err">0</span><span class="nf">x0000014c</span>      <span class="no">add</span> <span class="no">r61</span><span class="p">,</span> <span class="no">eip</span><span class="p">,</span> <span class="no">r00</span>
+</span><span class="line"><span class="err">0</span><span class="nf">x00000150</span>      <span class="no">movi</span> <span class="no">r57</span><span class="p">,</span> <span class="mi">0x4</span>
+</span><span class="line"><span class="err">0</span><span class="nf">x00000154</span>      <span class="no">nor</span> <span class="no">r57</span><span class="p">,</span> <span class="no">r57</span><span class="p">,</span> <span class="no">r57</span>
+</span><span class="line"><span class="err">0</span><span class="nf">x00000158</span>      <span class="no">add</span> <span class="no">r61</span><span class="p">,</span> <span class="no">r61</span><span class="p">,</span> <span class="no">r57</span>
+</span><span class="line"><span class="err">0</span><span class="nf">x0000015c</span>      <span class="no">movi</span> <span class="no">r57</span><span class="p">,</span> <span class="mi">0x1</span>
+</span><span class="line"><span class="err">0</span><span class="nf">x00000160</span>      <span class="no">add</span> <span class="no">r61</span><span class="p">,</span> <span class="no">r61</span><span class="p">,</span> <span class="no">r57</span>
+</span><span class="line"><span class="err">0</span><span class="nf">x00000164</span>      <span class="no">movi</span> <span class="no">esp</span><span class="p">,</span> <span class="no">sym.stack_end</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Here’s some things to take note of right off the bat:</p>
+
+<ul>
+  <li>There is no subtraction instruction</li>
+  <li>There is no concept of signed numbers</li>
+  <li>We can still have negative numbers using 2’s complement</li>
+  <li>There are no other bitwise logical operations besides NOR</li>
+  <li>NOR is universal, and can construct any other gate</li>
+  <li>There is no direct way to move one register into another one, so addition + 0 is used</li>
+  <li><code>nor(a, a)</code> flips all the bits of <code>a</code></li>
+  <li><code>nor(a, a)</code> is equivalent to <code>-(a + 1)</code> in 2’s complement</li>
+  <li><code>r00</code> is a hardware zero register</li>
+  <li><code>r57</code> is used as a temporary register</li>
+</ul>
+
+<p>There’s a few patterns we see using NOR throughout this binary.  Above we want to save the instruction pointer to <code>r61</code>, and
+then subtract 4 from it.  This is done many times in this binary like this:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="asm"><span class="line"><span class="nf">add</span> <span class="no">r61</span><span class="p">,</span> <span class="no">eip</span><span class="p">,</span> <span class="no">r00</span>     <span class="err">;</span>  <span class="no">r61</span> <span class="err">=</span> <span class="no">eip</span>
+</span><span class="line"><span class="nf">movi</span> <span class="no">r57</span><span class="p">,</span> <span class="mi">0x4</span>         <span class="err">;</span>  <span class="no">r57</span> <span class="err">=</span> <span class="mi">4</span>
+</span><span class="line"><span class="nf">nor</span> <span class="no">r57</span><span class="p">,</span> <span class="no">r57</span><span class="p">,</span> <span class="no">r57</span>     <span class="err">;</span>  <span class="no">r57</span> <span class="err">=</span> <span class="p">-</span><span class="mi">5</span>
+</span><span class="line"><span class="nf">add</span> <span class="no">r67</span><span class="p">,</span> <span class="no">r61</span><span class="p">,</span> <span class="no">r57</span>     <span class="err">;</span>  <span class="no">r61</span> <span class="err">=</span> <span class="no">r61</span> <span class="p">-</span> <span class="mi">5</span>
+</span><span class="line"><span class="nf">movi</span> <span class="no">r57</span><span class="p">,</span> <span class="mi">0x1</span>         <span class="err">;</span>  <span class="no">r57</span> <span class="err">=</span> <span class="mi">1</span>
+</span><span class="line"><span class="nf">add</span> <span class="no">r61</span><span class="p">,</span> <span class="no">r61</span><span class="p">,</span> <span class="no">r57</span>     <span class="err">;</span>  <span class="no">r61</span> <span class="err">=</span> <span class="no">r61</span> <span class="err">+</span> <span class="mi">1</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>This is a roundabout way of just saying <code>r61 = eip - 4</code>, but that’s what we’re dealing with here :)</p>
+
+<p>The next test the binary performs on the virtual machine, is to test the <code>div</code> instruction.  Since
+this instruction was not provided in the x86 assembly code, it is to ensure we’ve got the argument
+order right, and we’re not allowing division by zero.  If we’ve done it wrong, we’re sent off to
+some code that prints “ALU Malfunction (DIV)” and halts the program.</p>
+
+<p>By the way, these symbols such as <code>fcn.alu_malfunction_div, fcn.main</code>, and so on, were added by me
+while reversing the binary to make it more clear what is going on.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+</pre></td><td class="code"><pre><code class="asm"><span class="line"><span class="nf">nor</span> <span class="no">r20</span><span class="p">,</span> <span class="no">r00</span><span class="p">,</span> <span class="no">r00</span>                       <span class="err">;</span> <span class="no">r20</span> <span class="err">=</span> <span class="p">-</span><span class="mi">1</span>
+</span><span class="line"><span class="nf">div</span> <span class="no">r20</span><span class="p">,</span> <span class="no">r00</span><span class="p">,</span> <span class="no">r20</span>                       <span class="err">;</span> <span class="no">r20</span> <span class="err">=</span> <span class="mi">0</span> <span class="err">/</span> <span class="p">-</span><span class="mi">1</span>
+</span><span class="line"><span class="nf">movi</span> <span class="no">r57</span><span class="p">,</span> <span class="no">fcn.alu_malfunction_div</span>       <span class="err">;</span>
+</span><span class="line"><span class="nf">add</span> <span class="no">r57</span><span class="p">,</span> <span class="no">r57</span><span class="p">,</span> <span class="no">r00</span>                       <span class="err">;</span> <span class="no">does</span> <span class="no">nothing</span>
+</span><span class="line"><span class="nf">cmov</span> <span class="no">eip</span><span class="p">,</span> <span class="no">r57</span> <span class="no">if</span> <span class="no">r20</span>                    <span class="err">;</span> <span class="no">if</span><span class="p">(</span><span class="no">r20</span><span class="p">)</span> <span class="no">goto</span> <span class="no">fcn.alu_malfunction_div</span>
+</span><span class="line"><span class="nf">movi</span> <span class="no">r57</span><span class="p">,</span> <span class="no">fcn.main</span>                      <span class="err">;</span>
+</span><span class="line"><span class="nf">goto</span> <span class="no">r57</span>                                <span class="err">;</span> <span class="no">goto</span> <span class="no">main</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>That’s also our first look at conditionals in dan32.  There are no compare instructions, there is
+no zero flag, and no conditional jumps like <code>jne</code>, as you find in other instruction sets.</p>
+
+<p>An interesting side note I guess, is that there is no real compare instruction in x86 either, the
+<code>cmp</code> instruction on that processor is actually an alias for subtracting the two values.  When
+they are equal, since <code>a - a = 0</code>, this sets the zero flag, which is what instructions like <code>jne</code>
+are conditional on.</p>
+
+<h2 id="the-main-function">The Main Function</h2>
+
+<p>Now that the Radare plugins are working, let’s have a look around the binary, simulate it a bit, and look
+around.  This is loading a project file where I’ve already reversed the entire binary, but gives a good
+idea of how it’s working.</p>
+
+<script type="text/javascript" src="https://asciinema.org/a/134338.js" id="asciicast-134338" async=""></script>
+
+<p>Here’s where we start getting some idea of what this binary is up to, and finally get to see some proper
+functions such as <code>print()</code>, <code>scan()</code>, <code>memcmp()</code> and things like that implemented.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="asm"><span class="line"><span class="err">;--</span> <span class="nl">fcn.main:</span>
+</span><span class="line"><span class="err">0</span><span class="nf">x0000028c</span>      <span class="no">movi</span> <span class="no">r03</span><span class="p">,</span> <span class="no">str.password</span>
+</span><span class="line"><span class="err">0</span><span class="nf">x00000290</span>      <span class="no">movi</span> <span class="no">r57</span><span class="p">,</span> <span class="mi">0x8</span>
+</span><span class="line"><span class="err">0</span><span class="nf">x00000294</span>      <span class="no">add</span> <span class="no">r59</span><span class="p">,</span> <span class="no">eip</span><span class="p">,</span> <span class="no">r57</span>
+</span><span class="line"><span class="err">0</span><span class="nf">x00000298</span>      <span class="no">movi</span> <span class="no">r57</span><span class="p">,</span> <span class="no">fcn.print</span>
+</span><span class="line"><span class="err">0</span><span class="nf">x0000029c</span>      <span class="no">goto</span> <span class="no">r57</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>First up, radare has identified a string “Password: “, and helpfully renamed its address as the symbol
+<code>str.password</code> for us.  Here we can see one of the two calling conventions in action.  This one is a
+lot like fastcall, where we load the first few arguments of a function into registers <code>r03, r04, r05</code>,
+and end up with our return value in <code>r01</code>.</p>
+
+<p>Remember I identified <code>r59</code> as the link register, and that is used as our return value.  So here, the
+calling convention is to calculate the return address, <code>eip + 8</code>, two instructions away, and store it
+into <code>r59</code>, we then load the address of the print function <code>fcn.print</code> into a temp register, and jump
+there.</p>
+
+<p>Throughout the binary, <code>r57</code> is always used as a temporary register.  There are others such as <code>r20, r21</code>
+which are always used as counters or array indices.  In fact, this assembly code is so consistent in the
+way it does things and which registers it uses, that I wonder if it was emitted by a machine, or written by
+hand by someone who is just awesome.</p>
+
+<p>Now that we know our arguments, our return address, and where we’re going, that about fully describes
+this calling convention.  There is also a stack based calling convention like you would find on
+x86 32-bit, which I may write about later.</p>
+
+<h2 id="the-print-function">The Print Function</h2>
+<p>So don’t worry I’m not going to bore you to death by literally explaining every function,
+but this print one is a fairly simple example to start with.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+</pre></td><td class="code"><pre><code class="asm"><span class="line"><span class="err">;--</span> <span class="nl">fcn.print:</span>
+</span><span class="line">
+</span><span class="line"><span class="err">;</span>  <span class="nf">Initialize</span> <span class="no">r20</span> <span class="no">to</span> <span class="mi">0</span> <span class="no">as</span> <span class="no">an</span> <span class="no">array</span> <span class="no">index</span>
+</span><span class="line"><span class="nf">add</span> <span class="no">r20</span><span class="p">,</span> <span class="no">r00</span><span class="p">,</span> <span class="no">r00</span>
+</span><span class="line"><span class="nf">movi</span> <span class="no">r57</span><span class="p">,</span> <span class="no">lbl.head</span>
+</span><span class="line"><span class="nf">goto</span> <span class="no">r57</span>
+</span><span class="line">
+</span><span class="line"><span class="nl">lbl.body:</span>
+</span><span class="line">   <span class="err">;</span>  <span class="nf">Output</span> <span class="no">the</span> <span class="no">character</span> <span class="no">in</span> <span class="no">r21</span>
+</span><span class="line">   <span class="nf">out</span> <span class="no">r21</span>
+</span><span class="line">   <span class="err">;</span>  <span class="nf">r20</span> <span class="err">+=</span> <span class="mi">1</span>
+</span><span class="line">   <span class="nf">movi</span> <span class="no">r57</span><span class="p">,</span> <span class="mi">0x1</span>
+</span><span class="line">   <span class="nf">add</span> <span class="no">r20</span><span class="p">,</span> <span class="no">r20</span><span class="p">,</span> <span class="no">r57</span>
+</span><span class="line">
+</span><span class="line"><span class="nl">lbl.head:</span>
+</span><span class="line">   <span class="err">;</span>  <span class="nf">r21</span> <span class="err">=</span> <span class="no">r03</span><span class="err">[</span><span class="no">r20</span><span class="err">]</span>
+</span><span class="line">   <span class="nf">load.b</span> <span class="no">r21</span><span class="p">,</span> <span class="err">[</span><span class="no">r03</span> <span class="err">+</span> <span class="no">r20</span><span class="err">]</span>
+</span><span class="line">   <span class="nf">movi</span> <span class="no">r57</span><span class="p">,</span> <span class="no">lbl.body</span>
+</span><span class="line">   <span class="nf">add</span> <span class="no">r57</span><span class="p">,</span> <span class="no">r57</span><span class="p">,</span> <span class="no">r00</span>
+</span><span class="line">
+</span><span class="line"><span class="err">;</span>  <span class="nf">return</span> <span class="no">if</span> <span class="no">r21</span> <span class="err">==</span> <span class="mi">0</span>
+</span><span class="line"><span class="nf">cmov</span> <span class="no">eip</span><span class="p">,</span> <span class="no">r57</span> <span class="no">if</span> <span class="no">r21</span>
+</span><span class="line"><span class="nf">goto</span> <span class="no">r59</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>This function is simple, but normally to reverse a difficult function, I will slowly replace
+elements of the disassembly with C, until I have a C function.  In this case, we’d have a for loop:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class="c"><span class="line"><span class="kt">void</span> <span class="nf">print</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">r03</span><span class="p">){</span>
+</span><span class="line">  <span class="k">for</span><span class="p">(</span><span class="n">r20</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">r03</span><span class="p">[</span><span class="n">r20</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">r20</span><span class="o">++</span><span class="p">){</span>
+</span><span class="line">    <span class="n">out</span> <span class="n">r03</span><span class="p">[</span><span class="n">r20</span><span class="p">]</span>
+</span><span class="line">  <span class="p">}</span>
+</span><span class="line"><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="the-purpose-of-the-program">The Purpose of the Program</h2>
+<p>I’ve kept from mentioning the actual purpose of this program for way too much of this article.  If
+written in C, the main function would just about look like the following code.  This was figured out
+by reversing each function in turn, and I got a happy surprise at the end, we’re going to be dealing
+with encryption.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+</pre></td><td class="code"><pre><code class="c"><span class="line"><span class="kt">void</span> <span class="nf">main</span><span class="p">(){</span>
+</span><span class="line">  <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Password: &quot;</span><span class="p">);</span>
+</span><span class="line">  <span class="n">chars_read</span> <span class="o">=</span> <span class="n">scan</span><span class="p">(</span><span class="n">passphrase_input</span><span class="p">);</span>
+</span><span class="line">
+</span><span class="line">  <span class="k">if</span><span class="p">(</span><span class="n">chars_read</span> <span class="o">==</span> <span class="mi">0</span><span class="p">){</span>
+</span><span class="line">    <span class="n">print_eh_halt</span><span class="p">();</span>
+</span><span class="line">  <span class="p">}</span>
+</span><span class="line">
+</span><span class="line">  <span class="n">print</span><span class="p">(</span><span class="s">&quot;Initializing Encryption...&quot;</span><span class="p">);</span>
+</span><span class="line">  <span class="n">burn_cpu</span><span class="p">();</span>
+</span><span class="line">
+</span><span class="line">  <span class="n">rc4_key_schedule</span><span class="p">(</span><span class="n">key_schedule</span><span class="p">,</span> <span class="n">passphrase_input</span><span class="p">,</span> <span class="n">chars_read</span><span class="p">);</span>
+</span><span class="line">  <span class="n">print</span><span class="p">(</span><span class="s">&quot;Ok&quot;</span><span class="p">);</span>
+</span><span class="line">  <span class="n">print</span><span class="p">(</span><span class="s">&quot;Checking Key&quot;</span><span class="p">);</span>
+</span><span class="line">  <span class="n">burn_cpu</span><span class="p">();</span>
+</span><span class="line">
+</span><span class="line">  <span class="n">decrypt</span><span class="p">(</span><span class="n">key_schedule</span><span class="p">,</span> <span class="n">encrypted_test_data</span><span class="p">,</span> <span class="mh">0x38</span><span class="p">);</span>
+</span><span class="line">  <span class="n">result</span> <span class="o">=</span> <span class="n">memcmp</span><span class="p">(</span><span class="n">encrypted_test_data</span><span class="p">,</span> <span class="n">correct_decryption</span><span class="p">,</span> <span class="mh">0x38</span><span class="p">);</span>
+</span><span class="line">
+</span><span class="line">  <span class="k">if</span><span class="p">(</span><span class="n">result</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">){</span>
+</span><span class="line">    <span class="n">print_bad_key_halt</span><span class="p">();</span>
+</span><span class="line">  <span class="p">}</span>
+</span><span class="line">
+</span><span class="line">  <span class="n">print</span><span class="p">(</span><span class="s">&quot;Ok&quot;</span><span class="p">);</span>
+</span><span class="line">
+</span><span class="line">  <span class="n">rc4_key_schedule</span><span class="p">(</span><span class="n">key_schedule</span><span class="p">,</span> <span class="n">passphrase_input</span><span class="p">,</span> <span class="n">chars_read</span><span class="p">);</span>
+</span><span class="line">  <span class="n">print</span><span class="p">(</span><span class="s">&quot;Decrypting Disk Image&quot;</span><span class="p">);</span>
+</span><span class="line">
+</span><span class="line">  <span class="n">decrypt_disk</span><span class="p">();</span>
+</span><span class="line"><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>So what’s going on here, is we’re going to do an in-place decryption of the <code>DISK</code> section if we’ve
+entered the right passphrase.</p>
+
+<p>We’re able to figure all this out, without running this binary at all,
+through static analysis and a bit of ESIL simulation.  I guess the question is how did I know which
+function was doing the decryption, what actual encryption algorithm was being used, and how I’m going
+to figure out the passphrase without even running the binary.</p>
+
+<p>The answer to the first question is that I knew I would probably need to find XOR somewhere
+in this program which would XOR the ciphertext with the key stream, but since we have no XOR
+instruction, I knew it would need to be created with a group of <code>NOR</code>, which I found pretty easily.</p>
+
+<p><img src="/images/xor_nor.png" alt="XOR using NOR Gates" title="XOR using NOR Gates" /></p>
+
+<p>So I spotted that pretty easily, and pinpointed the main decryption routine.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class="asm"><span class="line"><span class="nf">nor</span> <span class="no">r58</span><span class="p">,</span> <span class="no">r21</span><span class="p">,</span> <span class="no">r01</span>
+</span><span class="line"><span class="nf">nor</span> <span class="no">r21</span><span class="p">,</span> <span class="no">r58</span><span class="p">,</span> <span class="no">r21</span>
+</span><span class="line"><span class="nf">nor</span> <span class="no">r57</span><span class="p">,</span> <span class="no">r58</span><span class="p">,</span> <span class="no">r01</span>
+</span><span class="line"><span class="nf">nor</span> <span class="no">r21</span><span class="p">,</span> <span class="no">r21</span><span class="p">,</span> <span class="no">r57</span>
+</span><span class="line"><span class="nf">nor</span> <span class="no">r21</span><span class="p">,</span> <span class="no">r21</span><span class="p">,</span> <span class="no">r21</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>The answer to how did I know which encryption algorithm it was, is more funny.  I didn’t know
+which one it was.  I had stepped through the key scheduling function a few times, after it prints
+“Initializing Encryption”, and thought that it was basically key stretching the passphrase.  It
+was only later when I was randomly reading through a writeup on some malware which used RC4 encryption,
+that I realized what I was looking at the same RC4 key scheduling algorithm.</p>
+
+<h2 id="cracking-the-passphrase">Cracking the Passphrase</h2>
+<p>The main encrypted part of the binary was identified by the address that was being passed to the
+<code>decrypt()</code> function, which was <code>0xc00</code>.  I also previously noticed this while running the binary
+through the entropy function of the program <code>binwalk</code>.  Here is the output from <code>binwalk -E</code></p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line"><span class="nv">$ </span>binwalk -E disk.img
+</span><span class="line">
+</span><span class="line">DECIMAL       HEXADECIMAL     ENTROPY
+</span><span class="line">--------------------------------------------------------------------------------
+</span><span class="line"><span class="m">0</span>             0x0             Falling entropy edge <span class="o">(</span>0.553052<span class="o">)</span>
+</span><span class="line"><span class="m">3072</span>          0xC00           Rising entropy edge <span class="o">(</span>0.972975<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>One of the weaknesses of some encryption schemes, is in how it checks if the passphrase is valid
+before decryption.  Say for example you enter a passphrase on a zip file or something, and the
+unzip program just blindly decrypts the file without knowing if the password is valid.  It’s going to produce
+total garbage if the passphrase is wrong, and the program won’t have any way of letting you know that
+you’ve entered the wrong password.</p>
+
+<p>So a common, bad, way to verify the password first, is to have some known ciphertext, plaintext pair
+that is encrypted using the passphrase right in the binary.  You enter the passphrase, it decrypts this
+small ciphertext, compares it to the known plaintext, and if it’s correct, it says “yay” and moves on
+to decrypting the rest of the file.  If it’s wrong, it says “boo”, and doesn’t decrypt the file into
+garbage.</p>
+
+<p>This is what’s happening in our dan32 binary.  The known ciphertext, plaintext pair is included, meaning
+we just have to crack that.</p>
+
+<p>Here we can see that before decrypting the <code>DISK</code> section, it tries to decrypt
+a small 56 byte buffer, and then compares that to a valid string that is included in the program.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="c"><span class="line">  <span class="n">decrypt</span><span class="p">(</span><span class="n">key_schedule</span><span class="p">,</span> <span class="n">encrypted_test_data</span><span class="p">,</span> <span class="mh">0x38</span><span class="p">);</span>
+</span><span class="line">  <span class="n">result</span> <span class="o">=</span> <span class="n">memcmp</span><span class="p">(</span><span class="n">encrypted_test_data</span><span class="p">,</span> <span class="n">correct_decryption</span><span class="p">,</span> <span class="mh">0x38</span><span class="p">);</span>
+</span><span class="line">
+</span><span class="line">  <span class="k">if</span><span class="p">(</span><span class="n">result</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">){</span>
+</span><span class="line">    <span class="n">print_bad_key_halt</span><span class="p">();</span>
+</span><span class="line">  <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Here we can output the short encrypted buffer, and its valid decryption.  If the passphrase we give
+doesn’t decrypt this short buffer correctly, the program will halt.  Here I use the <code>px</code> Radare command
+to do a hexdump of the test ciphertext, and another <code>ps</code> command to print the plaintext string.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">px 0x38 @ sym.another_buffer_i_think
+</span><span class="line">
+</span><span class="line">- offset -   <span class="m">0</span> <span class="m">1</span>  <span class="m">2</span> <span class="m">3</span>  <span class="m">4</span> <span class="m">5</span>  <span class="m">6</span> <span class="m">7</span>  <span class="m">8</span> <span class="m">9</span>  A B  C D  E F  0123456789ABCDEF
+</span><span class="line">0x00000964  <span class="m">7216</span> fa85 4c3c d0e4 <span class="m">5905</span> <span class="m">7954</span> d203 eb95  r...L&lt;..Y.yT....
+</span><span class="line">0x00000974  <span class="m">1601</span> e73b 6dc8 642f 742f <span class="m">5419</span> aabe ea31  ...<span class="p">;</span>m.d/t/T....1
+</span><span class="line">0x00000984  <span class="m">9306</span> c9e1 fa65 830f <span class="m">5118</span> a727 94ff <span class="m">9634</span>  .....e..Q..<span class="s1">&#39;...4</span>
+</span><span class="line"><span class="s1">0x00000994  5af7 4c29 85de 8714                      Z.L)....</span>
+</span><span class="line">
+</span><span class="line"><span class="s1">ps 0x38 @ 0x0000092c</span>
+</span><span class="line">
+</span><span class="line"><span class="s1">Another one got caught today, it&#39;</span>s all over the papers.
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>That means in order to crack this passphrase, I only need to figure out how to successfully decrypt
+this 56 byte buffer, which is something I can do entirely outside of this binary.  I decided to reverse
+the key scheduling and decryption routine, and rewrite it in C so that I could brute force the password
+quickly outside of this environment, and outside of Radare.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+</pre></td><td class="code"><pre><code class="c"><span class="line"><span class="c1">//  Here is the reversed RC4 key schedule from Dan32</span>
+</span><span class="line"><span class="kt">void</span> <span class="nf">rc4_key_schedule</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">key_schedule</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">key_input</span><span class="p">,</span> <span class="kt">int</span> <span class="n">length</span><span class="p">){</span>
+</span><span class="line">  <span class="kt">char</span> <span class="o">*</span><span class="n">ptr</span> <span class="o">=</span> <span class="p">(</span><span class="n">key_schedule</span> <span class="o">+</span> <span class="mi">2</span><span class="p">);</span>
+</span><span class="line">  <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mh">0xff</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">){</span>
+</span><span class="line">    <span class="n">ptr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+</span><span class="line">  <span class="p">}</span>
+</span><span class="line">
+</span><span class="line">  <span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class="line">  <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mh">0xff</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">){</span>
+</span><span class="line">    <span class="n">j</span> <span class="o">=</span> <span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="n">ptr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">key_input</span><span class="p">[</span><span class="n">i</span> <span class="o">%</span> <span class="n">length</span><span class="p">])</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="p">;</span>
+</span><span class="line">    <span class="kt">char</span> <span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">;</span>
+</span><span class="line">    <span class="n">t1</span> <span class="o">=</span> <span class="n">ptr</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+</span><span class="line">    <span class="n">t2</span> <span class="o">=</span> <span class="n">ptr</span><span class="p">[</span><span class="n">j</span><span class="p">];</span>
+</span><span class="line">    <span class="n">ptr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">t2</span><span class="p">;</span>
+</span><span class="line">    <span class="n">ptr</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">t1</span><span class="p">;</span>
+</span><span class="line">  <span class="p">}</span>
+</span><span class="line">  <span class="n">key_schedule</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class="line">  <span class="n">key_schedule</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class="line"><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+</pre></td><td class="code"><pre><code class="c"><span class="line"><span class="c1">//  Here is the PRGA from Dan32</span>
+</span><span class="line"><span class="kt">char</span> <span class="nf">pseudo_random_generation_algorithm</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">key_schedule</span><span class="p">){</span>
+</span><span class="line">  <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">key_schedule</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+</span><span class="line">  <span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">key_schedule</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+</span><span class="line">
+</span><span class="line">  <span class="kt">char</span> <span class="o">*</span><span class="n">s</span> <span class="o">=</span> <span class="n">zero_gap</span> <span class="o">+</span> <span class="mi">2</span><span class="p">;</span>
+</span><span class="line">
+</span><span class="line">  <span class="n">i</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="p">;</span>
+</span><span class="line">  <span class="n">j</span> <span class="o">=</span> <span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="p">;</span>
+</span><span class="line">
+</span><span class="line">  <span class="n">key_schedule</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+</span><span class="line">  <span class="n">key_schedule</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">j</span><span class="p">;</span>
+</span><span class="line">
+</span><span class="line">  <span class="kt">char</span> <span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">;</span>
+</span><span class="line">  <span class="n">t1</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+</span><span class="line">  <span class="n">t2</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">j</span><span class="p">];</span>
+</span><span class="line">  <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">t2</span><span class="p">;</span>
+</span><span class="line">  <span class="n">s</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">t1</span><span class="p">;</span>
+</span><span class="line">
+</span><span class="line">  <span class="k">return</span> <span class="n">s</span><span class="p">[</span> <span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">s</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="o">&amp;</span> <span class="mh">0xff</span> <span class="p">];</span>
+</span><span class="line"><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>And finally the decrypt routine.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+</pre></td><td class="code"><pre><code class="c"><span class="line"><span class="c1">//  RC4 Decrypt from Dan32</span>
+</span><span class="line"><span class="kt">void</span> <span class="nf">decrypt</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">key_stream</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">cipher_text</span><span class="p">,</span> <span class="kt">int</span> <span class="n">length</span><span class="p">){</span>
+</span><span class="line">  <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">length</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">){</span>
+</span><span class="line">    <span class="kt">char</span> <span class="n">key</span> <span class="o">=</span> <span class="n">pseudo_random_generation_algorithm</span><span class="p">(</span><span class="n">key_stream</span><span class="p">);</span>
+</span><span class="line">
+</span><span class="line">    <span class="n">cipher_text</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">cipher_text</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">^</span> <span class="n">key</span><span class="p">;</span>
+</span><span class="line">  <span class="p">}</span>
+</span><span class="line"><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>I made this into a complete program, that takes a passphrase as argument, and then wrapped it in
+a short Ruby script that repeatedly tries passwords from a list I have, until the decrypted result matches.
+This only took about 3 minutes, the passphrase ended up being <code>agent</code>  This was lucky, because it could
+have been a lot harder if it wasn’t a simple word, I would have needed to use hashcat or something a
+bit more sophisticated.  There are also flaws with RC4 itself, which directly relate to the problems
+with WEP, but I didn’t need to go that route.</p>
+
+<p>I can’t really call writing this code a waste of time, since I ended up needing to do it in order to
+actually identify the algorithm, but there are far easier ways to decrypt RC4 that I could have used,
+for example, Radare2 comes with a program called <code>rahash2</code> which can, among about a zillion other things,
+be used to decrypt RC4.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line"><span class="nv">$ </span>hexdump -C test.bin
+</span><span class="line">
+</span><span class="line"><span class="m">00000000</span>  <span class="m">72</span> <span class="m">16</span> fa <span class="m">85</span> 4c 3c d0 e4  <span class="m">59</span> <span class="m">05</span> <span class="m">79</span> <span class="m">54</span> d2 <span class="m">03</span> eb <span class="m">95</span>  <span class="p">|</span>r...L&lt;..Y.yT....<span class="p">|</span>
+</span><span class="line"><span class="m">00000010</span>  <span class="m">16</span> <span class="m">01</span> e7 3b 6d c8 <span class="m">64</span> 2f  <span class="m">74</span> 2f <span class="m">54</span> <span class="m">19</span> aa be ea <span class="m">31</span>  <span class="p">|</span>...<span class="p">;</span>m.d/t/T....1<span class="p">|</span>
+</span><span class="line"><span class="m">00000020</span>  <span class="m">93</span> <span class="m">06</span> c9 e1 fa <span class="m">65</span> <span class="m">83</span> 0f  <span class="m">51</span> <span class="m">18</span> a7 <span class="m">27</span> <span class="m">94</span> ff <span class="m">96</span> <span class="m">34</span>  <span class="p">|</span>.....e..Q..<span class="s1">&#39;...4|</span>
+</span><span class="line"><span class="s1">00000030  5a f7 4c 29 85 de 87 14                           |Z.L)....|</span>
+</span><span class="line"><span class="s1">00000038</span>
+</span><span class="line">
+</span><span class="line"><span class="s1">$ rahash2 -D rc4 -S s:agent test.bin</span>
+</span><span class="line">
+</span><span class="line"><span class="s1">Another one got caught today, it&#39;</span>s all over the papers.
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="decrypting-the-disk-image">Decrypting the Disk Image</h2>
+<p>At this point I am thinking I will just dump the high entropy section of the binary from <code>0xc00</code> onwards
+out to a separate file, and decrypt it with <code>rahash2</code> and be done with it, but when I try this, I end
+up with unintelligible garbage, that isn’t proper dan32 code, and isn’t anything else I can
+recognize.</p>
+
+<p>The <code>DISK</code> section is divided into 512 byte sectors, and it turns out they are not decrypted in the order they
+appear in the file.  The order of the pseudorandomly generated keystream matters since it’s a stream cipher,
+and so that is why I’m getting garbage out.  I decided then to just simulate the decryption process within Radare
+using ESIL, since I put so much work into properly defining each opcode in ESIL, it does simulate the VM perfectly.</p>
+
+<p>The only problem is, that I have not implemented the <code>in</code> and <code>out</code> opcodes for doing IO, so I would be
+running the program blind, and be unable to enter the passphrase or see printed output.</p>
+
+<h2 id="fixing-the-io-problem">Fixing the IO Problem</h2>
+<p>An easy way to avoid writing the <code>in</code> opcode, is for me to simulate the program up until it is about to
+ask me for a passphrase, stop there, and just write the passphrase into memory at the right address, and
+skip over the <code>scan()</code> function entirely and continue afterwards, so that’s what I’ve decided to do.</p>
+
+<p>For the <code>out</code> opcode, there is a less hacky solution.  I can use ESIL to simulate an interrupt, and attach
+that interrupt to an external program that will receive the character value to be printed.  I wrote a short
+Ruby script which accepts an argument and prints it to the standard output.  And inside Radare2 simulate the
+binary like this:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line"><span class="c">#  Setup ESIL</span>
+</span><span class="line">s 0
+</span><span class="line">aei
+</span><span class="line">aeim
+</span><span class="line">aeip
+</span><span class="line">
+</span><span class="line"><span class="c">#  Allow the binary to virtually write into a memory cache</span>
+</span><span class="line">e io.cache <span class="o">=</span> <span class="nb">true</span>
+</span><span class="line">
+</span><span class="line"><span class="c">#  And attach out.rb as an interrupt handler</span>
+</span><span class="line">e cmd.esil.intr<span class="o">=</span>!./out.rb
+</span><span class="line">
+</span><span class="line">
+</span><span class="line"><span class="c">#  Advance to right before we call scan to ask for password</span>
+</span><span class="line">aecu 0x000002ac
+</span><span class="line">
+</span><span class="line">
+</span><span class="line"><span class="c">#  Write the RC4 password into the right place in memory</span>
+</span><span class="line"><span class="c">#  The length is written to the return value register</span>
+</span><span class="line">
+</span><span class="line">wz agent @ 0x1200
+</span><span class="line">aer <span class="nv">r01</span> <span class="o">=</span> 0x5
+</span><span class="line">
+</span><span class="line">
+</span><span class="line"><span class="c">#  Skip over the call to scan(), and continue from there</span>
+</span><span class="line"><span class="c">#  r63 is the instruction pointer</span>
+</span><span class="line">
+</span><span class="line">aer <span class="nv">r63</span> <span class="o">=</span> 0x000002b4
+</span><span class="line">aecu 0x000004fc
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="the-result">The Result</h2>
+
+<script type="text/javascript" src="https://asciinema.org/a/134335.js" id="asciicast-134335" async=""></script>
+
+<p>This takes a while to complete, so I just went off and did something else.  Another thing, not shown here is that
+the binary often calls functions that just do nothing but waste enormous amounts of time counting, which have no
+effect on the output.  I patched these calls out of the binary so I wouldn’t have to wait 2000 years for it to finish.</p>
+
+<p>Once all is said and done, the binary has completely rewritten the <code>DISK</code> section into yet another binary, and we’re
+given this message:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line"><span class="nv">$ </span><span class="c"># Look, I&#39;m an HTTP server now!</span>
+</span><span class="line"><span class="nv">$ </span>cat xinetd.conf
+</span><span class="line">service httpd
+</span><span class="line"><span class="o">{</span>
+</span><span class="line">    <span class="nv">disable</span>     <span class="o">=</span> no
+</span><span class="line">    <span class="nv">socket_type</span> <span class="o">=</span> stream
+</span><span class="line">    <span class="nv">protocol</span>    <span class="o">=</span> tcp
+</span><span class="line">    <span class="nb">wait</span>        <span class="o">=</span> no
+</span><span class="line">    <span class="nb">bind</span>        <span class="o">=</span> 0.0.0.0
+</span><span class="line">    <span class="nv">server</span>      <span class="o">=</span> u5emu
+</span><span class="line">    <span class="nv">server_args</span> <span class="o">=</span> disk.img
+</span><span class="line">    <span class="nb">type</span>        <span class="o">=</span> UNLISTED
+</span><span class="line">    <span class="nv">port</span>        <span class="o">=</span> 80
+</span><span class="line">    <span class="nv">user</span>        <span class="o">=</span> root
+</span><span class="line"><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>I dump the <code>DISK</code> segment into an actual file, and reload that in Radare, and sure enough it has decrypted itself into
+a webserver written in dan32.  I reversed this new binary for a while, and found it contained:</p>
+
+<ul>
+  <li>Embedded html files</li>
+  <li>A GIF of Morpheus from the Matrix</li>
+  <li>A PNG background file</li>
+  <li>Some lzma compressed issues of Phrack Magazine</li>
+  <li>The Hacker’s Manifesto, by the Mentor</li>
+  <li>Some zlib compressed files</li>
+  <li>And the finally, the flag, written in Danish</li>
+</ul>
+
+<p>I used binwalk to extract these from the binary and looked through the contents.  I got the flag, so I’m calling this
+one done.  Good experience overall, 10/10 would crack again.  I’m so proficient in reading dan32 assembly now, that it’s
+a shame I’ll probably never have any use for it again, it’s a pretty nice VM.</p>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Safiire</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2017-08-19T15:53:11-07:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/assembly/'>assembly</a>, <a class='category' href='/blog/categories/crackme/'>crackme</a>, <a class='category' href='/blog/categories/dan32/'>dan32</a>, <a class='category' href='/blog/categories/debugging/'>debugging</a>, <a class='category' href='/blog/categories/encryption/'>encryption</a>, <a class='category' href='/blog/categories/engineering/'>engineering</a>, <a class='category' href='/blog/categories/programming/'>programming</a>, <a class='category' href='/blog/categories/radare/'>radare</a>, <a class='category' href='/blog/categories/reverse/'>reverse</a>
+  
+</span>
+
+
+    </p>
+    
+      
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/04/12/reversing-crackme-challenges/" title="Previous Post: Reversing Crackme Challenges">&laquo; Reversing Crackme Challenges</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2017/08/19/solving-danish-defense-intelligence-puzzle/">Solving a Danish Defense Intelligence Puzzle</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/04/12/reversing-crackme-challenges/">Reversing Crackme Challenges</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/02/10/glsl-shaders-with-webgl/">GLSL Shaders With WebGL</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/29/creating-sound-on-the-nes/">Creating Sound on the NES</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/17/matrices-as-linear-operations/">Matrices as Linear Operators</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/safiire">@safiire</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'safiire',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2017 - Safiire
+</p>
+
+</footer>
+  
+
+
+</body>
+</html>

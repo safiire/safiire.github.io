@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://irkenkitties.com/blog/2017/08/19/solving-danish-defense-intelligence-puzzle/</loc>
+<lastmod>2017-08-19T15:53:11-07:00</lastmod>
+</url>
+<url>
 <loc>http://irkenkitties.com/blog/2016/04/12/reversing-crackme-challenges/</loc>
 <lastmod>2016-04-12T16:27:26-07:00</lastmod>
 </url>
@@ -128,6 +132,33 @@
 </url>
 <url>
 <loc>http://irkenkitties.com/blog/categories/radare2/</loc>
+</url>
+<url>
+<loc>http://irkenkitties.com/blog/categories/crackme/</loc>
+</url>
+<url>
+<loc>http://irkenkitties.com/blog/categories/dan32/</loc>
+</url>
+<url>
+<loc>http://irkenkitties.com/blog/categories/reverse/</loc>
+</url>
+<url>
+<loc>http://irkenkitties.com/blog/categories/engineering/</loc>
+</url>
+<url>
+<loc>http://irkenkitties.com/blog/categories/programming/</loc>
+</url>
+<url>
+<loc>http://irkenkitties.com/blog/categories/debugging/</loc>
+</url>
+<url>
+<loc>http://irkenkitties.com/blog/categories/radare/</loc>
+</url>
+<url>
+<loc>http://irkenkitties.com/blog/categories/encryption/</loc>
+</url>
+<url>
+<loc>http://irkenkitties.com/posts/2/</loc>
 </url>
 <url>
 <loc>http://irkenkitties.com/lickmin/index.html</loc>

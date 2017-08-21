@@ -1,0 +1,998 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Programming | Irken Kitties]]></title>
+  <link href="http://irkenkitties.com/blog/categories/programming/atom.xml" rel="self"/>
+  <link href="http://irkenkitties.com/"/>
+  <updated>2017-08-21T13:19:08-07:00</updated>
+  <id>http://irkenkitties.com/</id>
+  <author>
+    <name><![CDATA[Safiire]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Solving a Danish Defense Intelligence Puzzle]]></title>
+    <link href="http://irkenkitties.com/blog/2017/08/19/solving-danish-defense-intelligence-puzzle/"/>
+    <updated>2017-08-19T15:53:11-07:00</updated>
+    <id>http://irkenkitties.com/blog/2017/08/19/solving-danish-defense-intelligence-puzzle</id>
+    <content type="html"><![CDATA[<p>While I was browsing the Reverse Engineering sub on Reddit a few months ago, I came across a puzzle that the poster said came from a Danish newspaper.
+It consisted of a single fairly large image, with a small amount of x86 assembly on one side, and a large block of text on the other, formatted to
+display a question mark.  So, having finally had the time to sit down and solve this recently, I thought I would do a writeup, explaining my
+thought processes along the way in the hopes someone can learn from it.  Another goal here is to expose people to the majesty of Radare2, which
+is a Vim-like commandline reverse engineering tool that follows the principles of the Unix philosophy.</p>
+
+<p><img src="/images/dan32.png" alt="The Challenge" title="The Challenge" /></p>
+
+<p>It looks like a CrackMe, or capture the flag exercise.  The x86 assembly is clearly a virtual machine, and I assumed the block of text on the
+right would be a binary that runs on that virtual machine.  I call the machine, for lack of a better name, <em>Dan32</em>, because as I later
+found out, it is a 32-bit virtual machine, and originates from Denmark.</p>
+
+<p>The block of text on the right is base64 encoded, which is easy enough to to convert back into a binary file, but since it is an image,
+we can’t directly get at that block in a text format without doing some kind of optical character recognition.  We can guess it is base64
+encoded by the characters used, and really after you’ve seen a lot of base64, you can usually spot it pretty easily.</p>
+
+<p>I tried a few online OCR services, which did not work, and since I had invested almost no time into this, I was ready to say the hell with it.
+I was not about to type all that base64 text into my text editor by hand.</p>
+
+<p>I did end up solving this puzzle and creating tools to reverse engineer it, what follows is a detailed writeup, read on for more.</p>
+
+<!-- more -->
+
+<h2 id="getting-the-base64-text">Getting the Base64 Text</h2>
+<p>Staring at it a bit longer, we notice certain characters in the base64 side are bolded, and if we go through and write down each bolded character,
+it spells out some nonsense <code>MzJoYWNrZXI1NTd6amt6aS5vbmlvbgo.</code>.</p>
+
+<p>I thought, since we are looking at a massive bunch of base64, that maybe this was also base64 encoded.  We can use a tool called <code>rax2</code> which
+is a part of Radare2 in order to decode it like this:</p>
+
+<p>&#8220;` bash
+$ rax2 -D MzJoYWNrZXI1NTd6amt6aS5vbmlvbgo.
+32hacker557zjkzi.onion</p>
+
+<p>&#8220;`</p>
+
+<p>It’s a vanity <code>.onion</code> address on the TOR network.  The site, which unfortunately is not online anymore, has downloads for both the assembly listing, and the base64,
+saving us from needing to worry about how to get those characters into our computer by hand.</p>
+
+<p>My approach to these sorts of files, that might be malicious or not, is usually to use <code>hexdump</code> or a hex editor program to look at them
+before going any further.  After doing this to the base64 file, I notice that it is full of ANSI terminal escape sequences, and that these
+ones are for positioning text at (x,y) coordinates, setting bolding etc.  This is because if you were to <code>cat</code> the file to your terminal,
+it would reproduce the formatting seen in the image, with the question mark and all, which is pretty cute, and are actually required to
+put the text in the right order to be decoded.</p>
+
+<p>Before I <code>cat</code> this to my terminal, I wrote a script to check each of the ANSI escape sequences to make sure they were only positional
+and style commands, and nothing weird or malicious.  They turned out alright, so I printed it to my terminal and copy pasted the
+text into a file.  Then I wrote another script to remove the end of line hyphens, join it all together, and base64 decode it, resulting
+in a binary file that I named <a href="https://github.com/safiire/radare2-dan32/blob/master/disk.img" title="disk.img">disk.img</a></p>
+
+<p>You can find the complete source code for all of the Radare2 plugins I wrote to solve this <a href="https://github.com/safiire/radare2-dan32/">on my github</a>.</p>
+
+<h2 id="the-virtual-machine">The Virtual Machine</h2>
+<p>The provided x86 assembly for the virtual machine is bare bones, but it tells us everything we need to know to run this binary.
+The label <code>OP_TABLE</code> points to an enumeration of each opcode the VM supports, and the order, so we know the numeric value of the that op.</p>
+
+<p><img src="/images/dan32_asm1.png" alt="Assembly Listing" title="Assembly Listing" /></p>
+
+<p>Some more information we learn from the given asm is</p>
+
+<ul>
+  <li>There are at least 64 registers in this machine</li>
+  <li>It must be a 32-bit machine</li>
+  <li><code>%define REG(r) [REGS + r * 4]</code> Registers are 32-bits wide</li>
+  <li><code>%define PTR(p) [MEM + p]</code> It requires some read/write memory space</li>
+  <li><code>lea esi [DISK + esi]</code> It requires some read/write space to act as a disk</li>
+  <li><code>mov eax, [OP_TABLE + eax * 4]</code> Every opcode is 4 bytes wide</li>
+  <li><code>cmov</code> is the only way to do conditionals</li>
+</ul>
+
+<p>Even after learning all that information, it’s incomplete, some of the opcodes are not given implementations, such as <code>write,
+in, div</code>, and the various sized <code>load.x, store.x</code>, and <code>nor</code>, to name a few.  So we’ll need to look at what’s given,
+and implement those ourselves.</p>
+
+<h2 id="my-philosophy-of-reversing">My Philosophy of Reversing</h2>
+<p>Here’s where a major part of my reverse engineering philosophy comes in, I don’t as a rule like to run random binaries given to me,
+especially in malware/crackme situations.  If I take the VM’s assembly listing, complete the missing implementations, and run the
+mystery binary <code>disk.img</code>, I have literally no idea what it is capable of at this point.  Worst case scenario is that binary knows
+about flaw in the given virtual machine, and exploits it for a VM escape onto my host system and starts doing shit.</p>
+
+<p>I’m heavy on the static analysis side, but at this point I don’t have any debugger, or analysis tools that even understand this
+made up computer architecture.  What I want to do, is use Radare2 to reverse engineer the binary, so I’m going to need to teach Radare2
+about this file format, computer architecture, invent a textural assembly language, and so on.  And that’s the real fun of this challenge for
+me, honestly, so that’s what I did.  Radare2 allows you to write plugins to extend it, so it can understand any CPU, real or
+imagined, and simulate its running through ESIL (Evaluable Strings Intermediate Language).</p>
+
+<h2 id="radare2-plugins">Radare2 Plugins</h2>
+<p>The first Radare2 plugin to write, is the asm plugin.  This plugin takes the 32-bit machine level opcodes and fills in a structure
+with information about that opcode, its arguments, and it provides a textual representation for viewing a disassembly listing.</p>
+
+<p>In order to do this, we’ll write a plugin in C.  The asm plugin’s main function has the following prototype</p>
+
+<p>&#8220;` c
+static int disassemble(RAsm *a, RAsmOp *op, ut8 *buf, ut64 len);</p>
+
+<p>&#8220;`</p>
+
+<p>The parameters to <code>disassemble</code> are:</p>
+
+<ul>
+  <li><code>RAsm *a</code> is the current assembler context</li>
+  <li><code>RAsmOp *op</code> is the structure we need to fill in</li>
+  <li><code>ut8 *buf</code> are the opcode bytes we are disassembling</li>
+  <li><code>ut64 len</code> is the length of <code>buf</code></li>
+</ul>
+
+<p>The important fields of <code>RAsmOp</code> to fill in here, are <code>buf_asm</code> which holds the textual representation of the disassembled opcode,
+and <code>size</code>, the size of the opcode.</p>
+
+<p>Looking at the provided x86 assembly code, we can see how to dismantle a 32-bit opcode into its constituent parts, remember all
+opcodes are 4 bytes long or 32-bits.</p>
+
+<p>&#8220;` asm
+mov ebp, edx
+shr ebp, 21
+and ebp, 77o
+mov esi, edx
+shr esi, 15
+and esi, 77o
+mov edi, edx
+shr edi, 9
+and edi, 77o</p>
+
+<p>mov eax, edx
+shr eax, 27
+mov eax, [OP_TABLE + eax * 4]
+jmp eax</p>
+
+<p>&#8220;`</p>
+
+<p>Becomes</p>
+
+<p>&#8220;` c
+#define SIX_BIT 077</p>
+
+<p>//  Cast 4 bytes from buf to a unsigned 32 bit value
+ut32 dword = <em>(ut32</em>)buf;</p>
+
+<p>//  32 - 27 leaves a 5-bit opcode
+ut8 op_index = (dword » 27);</p>
+
+<p>//  Extract 3 6-bit arguments using the SIX_BIT mask
+ut8 edi = (dword » 9 ) &amp; SIX_BIT;
+ut8 esi = (dword » 15) &amp; SIX_BIT;
+ut8 ebp = (dword » 21) &amp; SIX_BIT;</p>
+
+<p>&#8220;`</p>
+
+<p>Next, for convenience, we make a lookup table that maps 0 to 63 to the corresponding register name.  I happen to know from
+the future, that <code>r62</code> is the stack pointer, and <code>r63</code> is the instruction pointer, but I didn’t know this at the time.
+It makes reading the disassembly a lot easier though once we know this.</p>
+
+<p>&#8220;` c
+static const struct {
+    char *name;
+} regs[] = {
+  { “r00” }, { “r01”  }, { “r02” }, { “r03” }, { “r04” }, { “r05” }, { “r06” }, { “r07” },
+  { “r08” }, { “r09”  }, { “r10” }, { “r11” }, { “r12” }, { “r13” }, { “r14” }, { “r15” },
+  { “r16” }, { “r17”  }, { “r18” }, { “r19” }, { “r20” }, { “r21” }, { “r22” }, { “r23” },
+  { “r24” }, { “r25”  }, { “r26” }, { “r27” }, { “r28” }, { “r29” }, { “r30” }, { “r31” },
+  { “r32” }, { “r33”  }, { “r34” }, { “r35” }, { “r36” }, { “r37” }, { “r38” }, { “r39” },
+  { “r40” }, { “r41”  }, { “r42” }, { “r43” }, { “r44” }, { “r45” }, { “r46” }, { “r47” },
+  { “r48” }, { “r49”  }, { “r50” }, { “r51” }, { “r52” }, { “r53” }, { “r54” }, { “r55” },
+  { “r56” }, { “r57”  }, { “r58” }, { “r59” }, { “r60” }, { “r61” }, { “esp” }, { “eip” }
+};</p>
+
+<p>&#8220;`</p>
+
+<p>Since in the disassembly output we’re going to be referencing things by register name a lot, I grab the textual names
+for each argument as well.</p>
+
+<p>&#8220;` c
+char *edi_reg = regs[edi].name;
+char *esi_reg = regs[esi].name;
+char *ebp_reg = regs[ebp].name;</p>
+
+<p>&#8220;`</p>
+
+<p>What follows in the <code>disassemble</code> function is a switch statement on <code>op_index</code>, where we just need to fill in the
+op size and the textual representation of the opcode itself.  So I’ll show a few of those here, you can see the
+full source of these plugins <a href="https://github.com/safiire/radare2-dan32" title="on my github">here</a></p>
+
+<p>&#8220;` c
+  case 11:
+    snprintf(op-&gt;buf_asm, R_ASM_BUFSIZE, “nor %s, %s, %s”, ebp_reg, esi_reg, edi_reg);
+    op-&gt;size = 4;
+    break;</p>
+
+<p>&#8220;`</p>
+
+<p>So for example the <code>nor</code> instruction, which wasn’t provided in the image, just uses <code>snprintf</code> to write out our
+human readable disassembly, and sets the <code>op-&gt;size = 4</code>.  This ends up producing something like <code>nor r21, r57, r57</code>.</p>
+
+<p>Quickly taking a look at another example, <code>movi</code> is the move immediate value instruction, and looks like this:</p>
+
+<p>&#8220;` c
+    case 16:
+      eax = dword;
+      ecx = dword;
+      eax »= 5;
+      eax &amp;= 0xffff;
+      ecx &amp;= 037;
+      eax «= (ecx &amp; 0xff);</p>
+
+<pre><code>  snprintf(op-&gt;buf_asm, R_ASM_BUFSIZE, "movi %s, 0x%0x", ebp_reg, eax);
+  op-&gt;size = 4;
+  break;
+</code></pre>
+
+<p>&#8220;`</p>
+
+<p>Notice <code>op-&gt;size = 4</code> for all instructions, and setting <code>op-&gt;size = -1</code> indicates an invalid operation.  The above <code>movi</code> instruction actually
+encodes an immediate value directly into the opcode itself.  This is the only instruction which does this, all other instructions
+must move values into a register to operate on them.  Again, this is a straight translation from from the given x86 asm.</p>
+
+<p>Other instructions had to be put together just following the pattern that was set out for us.  For example, <code>div, mul, nor</code>
+all work the same as the given <code>mul</code> opcode.  All said, it is not a lot of work to get a fully functioning disassembler going in Radare2.</p>
+
+<p>Here is the last part of the plugin, where we hook our code up by setting callbacks, and some information:</p>
+
+<p>&#8220;` c
+RAsmPlugin r_asm_plugin_dan32 = {
+  .name = “dan32”,
+  .author = “safiire@irkenkitties.com”,
+  .license = “None”,
+  .desc = “Dan32 disassembler”,
+  .arch = “dan32”,
+  .bits = 32,
+  .init = NULL,
+  .fini = NULL,
+  .disassemble = &amp;disassemble,
+  .modify = NULL,
+  .assemble = NULL,
+};</p>
+
+<p>&#8220;`</p>
+
+<p>And here’s the result, a nice looking assembly readout that we can use to start reversing the binary.</p>
+
+<p><img src="/images/r2_disassembly1.png" alt="Disassembly" title="Disassembly" /></p>
+
+<h2 id="radare-analysis-plugin">Radare Analysis Plugin</h2>
+<p>With the above plugin we can now see human readable disassembly of the binary, but Radare doesn’t have enough information
+about this architecture yet to allow us to step through the program and simulate it like you would in a debugger. And you can’t yet
+perform static analysis like you would get with IDA.  Radare supports about one zillion architectures already, but
+since this CPU was probably invented just for this challenge, we’ll have to add support ourselves.</p>
+
+<p>Radare’s answer to this is ESIL, (Evaluable Strings Intermediate Language), providing a register profile for the
+CPU, and using those to create an analysis plugin.  An analysis plugin expects us to implement a function like this, to set
+the register profile.</p>
+
+<p>&#8220;` c
+static int set_reg_profile(RAnal *anal) {
+  const char *p =
+  “=A0  r03\n”
+  “=A1  r04\n”
+  “=A2  r05\n”
+  “=LR  r59\n”
+  “=PC  r63\n”
+  “=SP  r62\n”
+  “gpr r00 .32   0 0\n gpr r01 .32   4 0\n gpr r02 .32 … etc”
+  “gpr r08 .32  32 0\n gpr r09 .32  36 0\n gpr r10 .32 …”
+  “gpr r16 .32  64 0\n gpr r17 .32  68 0\n gpr r18 .32 …”
+  “gpr r24 .32  96 0\n gpr r25 .32 100 0\n gpr r26 .32 …”
+  “gpr r32 .32 128 0\n gpr r33 .32 132 0\n gpr r34 .32 …”
+  “gpr r40 .32 160 0\n gpr r41 .32 164 0\n gpr r42 .32 …”
+  “gpr r48 .32 192 0\n gpr r49 .32 196 0\n gpr r50 .32 …”
+  “gpr r56 .32 224 0\n gpr r57 .32 228 0\n gpr r58 .32 …”
+  return r_reg_set_profile_string(anal-&gt;reg, p);
+}</p>
+
+<p>&#8220;`</p>
+
+<p>Here we specify all 64 general purpose registers in the machine, and also give aliases to registers that have special meaning.
+The format is <code>gpr &lt;registername&gt; .&lt;size in bits&gt; &lt;offset&gt;</code>.</p>
+
+<p>With this we can create a register file containing registers of various sizes, which can overlap. For example in x86, we can specify
+register <code>gpr ax .16 0</code>, but also specify the high and low bytes as <code>gpr ah .8 8</code> and <code>gpr al .8 0</code>.</p>
+
+<p>Dan32 doesn’t have overlapping registers, or high and low register access by name, so we don’t need to do this.</p>
+
+<p>Some register aliases are A0, A1, A2, which are for arguments that are passed to functions via register, which is
+pretty common in this binary.  LR is the link register, which like on an ARM CPU holds the return address of a function, PC, is the
+instruction pointer, and SP is the stack pointer, so I’ve filled those in after having gotten some experience with the
+binary’s two calling conventions.</p>
+
+<p>The next task for the analysis plugin is to create ESIL for each and every instruction supported by the CPU. There are not many
+instructions so this didn’t take very long.</p>
+
+<p>The plugin must implement an analysis function with the following prototype, which looks extremely similar to the asm plugin function:</p>
+
+<p>&#8220;` c
+static int dan32_anal_op(RAnal *anal, RAnalOp *op, ut64 addr, const ut8 *data, int len);</p>
+
+<p>&#8220;`</p>
+
+<p>Here, we’re asked to fill in more information about the opcode in the given <code>RAnalOp *op</code> parameter, it looks something like this:</p>
+
+<p>&#8220;` c
+struct RAnalOp {
+  id       // I use the opcode index
+  esil     // A string containing ESIL
+  size     // Size of opcode, this is always 4 in dan32
+  nopcode  // No idea, other plugins set this to 1
+  addr     // Address this opcode is at
+  jump     // If this opcode jumps somewhere, the address
+  fail     // Where to jump on failure condition
+  ptr      // Pointer to the primary data we’re working with
+  val      // Value of the primary data we’re working with
+  type     // enum of types such as R_ANAL_OP_TYPE_CJMP for conditional jump
+  family   // enum of type family such as R_ANAL_OP_FAMILY_IO for I/O
+}</p>
+
+<p>&#8220;`</p>
+
+<p>All of these are pretty important for proper analysis, but the most important, so that we can simulate this binary inside
+radare2, without running it on the untrusted VM we were given, is the ESIL.  Here is an example of ESIL for <code>movi</code>, the
+move immediate value instruction:</p>
+
+<p>&#8220;` asm
+movi r57, 0x41</p>
+
+<p>; becomes</p>
+
+<p>0x41,r57,=</p>
+
+<p>&#8220;`</p>
+
+<p>ESIL is a stack machine, turing complete, so it is able to represent the instructions for any CPU, it is like a ridiculous
+sort of microcode almost.  A more complicated instruction <code>cmov</code>, the conditional move instruction, looks like this:</p>
+
+<p>&#8220;` asm
+cmov eip, r57 if r23</p>
+
+<p>;  becomes</p>
+
+<p>r23,?,{,r57,eip,=,}</p>
+
+<p>&#8220;`</p>
+
+<p>So after each instruction is codified by type and given an ESIL representation, we’re done.  If you are
+interested in how ESIL works, <a href="https://radare.gitbooks.io/radare2book/content/disassembling/esil.html">here’s the docs</a>.
+I’ve written some pretty crazy ESIL for the disk sector read/write code, and stack machines are not my favourite, but
+they work :)   Here is some of the longest ESIL I wrote for one opcode.  It reads 512 bytes from a numbered disk sector, into a given memory address.</p>
+
+<p>&#8220;` asm
+read [r57], sector(r21)</p>
+
+<p>;  becomes</p>
+
+<p>0x0,r40,=,
+0x200,r21,*,
+0x200000,+,
+r40,+,
+[8],
+r57,r40,+,
+=[8],
+0x8,r40,+=,
+0x200,r40,==,!,
+?{,3,GOTO,}</p>
+
+<p>&#8220;`</p>
+
+<h2 id="disassembling-the-binary-in-radare2">Disassembling the binary in Radare2</h2>
+
+<p>Ok, so now we’re all set to get a disassembly view of this binary, we’ll just load it up in Radare2, hit play
+to see how it goes.</p>
+
+<script type="text/javascript" src="https://asciinema.org/a/134202.js" id="asciicast-134202" async=""></script>
+
+<p>“Wrong Endianness”.  Now, there are a few things going on here, so let’s look at the first instruction: <code>movi r00, 0x78200</code>.
+I don’t want to get to bogged down in the details, but I know from the future, that register <code>r00</code> is like the zero register
+on a MIPS system, it always contains the value 0, and so here writing <code>0x78200</code> to that register, is effectively a no-op,
+and we’ll see why that’s done in the next part.</p>
+
+<p>Next up we have <code>movi eip, 0x14</code>.  There are no jump instructions in this opcode set, and unlike x86, you <em>can</em> write to the
+instruction pointer register to get a jump.  Interestingly, jumping to <code>0x14</code> is not a multiple of 4, and so we’re jumping out of alignment,
+which is why we’re seeing the disassembler isn’t able to interpret a few instructions after that at first.</p>
+
+<p>When we get to the address <code>0x14</code>, we end up at series of instructions that loads immediates, and then uses <code>out</code> to print them
+out to the display.</p>
+
+<p>&#8220;` asm
+0x00000014  e00a2087    movi r57, ‘W’
+0x00000018  000020cf    out r57
+0x0000001c  21072087    movi r57, ‘r’
+0x00000020  000020cf    out r57
+0x00000024  e00d2087    movi r57, ‘o’
+0x00000028  000020cf    out r57
+0x0000002c  e1062087    movi r57, ‘n’
+0x00000030  000020cf    out r57
+0x00000034  e00c2087    movi r57, ‘g’
+0x00000038  000020cf    out r57
+0x0000003c  25002087    movi r57, ‘ ‘</p>
+
+<p>&#8220;`</p>
+
+<p>A little bit of radare knowledge, the immediate values were displayed as hex to begin with, so I wrote a little radare expression
+to hint to it that those immediates are actually string or char values using the <code>ahi</code> command, which stands for “analyse hint immediate”.</p>
+
+<p>Radare2 is terse as hell, and you get very used to it, and probably, maybe, start loving it.  The expression below basically creates
+a range from the current address, denoted as <code>$$</code>, to <code>$$ + 17 * 8</code> with a step of 8 bytes.  The <code>@@=</code> functions as an iterator, which runs
+the command <code>ahi s</code> on each address in the range, telling radare the immediate values are character values.</p>
+
+<p>&#8220;`
+ahi s @@=<code>?s $$ $$+17*8 8</code></p>
+
+<p>&#8220;`</p>
+
+<p>Anyway, the real problem is we’re interpreting the binary as little endian, when it’s actually big endian.  So we can just go back to our plugin
+and fix that pretty simply in the disassemble function by reversing the bytes, and setting the endian properly.</p>
+
+<p>&#8220;` c
+//  Decode the op
+ut8 big_end[4];
+big_end[0] = buf[3];
+big_end[1] = buf[2];
+big_end[2] = buf[1];
+big_end[3] = buf[0];</p>
+
+<p>ut32 dword = <em>(ut32</em>)big_end;
+ut8 op_index = (dword » 27);       // 5-bit opcode</p>
+
+<p>// …</p>
+
+<p>RAsmPlugin r_asm_plugin_dan32 = {
+  // …</p>
+
+<p>.endian = R_SYS_ENDIAN_BIG,</p>
+
+<p>// …
+};</p>
+
+<p>&#8220;`</p>
+
+<h2 id="correct-endian">Correct Endian</h2>
+<p>Back to the entrypoint of our binary, what was once a no-op, when read backwards, jumps us past all the “Wrong Endian” stuff, and
+begins displaying the binary properly so we can reverse it.</p>
+
+<p>The opcode <code>87e00180</code> when read in big endian jumps us with <code>movi eip, 0xc</code>, and another jump <code>movi eip, 0xa8</code>, bringing us
+finally to some actual code.</p>
+
+<p>&#8220;` asm
+0x000000a8   movi r20, 0xc0
+0x000000ac   movi r21, 0x14c
+0x000000b0   movi r22, 0xbe
+0x000000b4   store.b [r22], r00
+0x000000b8   read [r00], sector(r00)
+0x000000bc   goto r21
+;  print “Disk read error!”</p>
+
+<p>&#8220;`</p>
+
+<p>This is the first in a series of tricks and tests that the binary performs on the virtual machine itself to make sure it is
+implemented properly.  With the use of a bin plugin for dan32, which I’m not going to bore you with here but is available on GitHub
+with the rest of the code, I’ve tried to setup a memory layout that would be familiar for someone like myself who works with ELF or PE files.
+Here is that layout.</p>
+
+<p>&#8220;`
+00  0x00000000 |#————————-| 0x0000092b  2.3K mrwx .text
+01  0x0000092c |#————————-| 0x00000b79   589 mrw- .bss
+02* 0x00000c00 |#————————-| 0x00007503 26.3K mrw- .encrypted
+03  0x000ffc00 |————#————-| 0x00100000    1K mrw- .stack
+04  0x00200000 |————————-#| 0x00207503 29.3K mrw- .diskrom
+05  0x00100000 |————#############-| 0x001f0000  960K -rwx esil.ram
+=&gt;  0x00001dc0 |————————–| 0x00001ec0</p>
+
+<p>&#8220;`</p>
+
+<p>Remembering the <code>DISK</code> address that was mentioned in the x86 assembly VM, which is meant to represent a readable writeable
+disk area from which the program is loaded.  This area stores <code>disk.img</code> in the <code>.diskrom</code> section at address <code>0x200000</code>.  I probably
+shouldn’t have called it a diskrom, since you can write to it, but I didn’t know it was going to be written to at the time, so
+it’s too late now.  I actually believed it was going to be something like a game cartridge rom at first, but oh well.</p>
+
+<p>The code is executed from the <code>.text</code> section, with entrypoint <code>0x0</code>, and we have a <code>.bss</code> section which contains some initialized
+data that is used in the program.  The <code>read</code> and <code>write</code> instructions are used to copy data from the disk into memory by <code>0x200</code> byte
+sectors.</p>
+
+<p>So the trick here, is that at <code>0xb4</code> we are writing from <code>r00</code>, which always contains zero to address <code>0xbe</code>, which is altering
+an instruction.  Then, if your <code>read</code> instruction works properly this is immediately corrected by reloading the entire first
+sector from <code>.diskrom</code> back into memory, undoing the damage.  If your <code>read</code> instruction is not working, you will be greeted by
+the text “Disk read error!” and the program will halt.</p>
+
+<script type="text/javascript" src="https://asciinema.org/a/134327.js" id="asciicast-134327" async=""></script>
+
+<p>Notice how the analysis plugin is working, showing beautiful ascii arrows that point to the destinations of our jumps.  When
+the zero is written to address <code>0xbe</code>, it modifies the instruction, and we see the control flow is taking us directly towards
+“Disk read error” and a halt.  The <code>read</code> immediately fixes this and the control flow updates.</p>
+
+<h2 id="the-next-test">The Next Test</h2>
+<p>Next we move on to <code>0x14c</code>, which is an area of the binary that sets up the stack pointer, and reads the rest
+of the program from <code>.diskrom</code> one sector at a time.</p>
+
+<p>I guess here we can get our first look at how dan32 goes about things.</p>
+
+<p>&#8220;` asm
+;– fcn_read_other_sectors:
+0x0000014c      add r61, eip, r00
+0x00000150      movi r57, 0x4
+0x00000154      nor r57, r57, r57
+0x00000158      add r61, r61, r57
+0x0000015c      movi r57, 0x1
+0x00000160      add r61, r61, r57
+0x00000164      movi esp, sym.stack_end</p>
+
+<p>&#8220;`</p>
+
+<p>Here’s some things to take note of right off the bat:</p>
+
+<ul>
+  <li>There is no subtraction instruction</li>
+  <li>There is no concept of signed numbers</li>
+  <li>We can still have negative numbers using 2’s complement</li>
+  <li>There are no other bitwise logical operations besides NOR</li>
+  <li>NOR is universal, and can construct any other gate</li>
+  <li>There is no direct way to move one register into another one, so addition + 0 is used</li>
+  <li><code>nor(a, a)</code> flips all the bits of <code>a</code></li>
+  <li><code>nor(a, a)</code> is equivalent to <code>-(a + 1)</code> in 2’s complement</li>
+  <li><code>r00</code> is a hardware zero register</li>
+  <li><code>r57</code> is used as a temporary register</li>
+</ul>
+
+<p>There’s a few patterns we see using NOR throughout this binary.  Above we want to save the instruction pointer to <code>r61</code>, and
+then subtract 4 from it.  This is done many times in this binary like this:</p>
+
+<p>&#8220;` asm
+add r61, eip, r00     ;  r61 = eip
+movi r57, 0x4         ;  r57 = 4
+nor r57, r57, r57     ;  r57 = -5
+add r67, r61, r57     ;  r61 = r61 - 5
+movi r57, 0x1         ;  r57 = 1
+add r61, r61, r57     ;  r61 = r61 + 1</p>
+
+<p>&#8220;`</p>
+
+<p>This is a roundabout way of just saying <code>r61 = eip - 4</code>, but that’s what we’re dealing with here :)</p>
+
+<p>The next test the binary performs on the virtual machine, is to test the <code>div</code> instruction.  Since
+this instruction was not provided in the x86 assembly code, it is to ensure we’ve got the argument
+order right, and we’re not allowing division by zero.  If we’ve done it wrong, we’re sent off to
+some code that prints “ALU Malfunction (DIV)” and halts the program.</p>
+
+<p>By the way, these symbols such as <code>fcn.alu_malfunction_div, fcn.main</code>, and so on, were added by me
+while reversing the binary to make it more clear what is going on.</p>
+
+<p>&#8220;` asm
+nor r20, r00, r00                       ; r20 = -1
+div r20, r00, r20                       ; r20 = 0 / -1
+movi r57, fcn.alu_malfunction_div       ;
+add r57, r57, r00                       ; does nothing
+cmov eip, r57 if r20                    ; if(r20) goto fcn.alu_malfunction_div
+movi r57, fcn.main                      ;
+goto r57                                ; goto main()</p>
+
+<p>&#8220;`</p>
+
+<p>That’s also our first look at conditionals in dan32.  There are no compare instructions, there is
+no zero flag, and no conditional jumps like <code>jne</code>, as you find in other instruction sets.</p>
+
+<p>An interesting side note I guess, is that there is no real compare instruction in x86 either, the
+<code>cmp</code> instruction on that processor is actually an alias for subtracting the two values.  When
+they are equal, since <code>a - a = 0</code>, this sets the zero flag, which is what instructions like <code>jne</code>
+are conditional on.</p>
+
+<h2 id="the-main-function">The Main Function</h2>
+
+<p>Now that the Radare plugins are working, let’s have a look around the binary, simulate it a bit, and look
+around.  This is loading a project file where I’ve already reversed the entire binary, but gives a good
+idea of how it’s working.</p>
+
+<script type="text/javascript" src="https://asciinema.org/a/134338.js" id="asciicast-134338" async=""></script>
+
+<p>Here’s where we start getting some idea of what this binary is up to, and finally get to see some proper
+functions such as <code>print()</code>, <code>scan()</code>, <code>memcmp()</code> and things like that implemented.</p>
+
+<p>&#8220;` asm
+;– fcn.main:
+0x0000028c      movi r03, str.password
+0x00000290      movi r57, 0x8
+0x00000294      add r59, eip, r57
+0x00000298      movi r57, fcn.print
+0x0000029c      goto r57</p>
+
+<p>&#8220;`</p>
+
+<p>First up, radare has identified a string “Password: “, and helpfully renamed its address as the symbol
+<code>str.password</code> for us.  Here we can see one of the two calling conventions in action.  This one is a
+lot like fastcall, where we load the first few arguments of a function into registers <code>r03, r04, r05</code>,
+and end up with our return value in <code>r01</code>.</p>
+
+<p>Remember I identified <code>r59</code> as the link register, and that is used as our return value.  So here, the
+calling convention is to calculate the return address, <code>eip + 8</code>, two instructions away, and store it
+into <code>r59</code>, we then load the address of the print function <code>fcn.print</code> into a temp register, and jump
+there.</p>
+
+<p>Throughout the binary, <code>r57</code> is always used as a temporary register.  There are others such as <code>r20, r21</code>
+which are always used as counters or array indices.  In fact, this assembly code is so consistent in the
+way it does things and which registers it uses, that I wonder if it was emitted by a machine, or written by
+hand by someone who is just awesome.</p>
+
+<p>Now that we know our arguments, our return address, and where we’re going, that about fully describes
+this calling convention.  There is also a stack based calling convention like you would find on
+x86 32-bit, which I may write about later.</p>
+
+<h2 id="the-print-function">The Print Function</h2>
+<p>So don’t worry I’m not going to bore you to death by literally explaining every function,
+but this print one is a fairly simple example to start with.</p>
+
+<p>&#8220;` asm
+;– fcn.print:</p>
+
+<p>;  Initialize r20 to 0 as an array index
+add r20, r00, r00
+movi r57, lbl.head
+goto r57</p>
+
+<p>lbl.body:
+   ;  Output the character in r21
+   out r21
+   ;  r20 += 1
+   movi r57, 0x1
+   add r20, r20, r57</p>
+
+<p>lbl.head:
+   ;  r21 = r03[r20]
+   load.b r21, [r03 + r20]
+   movi r57, lbl.body
+   add r57, r57, r00</p>
+
+<p>;  return if r21 == 0
+cmov eip, r57 if r21
+goto r59</p>
+
+<p>&#8220;`</p>
+
+<p>This function is simple, but normally to reverse a difficult function, I will slowly replace
+elements of the disassembly with C, until I have a C function.  In this case, we’d have a for loop:</p>
+
+<p><code>c
+void print(char *r03){
+  for(r20 = 0; r03[r20] != 0; r20++){
+    out r03[r20]
+  }
+}
+</code></p>
+
+<h2 id="the-purpose-of-the-program">The Purpose of the Program</h2>
+<p>I’ve kept from mentioning the actual purpose of this program for way too much of this article.  If
+written in C, the main function would just about look like the following code.  This was figured out
+by reversing each function in turn, and I got a happy surprise at the end, we’re going to be dealing
+with encryption.</p>
+
+<p>&#8220;` c
+void main(){
+  printf(“Password: “);
+  chars_read = scan(passphrase_input);</p>
+
+<p>if(chars_read == 0){
+    print_eh_halt();
+  }</p>
+
+<p>print(“Initializing Encryption…”);
+  burn_cpu();</p>
+
+<p>rc4_key_schedule(key_schedule, passphrase_input, chars_read);
+  print(“Ok”);
+  print(“Checking Key”);
+  burn_cpu();</p>
+
+<p>decrypt(key_schedule, encrypted_test_data, 0x38);
+  result = memcmp(encrypted_test_data, correct_decryption, 0x38);</p>
+
+<p>if(result != 0){
+    print_bad_key_halt();
+  }</p>
+
+<p>print(“Ok”);</p>
+
+<p>rc4_key_schedule(key_schedule, passphrase_input, chars_read);
+  print(“Decrypting Disk Image”);</p>
+
+<p>decrypt_disk();
+}</p>
+
+<p>&#8220;`</p>
+
+<p>So what’s going on here, is we’re going to do an in-place decryption of the <code>DISK</code> section if we’ve
+entered the right passphrase.</p>
+
+<p>We’re able to figure all this out, without running this binary at all,
+through static analysis and a bit of ESIL simulation.  I guess the question is how did I know which
+function was doing the decryption, what actual encryption algorithm was being used, and how I’m going
+to figure out the passphrase without even running the binary.</p>
+
+<p>The answer to the first question is that I knew I would probably need to find XOR somewhere
+in this program which would XOR the ciphertext with the key stream, but since we have no XOR
+instruction, I knew it would need to be created with a group of <code>NOR</code>, which I found pretty easily.</p>
+
+<p><img src="/images/xor_nor.png" alt="XOR using NOR Gates" title="XOR using NOR Gates" /></p>
+
+<p>So I spotted that pretty easily, and pinpointed the main decryption routine.</p>
+
+<p>&#8220;` asm
+nor r58, r21, r01
+nor r21, r58, r21
+nor r57, r58, r01
+nor r21, r21, r57
+nor r21, r21, r21</p>
+
+<p>&#8220;`</p>
+
+<p>The answer to how did I know which encryption algorithm it was, is more funny.  I didn’t know
+which one it was.  I had stepped through the key scheduling function a few times, after it prints
+“Initializing Encryption”, and thought that it was basically key stretching the passphrase.  It
+was only later when I was randomly reading through a writeup on some malware which used RC4 encryption,
+that I realized what I was looking at the same RC4 key scheduling algorithm.</p>
+
+<h2 id="cracking-the-passphrase">Cracking the Passphrase</h2>
+<p>The main encrypted part of the binary was identified by the address that was being passed to the
+<code>decrypt()</code> function, which was <code>0xc00</code>.  I also previously noticed this while running the binary
+through the entropy function of the program <code>binwalk</code>.  Here is the output from <code>binwalk -E</code></p>
+
+<p>&#8220;` bash
+$ binwalk -E disk.img</p>
+
+<h2 id="decimal-------hexadecimal-----entropy">DECIMAL       HEXADECIMAL     ENTROPY</h2>
+<p>0             0x0             Falling entropy edge (0.553052)
+3072          0xC00           Rising entropy edge (0.972975)</p>
+
+<p>&#8220;`</p>
+
+<p>One of the weaknesses of some encryption schemes, is in how it checks if the passphrase is valid
+before decryption.  Say for example you enter a passphrase on a zip file or something, and the
+unzip program just blindly decrypts the file without knowing if the password is valid.  It’s going to produce
+total garbage if the passphrase is wrong, and the program won’t have any way of letting you know that
+you’ve entered the wrong password.</p>
+
+<p>So a common, bad, way to verify the password first, is to have some known ciphertext, plaintext pair
+that is encrypted using the passphrase right in the binary.  You enter the passphrase, it decrypts this
+small ciphertext, compares it to the known plaintext, and if it’s correct, it says “yay” and moves on
+to decrypting the rest of the file.  If it’s wrong, it says “boo”, and doesn’t decrypt the file into
+garbage.</p>
+
+<p>This is what’s happening in our dan32 binary.  The known ciphertext, plaintext pair is included, meaning
+we just have to crack that.</p>
+
+<p>Here we can see that before decrypting the <code>DISK</code> section, it tries to decrypt
+a small 56 byte buffer, and then compares that to a valid string that is included in the program.</p>
+
+<p>&#8220;` c
+  decrypt(key_schedule, encrypted_test_data, 0x38);
+  result = memcmp(encrypted_test_data, correct_decryption, 0x38);</p>
+
+<p>if(result != 0){
+    print_bad_key_halt();
+  }</p>
+
+<p>&#8220;`</p>
+
+<p>Here we can output the short encrypted buffer, and its valid decryption.  If the passphrase we give
+doesn’t decrypt this short buffer correctly, the program will halt.  Here I use the <code>px</code> Radare command
+to do a hexdump of the test ciphertext, and another <code>ps</code> command to print the plaintext string.</p>
+
+<p>&#8220;` bash
+px 0x38 @ sym.another_buffer_i_think</p>
+
+<ul>
+  <li>offset -   0 1  2 3  4 5  6 7  8 9  A B  C D  E F  0123456789ABCDEF
+0x00000964  7216 fa85 4c3c d0e4 5905 7954 d203 eb95  r…L&lt;..Y.yT….
+0x00000974  1601 e73b 6dc8 642f 742f 5419 aabe ea31  …;m.d/t/T….1
+0x00000984  9306 c9e1 fa65 830f 5118 a727 94ff 9634  …..e..Q..’…4
+0x00000994  5af7 4c29 85de 8714                      Z.L)….</li>
+</ul>
+
+<p>ps 0x38 @ 0x0000092c</p>
+
+<p>Another one got caught today, it’s all over the papers.</p>
+
+<p>&#8220;`</p>
+
+<p>That means in order to crack this passphrase, I only need to figure out how to successfully decrypt
+this 56 byte buffer, which is something I can do entirely outside of this binary.  I decided to reverse
+the key scheduling and decryption routine, and rewrite it in C so that I could brute force the password
+quickly outside of this environment, and outside of Radare.</p>
+
+<p>&#8220;` c
+//  Here is the reversed RC4 key schedule from Dan32
+void rc4_key_schedule(char *key_schedule, char *key_input, int length){
+  char *ptr = (key_schedule + 2);
+  for(int i = 0; i &lt; 0xff; i++){
+    ptr[i] = i;
+  }</p>
+
+<p>int j = 0;
+  for(int i = 0; i &lt; 0xff; i++){
+    j = (j + ptr[i] + key_input[i % length]) &amp; 0xff;
+    char t1, t2;
+    t1 = ptr[i];
+    t2 = ptr[j];
+    ptr[i] = t2;
+    ptr[j] = t1;
+  }
+  key_schedule[0] = 0;
+  key_schedule[1] = 0;
+}</p>
+
+<p>&#8220;`</p>
+
+<p>&#8220;` c
+//  Here is the PRGA from Dan32
+char pseudo_random_generation_algorithm(char *key_schedule){
+  int i = key_schedule[0];
+  int j = key_schedule[1];</p>
+
+<p>char *s = zero_gap + 2;</p>
+
+<p>i = (i + 1) &amp; 0xff;
+  j = (j + s[i]) &amp; 0xff;</p>
+
+<p>key_schedule[0] = i;
+  key_schedule[1] = j;</p>
+
+<p>char t1, t2;
+  t1 = s[i];
+  t2 = s[j];
+  s[i] = t2;
+  s[j] = t1;</p>
+
+<p>return s[ (s[i] + s[j]) &amp; 0xff ];
+}</p>
+
+<p>&#8220;`</p>
+
+<p>And finally the decrypt routine.</p>
+
+<p>&#8220;` c
+//  RC4 Decrypt from Dan32
+void decrypt(char *key_stream, char *cipher_text, int length){
+  for(int i = 0; i &lt; length; i++){
+    char key = pseudo_random_generation_algorithm(key_stream);</p>
+
+<pre><code>cipher_text[i] = cipher_text[i] ^ key;   } }
+</code></pre>
+
+<p>&#8220;`</p>
+
+<p>I made this into a complete program, that takes a passphrase as argument, and then wrapped it in
+a short Ruby script that repeatedly tries passwords from a list I have, until the decrypted result matches.
+This only took about 3 minutes, the passphrase ended up being <code>agent</code>  This was lucky, because it could
+have been a lot harder if it wasn’t a simple word, I would have needed to use hashcat or something a
+bit more sophisticated.  There are also flaws with RC4 itself, which directly relate to the problems
+with WEP, but I didn’t need to go that route.</p>
+
+<p>I can’t really call writing this code a waste of time, since I ended up needing to do it in order to
+actually identify the algorithm, but there are far easier ways to decrypt RC4 that I could have used,
+for example, Radare2 comes with a program called <code>rahash2</code> which can, among about a zillion other things,
+be used to decrypt RC4.</p>
+
+<p>&#8220;` bash
+$ hexdump -C test.bin</p>
+
+<p>00000000  72 16 fa 85 4c 3c d0 e4  59 05 79 54 d2 03 eb 95  |r…L&lt;..Y.yT….|
+00000010  16 01 e7 3b 6d c8 64 2f  74 2f 54 19 aa be ea 31  |…;m.d/t/T….1|
+00000020  93 06 c9 e1 fa 65 83 0f  51 18 a7 27 94 ff 96 34  |…..e..Q..’…4|
+00000030  5a f7 4c 29 85 de 87 14                           |Z.L)….|
+00000038</p>
+
+<p>$ rahash2 -D rc4 -S s:agent test.bin</p>
+
+<p>Another one got caught today, it’s all over the papers.</p>
+
+<p>&#8220;`</p>
+
+<h2 id="decrypting-the-disk-image">Decrypting the Disk Image</h2>
+<p>At this point I am thinking I will just dump the high entropy section of the binary from <code>0xc00</code> onwards
+out to a separate file, and decrypt it with <code>rahash2</code> and be done with it, but when I try this, I end
+up with unintelligible garbage, that isn’t proper dan32 code, and isn’t anything else I can
+recognize.</p>
+
+<p>The <code>DISK</code> section is divided into 512 byte sectors, and it turns out they are not decrypted in the order they
+appear in the file.  The order of the pseudorandomly generated keystream matters since it’s a stream cipher,
+and so that is why I’m getting garbage out.  I decided then to just simulate the decryption process within Radare
+using ESIL, since I put so much work into properly defining each opcode in ESIL, it does simulate the VM perfectly.</p>
+
+<p>The only problem is, that I have not implemented the <code>in</code> and <code>out</code> opcodes for doing IO, so I would be
+running the program blind, and be unable to enter the passphrase or see printed output.</p>
+
+<h2 id="fixing-the-io-problem">Fixing the IO Problem</h2>
+<p>An easy way to avoid writing the <code>in</code> opcode, is for me to simulate the program up until it is about to
+ask me for a passphrase, stop there, and just write the passphrase into memory at the right address, and
+skip over the <code>scan()</code> function entirely and continue afterwards, so that’s what I’ve decided to do.</p>
+
+<p>For the <code>out</code> opcode, there is a less hacky solution.  I can use ESIL to simulate an interrupt, and attach
+that interrupt to an external program that will receive the character value to be printed.  I wrote a short
+Ruby script which accepts an argument and prints it to the standard output.  And inside Radare2 simulate the
+binary like this:</p>
+
+<p>&#8220;` bash
+#  Setup ESIL
+s 0
+aei
+aeim
+aeip</p>
+
+<h1 id="allow-the-binary-to-virtually-write-into-a-memory-cache">Allow the binary to virtually write into a memory cache</h1>
+<p>e io.cache = true</p>
+
+<h1 id="and-attach-outrb-as-an-interrupt-handler">And attach out.rb as an interrupt handler</h1>
+<p>e cmd.esil.intr=!./out.rb</p>
+
+<h1 id="advance-to-right-before-we-call-scan-to-ask-for-password">Advance to right before we call scan to ask for password</h1>
+<p>aecu 0x000002ac</p>
+
+<h1 id="write-the-rc4-password-into-the-right-place-in-memory">Write the RC4 password into the right place in memory</h1>
+<p>#  The length is written to the return value register</p>
+
+<p>wz agent @ 0x1200
+aer r01 = 0x5</p>
+
+<h1 id="skip-over-the-call-to-scan-and-continue-from-there">Skip over the call to scan(), and continue from there</h1>
+<p>#  r63 is the instruction pointer</p>
+
+<p>aer r63 = 0x000002b4
+aecu 0x000004fc</p>
+
+<p>&#8220;`</p>
+
+<h2 id="the-result">The Result</h2>
+
+<script type="text/javascript" src="https://asciinema.org/a/134335.js" id="asciicast-134335" async=""></script>
+
+<p>This takes a while to complete, so I just went off and did something else.  Another thing, not shown here is that
+the binary often calls functions that just do nothing but waste enormous amounts of time counting, which have no
+effect on the output.  I patched these calls out of the binary so I wouldn’t have to wait 2000 years for it to finish.</p>
+
+<p>Once all is said and done, the binary has completely rewritten the <code>DISK</code> section into yet another binary, and we’re
+given this message:</p>
+
+<p>&#8220;` bash
+$ # Look, I’m an HTTP server now!
+$ cat xinetd.conf
+service httpd
+{
+    disable     = no
+    socket_type = stream
+    protocol    = tcp
+    wait        = no
+    bind        = 0.0.0.0
+    server      = u5emu
+    server_args = disk.img
+    type        = UNLISTED
+    port        = 80
+    user        = root
+}</p>
+
+<p>&#8220;`</p>
+
+<p>I dump the <code>DISK</code> segment into an actual file, and reload that in Radare, and sure enough it has decrypted itself into
+a webserver written in dan32.  I reversed this new binary for a while, and found it contained:</p>
+
+<ul>
+  <li>Embedded html files</li>
+  <li>A GIF of Morpheus from the Matrix</li>
+  <li>A PNG background file</li>
+  <li>Some lzma compressed issues of Phrack Magazine</li>
+  <li>The Hacker’s Manifesto, by the Mentor</li>
+  <li>Some zlib compressed files</li>
+  <li>And the finally, the flag, written in Danish</li>
+</ul>
+
+<p>I used binwalk to extract these from the binary and looked through the contents.  I got the flag, so I’m calling this
+one done.  Good experience overall, 10/10 would crack again.  I’m so proficient in reading dan32 assembly now, that it’s
+a shame I’ll probably never have any use for it again, it’s a pretty nice VM.</p>
+
+]]></content>
+  </entry>
+  
+</feed>
