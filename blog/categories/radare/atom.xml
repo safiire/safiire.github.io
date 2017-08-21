@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Radare | Irken Kitties]]></title>
   <link href="http://irkenkitties.com/blog/categories/radare/atom.xml" rel="self"/>
   <link href="http://irkenkitties.com/"/>
-  <updated>2017-08-21T13:19:08-07:00</updated>
+  <updated>2017-08-21T13:59:11-07:00</updated>
   <id>http://irkenkitties.com/</id>
   <author>
     <name><![CDATA[Safiire]]></name>
@@ -38,6 +38,10 @@ encoded by the characters used, and really after you’ve seen a lot of base64, 
 I was not about to type all that base64 text into my text editor by hand.</p>
 
 <p>I did end up solving this puzzle and creating tools to reverse engineer it, what follows is a detailed writeup, read on for more.</p>
+
+<p>Note: If you are using a blocker such as Privacy Badger, like I do, I’ve noticed the terminal movie playback embeds from asciinema.org may
+be blocked by default.  If you wish to see those in this post, you’ll have to toggle that domain to allow in your plugin, though you don’t
+need to accept cookies from that domain for it to work.</p>
 
 <!-- more -->
 
@@ -656,13 +660,14 @@ goto r59</p>
 <p>This function is simple, but normally to reverse a difficult function, I will slowly replace
 elements of the disassembly with C, until I have a C function.  In this case, we’d have a for loop:</p>
 
-<p><code>c
+<p>&#8220;` c
 void print(char *r03){
   for(r20 = 0; r03[r20] != 0; r20++){
     out r03[r20]
   }
-}
-</code></p>
+}</p>
+
+<p>&#8220;`</p>
 
 <h2 id="the-purpose-of-the-program">The Purpose of the Program</h2>
 <p>I’ve kept from mentioning the actual purpose of this program for way too much of this article.  If

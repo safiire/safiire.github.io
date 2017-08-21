@@ -4,7 +4,7 @@
   <title><![CDATA[Irken Kitties]]></title>
   <link href="http://irkenkitties.com/atom.xml" rel="self"/>
   <link href="http://irkenkitties.com/"/>
-  <updated>2017-08-21T13:19:08-07:00</updated>
+  <updated>2017-08-21T13:59:11-07:00</updated>
   <id>http://irkenkitties.com/</id>
   <author>
     <name><![CDATA[Safiire]]></name>
@@ -38,6 +38,10 @@ encoded by the characters used, and really after you’ve seen a lot of base64, 
 I was not about to type all that base64 text into my text editor by hand.</p>
 
 <p>I did end up solving this puzzle and creating tools to reverse engineer it, what follows is a detailed writeup, read on for more.</p>
+
+<p>Note: If you are using a blocker such as Privacy Badger, like I do, I’ve noticed the terminal movie playback embeds from asciinema.org may
+be blocked by default.  If you wish to see those in this post, you’ll have to toggle that domain to allow in your plugin, though you don’t
+need to accept cookies from that domain for it to work.</p>
 
 <!-- more -->
 
