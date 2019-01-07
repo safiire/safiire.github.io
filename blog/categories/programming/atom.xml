@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Programming | Irken Kitties]]></title>
   <link href="http://irkenkitties.com/blog/categories/programming/atom.xml" rel="self"/>
   <link href="http://irkenkitties.com/"/>
-  <updated>2017-08-21T16:03:57-07:00</updated>
+  <updated>2019-01-07T04:40:32-08:00</updated>
   <id>http://irkenkitties.com/</id>
   <author>
     <name><![CDATA[Safiire]]></name>
@@ -12,6 +12,268 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[An Integer Overflow Puzzle]]></title>
+    <link href="http://irkenkitties.com/blog/2019/01/07/integer-overflow-puzzle/"/>
+    <updated>2019-01-07T15:53:11-07:00</updated>
+    <id>http://irkenkitties.com/blog/2019/01/07/integer-overflow-puzzle</id>
+    <content type="html"><![CDATA[<p>I just came across this cute puzzle and decided to solve it.  Like a lot of simple CTF puzzles, we’re just asked
+to pass some program arguments which when correct, guide the control flow to giving us a shell.</p>
+
+<p>We’re given this C source code:</p>
+
+<p>&#8220;`c
+#include <unistd.h></unistd.h></p>
+
+<p>int main(int argc, long <em>*argv) {
+  if(</em>argv[1] * 0x1064deadbeef4601u == 0xd1038d2e07b42569u){
+    execl(“/bin/sh”, “sh”, 0);
+  }
+  return 0;
+}</p>
+
+<p>&#8220;`</p>
+
+<p>If we can provide the correct number in <code>*argv[1]</code>, passing this conditional, we’ll execute a <code>/bin/sh</code> shell on
+this suid binary and win.  Continue on to see how it was solved.</p>
+
+<!-- more -->
+
+<h2 id="something-is-different-in-argv">Something is different in argv</h2>
+
+<p>Normally the <code>main</code> function in a C program will look something like <code>int main(int argc, char **argv)</code> where <code>argc</code>
+is the number of arguments provided, including the program name as argument 0, and <code>char **argv</code> or similarly <code>char *argv[]</code>
+which is an array of pointers to character arrays (C strings) representing each argument.</p>
+
+<p>The program’s environment variables <code>char **envp</code>, (the third argument to <code>main</code>, which has been left out in this case), and
+the commandline arguments are loaded into the beginning of the stack area when the program loads.</p>
+
+<p>Let’s say we run this program like this <code>./level02 one two three four</code>, and have a look at how that area of the stack looks in
+radare2.</p>
+
+<p>&#8220;`bash
+$ r2 -d ./level02 one two three four
+– I accidentally the kernel with radare2.</p>
+
+<p>Process with PID 27842 started…
+= attach 27842 27842</p>
+
+<h1 id="short-binary-analysis">Short binary analysis</h1>
+<p>[0x564684b24050]&gt; aa
+[x] Analyze all flags starting with sym. and entry0 (aa)</p>
+
+<h1 id="debug-continue-until-main">Debug Continue Until main</h1>
+<p>[0x564684b24050]&gt; dcu sym.main</p>
+
+<p>hit breakpoint at: 564684b24135</p>
+
+<h1 id="analyse-register-rdi-first-argument-to-main-normally-named-argc">Analyse Register rdi, first argument to main, normally named argc</h1>
+<p>[0x564684b24135]&gt; ar rdi
+0x00000005</p>
+
+<h1 id="analyse-register-rsi-second-argument-to-main-normally-named-argv">Analyse Register rsi, second argument to main, normally named argv</h1>
+<p>[0x564684b24135]&gt; ar rsi
+0x7ffe26db3678</p>
+
+<p>&#8220;`</p>
+
+<p>This is the X86_64 calling convention of putting function arguments in order in the registers: <code>rdi, rsi, rdx, rcx, r8, r9</code>
+which means main was called essentially like this: <code>main(rdi, rsi)</code>, or in this case literally <code>main(5, 0x7ffe26db3678)</code>.</p>
+
+<p>Somewhat confusingly this C program types <code>argv</code> differently, this will be important later.  So the four arguments we gave,
+plus the program’s name gives us <code>5</code> here, and the stack address <code>0x7ffe26db3678</code> will be a pointer, to a pointer, to those
+argument strings, so let’s look at that now.</p>
+
+<p>&#8220;`bash
+#  Print Hex, 0x50 bytes at the address pointed to by rsi
+[0x564684b24135]&gt; px 0x50 @ [rsi]</p>
+
+<ul>
+  <li>offset -       0 1  2 3  4 5  6 7  8 9  A B  C D  E F  0123456789ABCDEF
+0x7ffe26db5785  2e2f 6c65 7665 6c30 3200 6f6e 6500 7477  ./level02.one.tw
+0x7ffe26db5795  6f00 7468 7265 6500 666f 7572 004c 535f  o.three.four.LS_
+0x7ffe26db57a5  434f 4c4f 5253 3d72 733d 303a 6469 3d30  COLORS=rs=0:di=0
+0x7ffe26db57b5  313b 3334 3a6c 6e3d 3031 3b33 363a 6d68  1;34:ln=01;36:mh
+0x7ffe26db57c5  3d30 303a 7069 3d34 303b 3333 3a73 6f3d  =00:pi=40;33:so=</li>
+</ul>
+
+<p>&#8220;`</p>
+
+<p>We can see here the following arguments, <code>./level02</code>, <code>one</code>, <code>two</code>, <code>three</code>, and <code>four</code>, each separated by a <code>0x00</code> null character
+to terminate the string.  After that we have a similar situation for environment variables, <code>LS_COLORS=...</code> shown here, which we
+don’t care about.</p>
+
+<h2 id="an-argument-string-is-not-an-integer">An Argument String is Not an Integer</h2>
+
+<p>Remembering that <code>char **argv</code> and <code>char *argv[]</code> mean essentially the same thing in C, let’s find out what happens when that
+is changed to <code>long **argv</code>.</p>
+
+<p>In the normal course of things <code>char *argv[]</code> holds an array of <code>char *</code> which are C strings as shown above.  In this program
+we have <code>long **argv</code> which essentially means an pointer to an array of pointers to <code>long</code>.  Confusing?</p>
+
+<p>Basically what this is going to do is force a string entered on the commandline to be interpreted as a type of 64-bit signed
+int called a <code>long</code>.  It’s going to force the bytes in a string to be interpreted as a 64-bit number, which we’ll subsequently do
+some math on.  Computers don’t care about data types, and in C we can take any pointer to some bytes and say, consider the following
+bytes as this type.</p>
+
+<p>Let’s have some fun, and convert an 8 character string into a 64-bit integer, a <code>long</code> as this program is doing.</p>
+
+<p>&#8220;`c
+#include <stdio.h></stdio.h></p>
+
+<p>int main(int argc, char **argv){</p>
+
+<p>char *string = “ABCDEFGH”;
+  long *integer = (long *)string;</p>
+
+<p>printf(“sizeof(long) = %d\n”, sizeof(long));
+  printf(“%p\n”, *integer);</p>
+
+<p>return 0;
+}</p>
+
+<p>&#8220;`</p>
+
+<p>Giving the output:</p>
+
+<p>&#8220;`
+$ ./string_to_int
+sizeof(long) = 8
+0x4847464544434241</p>
+
+<p>&#8220;`</p>
+
+<p>We can see, because X86_64 is little endian, <code>A = 0x41, B = 0x42</code>, and so on, is now backwards, and represents a fairly
+large 64-bit number.</p>
+
+<h2 id="finding-the-correct-number-for-argv1">Finding the Correct Number for argv[1]</h2>
+
+<p>Since we now understand how a commandline string can represent a number, let’s find that number so we can pass the following
+condition:</p>
+
+<p>&#8220;`c
+  if(*argv[1] * 0x1064deadbeef4601u == 0xd1038d2e07b42569u)</p>
+
+<p>&#8220;`</p>
+
+<p>This should be as simple as taking this equation and rearranging it terms of <code>x</code>:</p>
+
+<p>&#8220;`c
+x * 0x1064deadbeef4601 = 0xd1038d2e07b42569
+x = 0xd1038d2e07b42569 / 0x1064deadbeef4601</p>
+
+<p>&#8220;`</p>
+
+<p>This works out to <code>x = 12</code>, and it’s wrong.  This is because we’re mixing regular algebra with integer division
+and disregarding that integers on the computer have a finite range due to bit depth, and wrap around when they exceed the
+resolution of bits used.</p>
+
+<p>Now let’s say we have, for example 8-bit unsigned integers and multiply <code>99 * 5 = 495</code>.  The maximum value of of an 8-bit
+unsigned integer is <code>2^8 - 1 = 255</code>, and this is too high.  Counting 0, we have a total of 256 distinct values.</p>
+
+<p>In order to find out how this expression will actually work out on the CPU we can say instead <code>99 * 5 mod 2^8 = 239</code>, which
+is the answer you would get for 8-bits after it wraps around.  We’ll use that next for our 64-bit values.</p>
+
+<p>I’m going to use Wolfram Alpha to solve for <code>x</code>, because I don’t know offhand how to do algebra involving modulus.  First
+we’ll convert the large 64-bit hex into decimal.  I very much like hex, but Wolfram Alpha doesn’t. Boo to that.</p>
+
+<p>&#8220;`
+0x1064deadbeef4601u = 1181313840091973121
+0xd1038d2e07b42569u = 15061036807694329193</p>
+
+<p>&#8220;`</p>
+
+<p>Then entering this equation into Wolfram to solve for <code>x</code>:</p>
+
+<p>&#8220;`perl
+mod(1181313840091973121 * x, 2^64) = 15061036807694329193</p>
+
+<p>Solution is this set of linear equations:
+x = 18446744073709551616 * n + 8319100071223652201  forall n</p>
+
+<p>&#8220;`</p>
+
+<p>This will give a valid solution for any <code>n</code>, because of the cyclic nature of integer overflows, so let’s just pick <code>n = 1</code>.</p>
+
+<p>&#8220;`ruby
+n = 1
+x = 18446744073709551616 * n + 8319100071223652201
+=&gt; 26765844144933203817</p>
+
+<p>&#8220;`</p>
+
+<p>We now have one of an infinite amount of solutions, but we have a problem, this number is too large to fit into 64-bits.
+How can we tell how many bits a number needs to be represented?  The base 2 logarithm of a number will let us know exactly
+how many bits are needed.</p>
+
+<p>&#8220;`ruby
+x = 26765844144933203817
+Math.log2(x)
+=&gt; 64.53702695614811</p>
+
+<h1 id="requires-just-slightly-more-than-64-bits">Requires just slightly more than 64-bits.</h1>
+<p>#  Wrap it back into 64-bit range, gives us a 63 bit number, which is fine
+wrapped = x % (2**64)
+=&gt; 8319100071223652201</p>
+
+<h1 id="now-fits-into-62-ish-bits-good">Now fits into 62-ish bits, good.</h1>
+<p>Math.log2(wrapped)
+=&gt; 62.85113317948744</p>
+
+<p>&#8220;`</p>
+
+<p>Looks like we should have just picked <code>n = 0</code> and saved ourselves some time.  I figured as much, but we got to show off
+the <code>log2</code> thing, so whatever.  I’m interested in knowing if we can solve this with values of <code>n &lt; 0</code>, but not <em>that</em> interested
+at the moment :)</p>
+
+<p>Next we need to check that <code>8319100071223652201</code> is the number we’re looking for by multiplying it out, this looks like
+it’s going to be a HUGE number, so we’ll again need to use modulus to wrap it back within 64-bits.</p>
+
+<p>&#8220;`ruby
+8319100071223652201 * 1181313840091973121
+=&gt; 9827468051246619677849523421944489321</p>
+
+<h1 id="again-wrap-it-back-into-64-bit">Again wrap it back into 64-bit</h1>
+<p>(8319100071223652201 * 1181313840091973121) % (2**64)
+=&gt; 15061036807694329193</p>
+
+<h1 id="exactly-the-number-that-will-pass-the-conditional">Exactly the number that will pass the conditional</h1>
+<p>0xd1038d2e07b42569
+=&gt; 15061036807694329193</p>
+
+<p>&#8220;`</p>
+
+<h2 id="convert-our-found-number-to-hex">Convert our found number to hex</h2>
+
+<p>Our number is <code>8319100071223652201</code>, and in hexadecimal that is <code>0x7373617034366f69</code>.  This looks suspiciously like each byte
+is an ASCII character value to me, forming an 8 character string, so let’s convert that in radare.</p>
+
+<p>&#8220;`bash
+&gt; ? 0x7373617034366f69
+hex     0x7373617034366f69
+octal   0715633027006415467551
+int64   8319100071223652201
+string  “io64pass”
+binary  0b0111001101110011011000010111000000110100001101100110111101101001</p>
+
+<p>&#8220;`</p>
+
+<p>Looks like we have found the commandline argument that will get us our suid shell, <code>io64pass</code> so let’s try it out.</p>
+
+<p>&#8220;`bash
+$ ls -lah level02
+-rwsr-xr-x 1 root root 17K Jan  7 01:02 level02</p>
+
+<p>$ ./level02 io64pass
+# whoami
+root
+# id
+uid=0(root) gid=0(root) groups=0(root)</p>
+
+<p>&#8220;`</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Solving a Danish Defense Intelligence Puzzle]]></title>

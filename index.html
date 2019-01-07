@@ -9,7 +9,8 @@
   <meta name="author" content="Safiire">
 
   
-  <meta name="description" content="While I was browsing the Reverse Engineering sub on Reddit a few months ago, I came across a puzzle that the poster said came from a Danish newspaper &hellip;">
+  <meta name="description" content="I just came across this cute puzzle and decided to solve it. Like a lot of simple CTF puzzles, we’re just asked
+to pass some program arguments which &hellip;">
   
 
   <meta name="HandheldFriendly" content="True">
@@ -117,6 +118,71 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2019/01/07/integer-overflow-puzzle/">An Integer Overflow Puzzle</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2019-01-07T15:53:11-07:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I just came across this cute puzzle and decided to solve it.  Like a lot of simple CTF puzzles, we’re just asked
+to pass some program arguments which when correct, guide the control flow to giving us a shell.</p>
+
+<p>We’re given this C source code:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+</pre></td><td class="code"><pre><code class="c"><span class="line"><span class="cp">#include &lt;unistd.h&gt;</span>
+</span><span class="line">
+</span><span class="line"><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">long</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
+</span><span class="line">  <span class="k">if</span><span class="p">(</span><span class="o">*</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mh">0x1064deadbeef4601u</span> <span class="o">==</span> <span class="mh">0xd1038d2e07b42569u</span><span class="p">){</span>
+</span><span class="line">    <span class="n">execl</span><span class="p">(</span><span class="s">&quot;/bin/sh&quot;</span><span class="p">,</span> <span class="s">&quot;sh&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class="line">  <span class="p">}</span>
+</span><span class="line">  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class="line"><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>If we can provide the correct number in <code>*argv[1]</code>, passing this conditional, we’ll execute a <code>/bin/sh</code> shell on
+this suid binary and win.  Continue on to see how it was solved.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2019/01/07/integer-overflow-puzzle/">Read it &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -631,76 +697,6 @@ is the same thing as our data constructor, <code>Cons</code>.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/12/03/recreating-the-haskell-list-part-3-monoids/">Recreating the Haskell List Part 3: Monoids</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-12-03T23:55:00-08:00" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>This is part 3 of a 6 part tutorial</p>
-
-<h2 id="monoids">Monoids</h2>
-
-<p>It turns out that cons lists can be more than just a Functor, it can be a Monoid.  A Monoid is
-a object with a single associative binary operation, and an identity element.  This means that 
-things like addition and multiplication form a monoid.</p>
-
-<p>The identity element for addition is the number $0$, because $x + 0 = x$.  An identity element and any
-other element, when operated on by the single associative binary operation, is one that does not
-change the other element.  Basically you can add $0$ to any number and you just get the same number.
-The identity element for multiplication is $1$, because $x \cdot 1 = x$ for every number.</p>
-
-<p>The binary operation should be one which can combine two of the objects, and for a list that happens to be
-appending them using the function <code>++</code>.</p>
-
-<p><code>[1, 2, 3] ++ [4, 5, 6] == [1, 2, 3, 4, 5, 6]</code>  Easy enough, so that means the identity element, the
-element you can combine with a list that will return the same list is: <code>[]</code>, the empty list.  <code>[1, 2] ++ [] == [1, 2]</code></p>
-
-<p>The ghci command <code>:info</code> shows that to be an instance of a monoid you must implement the functions
-<code>mempty</code> which returns the identity element, and either <code>mappend</code> or <code>mconcat</code>.  Typeclasses can
-sometimes have default implementations for some functions, and it’s often the case that two functions 
-are actually defined by default in terms of one another, meaning you only have to implement one of them
-and the other will automatically work.  Here <code>mappend</code> and <code>mconcat</code> are defined in terms of each other
-so we just decide to implement the easier of the two, <code>mappend</code></p>
-
-<p>Looking at the type signatures below we can see <code>mappend :: a -&gt; a -&gt; a</code>,  where in our case <code>a</code> will
-be the type <code>MyList</code>.  This means <code>mappend</code> receives two lists and returns a third in which they are 
-combined.  For addition this would have been receiving two numbers that need to be combined, but for
-a list it just means to stick them together end to end.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2012/12/03/recreating-the-haskell-list-part-3-monoids/">Read it &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="2">&larr; Older</a>
@@ -716,6 +712,10 @@ a list it just means to stick them together end to end.</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2019/01/07/integer-overflow-puzzle/">An Integer Overflow Puzzle</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2017/08/19/solving-danish-defense-intelligence-puzzle/">Solving a Danish Defense Intelligence Puzzle</a>
       </li>
     
@@ -729,10 +729,6 @@ a list it just means to stick them together end to end.</p>
     
       <li class="post">
         <a href="/blog/2015/03/29/creating-sound-on-the-nes/">Creating Sound on the NES</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/10/17/matrices-as-linear-operations/">Matrices as Linear Operators</a>
       </li>
     
   </ul>
@@ -774,7 +770,7 @@ a list it just means to stick them together end to end.</p>
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2017 - Safiire
+  Copyright &copy; 2019 - Safiire
 </p>
 
 </footer>
