@@ -267,7 +267,7 @@ don’t care about.</p>
 is changed to <code>long **argv</code>.</p>
 
 <p>In the normal course of things <code>char *argv[]</code> holds an array of <code>char *</code> which are C strings as shown above.  In this program
-we have <code>long **argv</code> which essentially means an pointer to an array of pointers to <code>long</code>.  Confusing?</p>
+we have <code>long **argv</code> which essentially means a pointer to an array of pointers to <code>long</code>.  Confusing?</p>
 
 <p>Basically what this is going to do is force a string entered on the commandline to be interpreted as a type of 64-bit signed
 int called a <code>long</code>.  It’s going to force the bytes in a string to be interpreted as a 64-bit number, which we’ll subsequently do
